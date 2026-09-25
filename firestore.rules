@@ -1,0 +1,274 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function userExists() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function isSuperAdminEmail() {
+      return request.auth.token.email == 'clausephwandji2020@gmail.com';
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        isSuperAdminEmail() ||
+        (userExists() && (getUserData().role == 'admin' || getUserData().role == 'dg'))
+      );
+    }
+
+    function isActiveUser() {
+      return isSignedIn() && (
+        isSuperAdminEmail() ||
+        !userExists() || // allow during initial profile creation
+        (getUserData().isActive != false && getUserData().status != 'desactive' && getUserData().status != 'suspendu')
+      );
+    }
+
+    function isFinance() {
+      return isAdmin() || (isActiveUser() && userExists() && getUserData().role == 'comptable');
+    }
+
+    function isHR() {
+      return isAdmin() || (isActiveUser() && userExists() && getUserData().role == 'rh');
+    }
+
+    function isProjectManager() {
+      return isAdmin() || (isActiveUser() && userExists() && getUserData().role == 'chef_projet');
+    }
+
+    function isStockManager() {
+      return isAdmin() || (isActiveUser() && userExists() && getUserData().role == 'magasinier');
+    }
+
+    // 1. Users collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      // Users can update their own personal info, but cannot escalate their own role or status
+      allow update: if isAdmin() || (
+        isSignedIn() && request.auth.uid == userId &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'status', 'isActive'])
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 2. Audit logs (Strictly append-only and immutable)
+    match /auditLogs/{logId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    // 3. Settings & Configuration
+    match /settings/{settingId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // 4. Role definitions
+    match /roles/{roleId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // 5. Documents (GED)
+    match /documents/{documentId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser();
+      allow delete: if isAdmin() || (isActiveUser() && resource.data.context.uploadedById == request.auth.uid);
+    }
+
+    // 6. Document Versions (Immutable historical snapshots)
+    match /documentVersions/{versionId} {
+      allow read: if isActiveUser();
+      allow create: if isActiveUser();
+      allow update, delete: if false;
+    }
+
+    // 7. Projects
+    match /projects/{projectId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && (isAdmin() || isProjectManager());
+      allow delete: if isAdmin();
+    }
+
+    // 8. Financial Expenses
+    match /expenses/{expenseId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && (isFinance() || isProjectManager());
+      allow delete: if isAdmin();
+    }
+
+    // 9. Financial Invoices
+    match /invoices/{invoiceId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && isFinance();
+      allow delete: if isAdmin();
+    }
+
+    // 10. Personnel & HR
+    match /employees/{employeeId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && isHR();
+      allow delete: if isAdmin();
+    }
+
+    // 11. Materials & Stock
+    match /materials/{materialId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && (isStockManager() || isProjectManager());
+      allow delete: if isAdmin();
+    }
+
+    // 12. Stock Movements
+    match /stockMovements/{movementId} {
+      allow read: if isActiveUser();
+      allow create: if isActiveUser() && (isStockManager() || isProjectManager());
+      allow update, delete: if isAdmin();
+    }
+
+    // 13. Clients & Suppliers
+    match /clients/{clientId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser();
+      allow delete: if isAdmin();
+    }
+
+    match /suppliers/{supplierId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && (isFinance() || isStockManager());
+      allow delete: if isAdmin();
+    }
+
+    // 14. Multi-Sites & Chantiers Déportés
+    match /sites/{siteId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && (isAdmin() || isProjectManager());
+      allow delete: if isAdmin();
+    }
+
+    match /siteTransfers/{transferId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && (isStockManager() || isProjectManager() || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // 15. Achats & Commandes
+    match /purchaseRequests/{prId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser();
+      allow delete: if isAdmin() || (isActiveUser() && resource.data.requesterId == request.auth.uid);
+    }
+
+    match /purchaseOrders/{poId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && (isAdmin() || isFinance() || isProjectManager());
+      allow delete: if isAdmin();
+    }
+
+    match /goodsReceipts/{receiptId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && (isStockManager() || isProjectManager() || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // 16. Rapports & PV Techniques
+    match /technicalReports/{reportId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && (isProjectManager() || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // 17. Maintenance & GMAO
+    match /equipment/{equipmentId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && (isStockManager() || isProjectManager() || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    match /maintenancePlans/{planId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && (isStockManager() || isProjectManager() || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    match /maintenanceWorkOrders/{woId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser() && (isStockManager() || isProjectManager() || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // 18. Missions & Déplacements
+    match /missions/{missionId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser();
+      allow delete: if isAdmin();
+    }
+
+    // 19. Paie & Rémunérations (Confidentialité stricte RH / Finance / DG)
+    match /payrollPeriods/{periodId} {
+      allow read: if isHR() || isFinance() || isAdmin();
+      allow create, update: if isHR() || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /payslips/{payslipId} {
+      allow read: if isHR() || isFinance() || isAdmin() || (isActiveUser() && resource.data.employeeId == request.auth.uid);
+      allow create, update: if isHR() || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // 20. Comptabilité Avancée (SYSCOHADA)
+    match /accountingAccounts/{accId} {
+      allow read: if isFinance() || isAdmin();
+      allow create, update: if isFinance() || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /journalEntries/{entryId} {
+      allow read: if isFinance() || isAdmin();
+      allow create, update: if isFinance() || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /bankTransactions/{txId} {
+      allow read: if isFinance() || isAdmin();
+      allow create, update: if isFinance() || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // 21. Centre de Notifications
+    match /notifications/{notifId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser();
+      allow delete: if isAdmin() || (isActiveUser() && resource.data.recipientUserId == request.auth.uid);
+    }
+
+    // 22. Moteur OCR & IA
+    match /ocrResults/{ocrId} {
+      allow read: if isActiveUser();
+      allow create, update: if isActiveUser();
+      allow delete: if isAdmin();
+    }
+
+    // 23. Health check & Diagnostics
+    match /test/{docId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
