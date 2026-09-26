@@ -12,12 +12,14 @@ import {
   ShieldCheck,
   Calendar,
   AlertCircle,
+  Printer,
 } from 'lucide-react';
 import { PayrollPeriod, Payslip } from '../../types/advancedModules';
 import { PayrollService } from '../../services/payrollService';
 import { DataService } from '../../services/dataService';
 import { Employee } from '../../types';
 import { DetailSidebar, SidebarSection, SidebarField, SidebarDivider } from '../shared/DetailSidebar';
+import { PrintDocumentModal, PrintDocumentData } from '../shared/PrintDocumentModal';
 
 interface PayrollModuleProps {
   periods: PayrollPeriod[];
@@ -40,6 +42,7 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSlip, setSelectedSlip] = useState<Payslip | null>(null);
   const [calculating, setCalculating] = useState(false);
+  const [printDoc, setPrintDoc] = useState<PrintDocumentData | null>(null);
 
   const currentUser = DataService.getCurrentUser();
 
@@ -88,18 +91,49 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
     showToast(`Bulletin de paie PDF généré : ${slip.reference}`);
   };
 
+  const handleOpenPrintSlip = (slip: Payslip) => {
+    setPrintDoc({
+      type: 'payslip',
+      title: 'BULLETIN DE PAIE INDIVIDUEL',
+      reference: slip.reference,
+      date: new Date().toISOString().split('T')[0],
+      periodLabel: slip.periodKey,
+      recipientName: slip.employeeName,
+      recipientRole: slip.role,
+      recipientMatricule: slip.matricule,
+      recipientDepartment: slip.department,
+      payslipDetails: {
+        baseSalary: slip.baseSalary,
+        seniorityBonus: slip.seniorityBonus || Math.round(slip.baseSalary * 0.05),
+        transportBonus: slip.transportAllowance || 25000,
+        siteBonus: slip.offshoreBonus + slip.hazardBonus || 35000,
+        grossSalary: slip.grossSalary,
+        cnssSalarial: slip.employeeCnss || Math.round(slip.grossSalary * 0.04),
+        taxesSalarial: slip.incomeTax || Math.round(slip.grossSalary * 0.05),
+        delayDeductions: 0,
+        advancesDeductions: slip.advanceDeduction || 0,
+        totalDeductions: slip.totalDeductions,
+        netSalary: slip.netSalary,
+        cnssPatronal: slip.employerContributions || Math.round(slip.grossSalary * 0.16),
+        paymentMode: 'Virement Bancaire',
+        bankDetails: 'BGFI Bank / La Congolaise de Banque',
+      },
+      notes: `Salaire régulier du mois de ${slip.periodKey}. Soumis à la réglementation CNSS République du Congo et au code du travail CEMAC.`,
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 p-6 rounded-2xl shadow-xs transition-colors">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+          <div className="w-12 h-12 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-700 dark:text-green-400">
             <Banknote className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">Paie & Rémunérations (SYSCOHADA)</h1>
-            <p className="text-sm text-slate-400">
-              Calcul des salaires, cotisations CNSS, impôt IRPP et bulletins dématérialisés
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white">Paie &amp; Rémunérations (SYSCOHADA)</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Calcul des salaires, cotisations CNSS, impôt IRPP et bulletins dématérialisés avec impression certifiée
             </p>
           </div>
         </div>
@@ -109,7 +143,7 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
           <select
             value={selectedPeriodKey}
             onChange={(e) => setSelectedPeriodKey(e.target.value)}
-            className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm font-semibold"
+            className="px-3 py-2 bg-stone-50 dark:bg-slate-800 border border-stone-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-xs font-bold"
           >
             {periods.map((p) => (
               <option key={p.id} value={p.periodKey}>
@@ -125,7 +159,7 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
             <button
               onClick={handleGeneratePeriod}
               disabled={calculating}
-              className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-sm transition-colors shadow-lg shadow-cyan-500/20 disabled:opacity-50"
+              className="px-4 py-2 bg-green-700 hover:bg-green-600 text-white font-bold rounded-xl text-xs transition-colors shadow-md shadow-green-700/20 disabled:opacity-50 cursor-pointer"
             >
               {calculating ? 'Calcul en cours...' : 'Calculer la Période'}
             </button>
@@ -136,64 +170,64 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
       {/* KPI Cards for the active period */}
       {currentPeriod && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-            <span className="text-xs text-slate-400 font-semibold block mb-1">Masse Salariale Brute</span>
-            <div className="text-2xl font-bold text-white font-mono">
+          <div className="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 p-5 rounded-2xl shadow-xs transition-colors">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold block mb-1">Masse Salariale Brute</span>
+            <div className="text-2xl font-bold text-slate-900 dark:text-white font-mono">
               {currentPeriod.totalGross.toLocaleString('fr-FR')} FCFA
             </div>
-            <span className="text-xs text-slate-500 mt-1 block">
+            <span className="text-xs text-slate-400 mt-1 block">
               {currentPeriod.employeesCount} collaborateurs inclus
             </span>
           </div>
 
-          <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-            <span className="text-xs text-slate-400 font-semibold block mb-1">Net Total à Payer</span>
-            <div className="text-2xl font-bold text-emerald-400 font-mono">
+          <div className="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 p-5 rounded-2xl shadow-xs transition-colors">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold block mb-1">Net Total à Payer</span>
+            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 font-mono">
               {currentPeriod.totalNet.toLocaleString('fr-FR')} FCFA
             </div>
-            <span className="text-xs text-emerald-500 mt-1 block">Prêts pour virement bancaire</span>
+            <span className="text-xs text-emerald-600 dark:text-emerald-500 mt-1 block">Prêts pour virement bancaire</span>
           </div>
 
-          <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-            <span className="text-xs text-slate-400 font-semibold block mb-1">Retenues (CNSS + IRPP)</span>
-            <div className="text-2xl font-bold text-amber-400 font-mono">
+          <div className="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 p-5 rounded-2xl shadow-xs transition-colors">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold block mb-1">Retenues (CNSS + IRPP)</span>
+            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400 font-mono">
               {currentPeriod.totalDeductions.toLocaleString('fr-FR')} FCFA
             </div>
-            <span className="text-xs text-slate-500 mt-1 block">Dettes sociales et fiscales</span>
+            <span className="text-xs text-slate-400 mt-1 block">Dettes sociales et fiscales</span>
           </div>
 
-          <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-            <span className="text-xs text-slate-400 font-semibold block mb-1">Charges Patronales (CNSS 16%)</span>
-            <div className="text-2xl font-bold text-cyan-400 font-mono">
+          <div className="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 p-5 rounded-2xl shadow-xs transition-colors">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold block mb-1">Charges Patronales (16%)</span>
+            <div className="text-2xl font-bold text-green-700 dark:text-green-400 font-mono">
               {currentPeriod.totalEmployerContributions.toLocaleString('fr-FR')} FCFA
             </div>
-            <span className="text-xs text-slate-500 mt-1 block">Coût entreprise employeur</span>
+            <span className="text-xs text-slate-400 mt-1 block">Coût entreprise employeur</span>
           </div>
         </div>
       )}
 
       {/* Period Status & Action Bar */}
       {currentPeriod && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-slate-900/60 border border-slate-800 rounded-2xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white dark:bg-slate-900/60 border border-stone-200 dark:border-slate-800 rounded-2xl shadow-xs">
           <div className="flex items-center gap-3">
             <span
               className={`text-xs px-3 py-1 rounded-full font-bold uppercase ${
                 currentPeriod.status === 'cloture'
-                  ? 'bg-rose-950 text-rose-400 border border-rose-800'
+                  ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-400 border border-rose-300 dark:border-rose-800'
                   : currentPeriod.status === 'valide'
-                  ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-                  : 'bg-amber-950 text-amber-400 border border-amber-800'
+                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800'
+                  : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-400 border border-amber-300 dark:border-amber-800'
               }`}
             >
               Statut : {currentPeriod.status}
             </span>
             {currentPeriod.validatedBy && (
-              <span className="text-xs text-slate-400">
-                Validé par : <strong className="text-white">{currentPeriod.validatedBy}</strong>
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                Validé par : <strong className="text-slate-800 dark:text-white">{currentPeriod.validatedBy}</strong>
               </span>
             )}
             {currentPeriod.closedBy && (
-              <span className="text-xs text-rose-300">
+              <span className="text-xs text-rose-600 dark:text-rose-300">
                 Clôturé par : <strong>{currentPeriod.closedBy}</strong>
               </span>
             )}
@@ -203,7 +237,7 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
             {currentPeriod.status === 'controle' && (
               <button
                 onClick={handleValidatePeriod}
-                className="px-3.5 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                className="px-3.5 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <CheckCircle className="w-4 h-4" /> Valider Période (DG)
               </button>
@@ -211,7 +245,7 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
             {currentPeriod.status === 'valide' && (
               <button
                 onClick={handleClosePeriod}
-                className="px-3.5 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                className="px-3.5 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Lock className="w-4 h-4" /> Clôturer Définitivement
               </button>
@@ -221,30 +255,30 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
       )}
 
       {/* Bulletins Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between gap-4">
-          <h3 className="font-bold text-white text-sm">
+      <div className="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs">
+        <div className="p-4 border-b border-stone-200 dark:border-slate-800 flex items-center justify-between gap-4">
+          <h3 className="font-bold text-slate-900 dark:text-white text-sm">
             Bulletins de Salaire Individuels ({filteredSlips.length})
           </h3>
           <div className="relative w-64">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             <input
               type="text"
               placeholder="Chercher collaborateur..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-1.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+              className="w-full pl-9 pr-4 py-1.5 bg-stone-50 dark:bg-slate-800 border border-stone-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-green-600"
             />
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-300">
-            <thead className="bg-slate-950/60 text-xs uppercase text-slate-400 border-b border-slate-800">
+          <table className="w-full text-left text-sm text-slate-700 dark:text-slate-300">
+            <thead className="bg-stone-50 dark:bg-slate-950/60 text-xs uppercase text-slate-500 dark:text-slate-400 border-b border-stone-200 dark:border-slate-800 font-bold">
               <tr>
                 <th className="p-4">Réf Bulletin</th>
                 <th className="p-4">Collaborateur</th>
-                <th className="p-4">Poste & Département</th>
+                <th className="p-4">Poste &amp; Département</th>
                 <th className="p-4">Salaire de Base</th>
                 <th className="p-4">Primes / H.Sup</th>
                 <th className="p-4">Retenues CNSS/Taxe</th>
@@ -252,40 +286,48 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
                 <th className="p-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-stone-100 dark:divide-slate-800/60">
               {filteredSlips.map((slip) => (
-                <tr key={slip.id} className="hover:bg-slate-800/30 transition-colors">
-                  <td className="p-4 font-mono font-bold text-cyan-400">{slip.reference}</td>
+                <tr key={slip.id} className="hover:bg-stone-50/80 dark:hover:bg-slate-800/30 transition-colors">
+                  <td className="p-4 font-mono font-bold text-green-700 dark:text-green-400">{slip.reference}</td>
                   <td className="p-4">
-                    <div className="font-semibold text-white">{slip.employeeName}</div>
+                    <div className="font-semibold text-slate-900 dark:text-white">{slip.employeeName}</div>
                     <div className="text-xs text-slate-400">Matricule : {slip.matricule}</div>
                   </td>
                   <td className="p-4 text-xs">
-                    <div className="text-white">{slip.role}</div>
-                    <div className="text-slate-400 uppercase">{slip.department}</div>
+                    <div className="text-slate-800 dark:text-white font-medium">{slip.role}</div>
+                    <div className="text-slate-400 uppercase text-[10px]">{slip.department}</div>
                   </td>
-                  <td className="p-4 font-mono text-slate-300">
+                  <td className="p-4 font-mono text-slate-700 dark:text-slate-300">
                     {slip.baseSalary.toLocaleString('fr-FR')} F
                   </td>
-                  <td className="p-4 font-mono text-cyan-400">
+                  <td className="p-4 font-mono text-green-700 dark:text-green-400">
                     +{(slip.grossSalary - slip.baseSalary).toLocaleString('fr-FR')} F
                   </td>
-                  <td className="p-4 font-mono text-rose-400">
+                  <td className="p-4 font-mono text-rose-600 dark:text-rose-400">
                     -{slip.totalDeductions.toLocaleString('fr-FR')} F
                   </td>
-                  <td className="p-4 font-mono font-bold text-emerald-400 whitespace-nowrap">
+                  <td className="p-4 font-mono font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
                     {slip.netSalary.toLocaleString('fr-FR')} FCFA
                   </td>
-                  <td className="p-4 text-right space-x-2 whitespace-nowrap">
+                  <td className="p-4 text-right space-x-1.5 whitespace-nowrap">
                     <button
                       onClick={() => setSelectedSlip(slip)}
-                      className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-colors"
+                      className="px-2.5 py-1.5 bg-stone-100 hover:bg-stone-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-colors cursor-pointer"
                     >
                       Détails
                     </button>
                     <button
+                      onClick={() => handleOpenPrintSlip(slip)}
+                      className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                      title="Aperçu A4 & Impression"
+                    >
+                      <Printer className="w-3.5 h-3.5 inline mr-1" />
+                      Aperçu
+                    </button>
+                    <button
                       onClick={() => handleDownloadSlipPdf(slip)}
-                      className="p-1 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-lg transition-colors"
+                      className="p-1.5 bg-green-600/10 hover:bg-green-600/20 text-green-700 dark:text-green-400 border border-green-600/30 rounded-lg transition-colors cursor-pointer"
                       title="Télécharger Bulletin PDF"
                     >
                       <Download className="w-3.5 h-3.5" />
@@ -295,7 +337,7 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
               ))}
               {filteredSlips.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="p-8 text-center text-slate-500">
+                  <td colSpan={8} className="p-8 text-center text-slate-400">
                     Aucun bulletin calculé pour cette période. Cliquez sur "Calculer la Période".
                   </td>
                 </tr>
@@ -314,12 +356,20 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
         referenceCode={selectedSlip?.reference}
         actions={
           selectedSlip
-            ? [{
-                label: 'Télécharger Bulletin PDF',
-                icon: <Download className="w-3.5 h-3.5" />,
-                onClick: () => selectedSlip && handleDownloadSlipPdf(selectedSlip),
-                variant: 'primary' as const,
-              }]
+            ? [
+                {
+                  label: 'Aperçu A4 & Imprimer',
+                  icon: <Printer className="w-3.5 h-3.5" />,
+                  onClick: () => selectedSlip && handleOpenPrintSlip(selectedSlip),
+                  variant: 'secondary' as const,
+                },
+                {
+                  label: 'Télécharger Bulletin PDF',
+                  icon: <Download className="w-3.5 h-3.5" />,
+                  onClick: () => selectedSlip && handleDownloadSlipPdf(selectedSlip),
+                  variant: 'primary' as const,
+                },
+              ]
             : []
         }
       >
@@ -331,7 +381,7 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
               <SidebarField label={`Heures suppl. (${selectedSlip.overtimeHours}h)`} value={`+${selectedSlip.overtimeAmount.toLocaleString('fr-FR')} FCFA`} mono />
               <SidebarField label="Primes (Anc., Offshore, Panier)" value={`+${(selectedSlip.seniorityBonus + selectedSlip.offshoreBonus + selectedSlip.hazardBonus).toLocaleString('fr-FR')} FCFA`} mono />
               <SidebarField label="Indemnités (Transport & Logement)" value={`+${(selectedSlip.transportAllowance + selectedSlip.housingAllowance).toLocaleString('fr-FR')} FCFA`} mono />
-              <div className="mt-2 py-2 px-3 bg-slate-100 dark:bg-slate-950 rounded-lg flex justify-between font-bold text-sm">
+              <div className="mt-2 py-2 px-3 bg-stone-100 dark:bg-slate-950 rounded-lg flex justify-between font-bold text-sm">
                 <span className="text-slate-800 dark:text-white">SALAIRE BRUT TOTAL</span>
                 <span className="font-mono text-slate-800 dark:text-white">{selectedSlip.grossSalary.toLocaleString('fr-FR')} FCFA</span>
               </div>
@@ -341,16 +391,16 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
 
             {/* Deductions */}
             <SidebarSection title="Retenues & Charges" icon={<AlertCircle className="w-3.5 h-3.5" />}>
-              <div className="flex justify-between py-1 text-xs text-red-600 dark:text-rose-400">
+              <div className="flex justify-between py-1 text-xs text-rose-600 dark:text-rose-400">
                 <span>Cotisation Salariale CNSS (4.2%)</span>
                 <span className="font-mono">-{selectedSlip.employeeCnss.toLocaleString('fr-FR')} FCFA</span>
               </div>
-              <div className="flex justify-between py-1 text-xs text-red-600 dark:text-rose-400">
+              <div className="flex justify-between py-1 text-xs text-rose-600 dark:text-rose-400">
                 <span>Impôt sur le Revenu (IRPP)</span>
                 <span className="font-mono">-{selectedSlip.incomeTax.toLocaleString('fr-FR')} FCFA</span>
               </div>
               {selectedSlip.advanceDeduction > 0 && (
-                <div className="flex justify-between py-1 text-xs text-red-600 dark:text-rose-400">
+                <div className="flex justify-between py-1 text-xs text-amber-600 dark:text-amber-400">
                   <span>Remboursement Acompte / Avance</span>
                   <span className="font-mono">-{selectedSlip.advanceDeduction.toLocaleString('fr-FR')} FCFA</span>
                 </div>
@@ -361,12 +411,22 @@ export const PayrollModule: React.FC<PayrollModuleProps> = ({
 
             {/* Net */}
             <div className="py-3 px-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 rounded-xl flex justify-between items-center">
-              <span className="font-bold text-emerald-700 dark:text-emerald-300">NET À PAYER</span>
+              <span className="font-bold text-emerald-800 dark:text-emerald-300">NET À PAYER</span>
               <span className="font-mono font-bold text-lg text-emerald-700 dark:text-emerald-400">{selectedSlip.netSalary.toLocaleString('fr-FR')} FCFA</span>
             </div>
           </>
         )}
       </DetailSidebar>
+
+      {/* Printable Sheet Modal */}
+      {printDoc && (
+        <PrintDocumentModal
+          isOpen={!!printDoc}
+          onClose={() => setPrintDoc(null)}
+          documentData={printDoc}
+          onDownloaded={() => showToast?.('Bulletin de paie téléchargé en PDF.')}
+        />
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Settings,
@@ -11,12 +11,20 @@ import {
   Save,
   Sun,
   Moon,
+  Lock,
+  KeyRound,
+  Fingerprint,
+  ShieldCheck,
+  Trash2,
+  Clock,
 } from 'lucide-react';
 import { CloudinaryConfig, UserProfile, UserRole } from '../../types';
 import { CloudinaryService } from '../../services/cloudinaryService';
 import { DataService } from '../../services/dataService';
 import { useTheme } from '../../context/ThemeContext';
 import { firebaseConfig } from '../../firebase';
+import { QuickAccessService } from '../../services/auth/quickAccessService';
+import { WindowsHelloService } from '../../services/auth/windowsHelloService';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -36,6 +44,91 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const { theme, setTheme } = useTheme();
   const [cloudinaryConfig, setCloudinaryConfig] = useState<CloudinaryConfig>(CloudinaryService.getConfig());
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
+
+  const userEmail = currentUser?.email || 'direction@coresi-congo.com';
+  const [pinInput, setPinInput] = useState<string>('');
+  const [pinConfirm, setPinConfirm] = useState<string>('');
+  const [pinStatusMsg, setPinStatusMsg] = useState<{ text: string; isError?: boolean } | null>(null);
+  const [hasPin, setHasPin] = useState<boolean>(false);
+  const [hasHello, setHasHello] = useState<boolean>(false);
+  const [helloLoading, setHelloLoading] = useState<boolean>(false);
+  const [idleTimeout, setIdleTimeoutState] = useState<number>(15);
+  const [preferredMethod, setPreferredMethodState] = useState<'pin' | 'hello' | 'password'>('pin');
+
+  useEffect(() => {
+    if (isOpen) {
+      setHasPin(QuickAccessService.hasPin(userEmail));
+      setHasHello(WindowsHelloService.hasCredential(userEmail));
+      setIdleTimeoutState(QuickAccessService.getIdleTimeout());
+      setPreferredMethodState(QuickAccessService.getPreferredMethod(userEmail));
+      setPinInput('');
+      setPinConfirm('');
+      setPinStatusMsg(null);
+    }
+  }, [isOpen, userEmail]);
+
+  const handleSavePin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!/^\d{4,6}$/.test(pinInput)) {
+      setPinStatusMsg({ text: 'Le code PIN doit comporter 4 à 6 chiffres.', isError: true });
+      return;
+    }
+    if (pinInput !== pinConfirm) {
+      setPinStatusMsg({ text: 'Les deux saisies du code PIN ne correspondent pas.', isError: true });
+      return;
+    }
+    const ok = await QuickAccessService.setPin(userEmail, pinInput);
+    if (ok) {
+      setHasPin(true);
+      setPinInput('');
+      setPinConfirm('');
+      setPinStatusMsg({ text: 'Code PIN configuré avec succès.' });
+      setTimeout(() => setPinStatusMsg(null), 3000);
+    } else {
+      setPinStatusMsg({ text: 'Erreur lors de la sauvegarde du PIN.', isError: true });
+    }
+  };
+
+  const handleRemovePin = () => {
+    QuickAccessService.removePin(userEmail);
+    setHasPin(false);
+    setPinStatusMsg({ text: 'Code PIN révoqué.' });
+    setTimeout(() => setPinStatusMsg(null), 2500);
+  };
+
+  const handleRegisterHello = async () => {
+    setHelloLoading(true);
+    try {
+      const ok = await WindowsHelloService.registerCredential(userEmail, currentUser.displayName);
+      if (ok) {
+        setHasHello(true);
+        QuickAccessService.setPreferredMethod(userEmail, 'hello');
+        setPreferredMethodState('hello');
+        setPinStatusMsg({ text: 'Biométrie Windows Hello activée avec succès.' });
+        setTimeout(() => setPinStatusMsg(null), 3000);
+      } else {
+        setPinStatusMsg({ text: 'Échec de l\'activation Windows Hello.', isError: true });
+      }
+    } catch {
+      setPinStatusMsg({ text: 'Erreur d\'authentification biométrique.', isError: true });
+    } finally {
+      setHelloLoading(false);
+    }
+  };
+
+  const handleRemoveHello = () => {
+    WindowsHelloService.removeCredential(userEmail);
+    setHasHello(false);
+    QuickAccessService.setPreferredMethod(userEmail, 'pin');
+    setPreferredMethodState('pin');
+    setPinStatusMsg({ text: 'Biométrie Windows Hello désactivée.' });
+    setTimeout(() => setPinStatusMsg(null), 2500);
+  };
+
+  const handleTimeoutChange = (minutes: number) => {
+    QuickAccessService.setIdleTimeout(minutes);
+    setIdleTimeoutState(minutes);
+  };
 
   if (!isOpen) return null;
 
@@ -173,6 +266,165 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <p className="text-[10px] text-slate-400">Contraste élevé pour les bureaux</p>
                 </div>
               </button>
+            </div>
+          </div>
+
+          {/* Security & Quick Unlock (PIN & Windows Hello) */}
+          <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-white font-semibold">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>Sécurité d'Accès &amp; Verrouillage Rapide (Multi-Utilisateurs)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${hasPin ? 'bg-emerald-950/80 text-emerald-300 border-emerald-800' : 'bg-amber-950/60 text-amber-300 border-amber-800'}`}>
+                  PIN {hasPin ? 'Actif' : 'Inactif'}
+                </span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${hasHello ? 'bg-indigo-950/80 text-indigo-300 border-indigo-800' : 'bg-slate-900 text-slate-400 border-slate-700'}`}>
+                  Hello {hasHello ? 'Actif' : 'Inactif'}
+                </span>
+              </div>
+            </div>
+
+            <p className="text-slate-400">
+              Permet à chaque opérateur ou chef de chantier de verrouiller instantanément son écran et de le déverrouiller sans ressaisir son mot de passe complet.
+            </p>
+
+            {pinStatusMsg && (
+              <div className={`p-2.5 rounded-lg border text-xs flex items-center gap-2 ${pinStatusMsg.isError ? 'bg-rose-950/40 border-rose-800 text-rose-300' : 'bg-emerald-950/40 border-emerald-800 text-emerald-300'}`}>
+                {pinStatusMsg.isError ? <AlertCircle className="w-4 h-4 shrink-0" /> : <CheckCircle className="w-4 h-4 shrink-0" />}
+                <span>{pinStatusMsg.text}</span>
+              </div>
+            )}
+
+            {/* PIN Configuration Form */}
+            <form onSubmit={handleSavePin} className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-slate-200 text-xs flex items-center gap-1.5">
+                  <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+                  Code PIN personnel (4 à 6 chiffres)
+                </span>
+                {hasPin && (
+                  <button
+                    type="button"
+                    onClick={handleRemovePin}
+                    className="text-[11px] text-rose-400 hover:text-rose-300 flex items-center gap-1 hover:underline cursor-pointer"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Supprimer le PIN
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] text-slate-400 block mb-1">Nouveau Code PIN</label>
+                  <input
+                    type="password"
+                    maxLength={6}
+                    value={pinInput}
+                    onChange={(e) => setPinInput(e.target.value.replace(/\D/g, ''))}
+                    placeholder="Ex: 1234"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-mono text-center tracking-widest text-sm focus:border-green-600 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] text-slate-400 block mb-1">Confirmer le PIN</label>
+                  <input
+                    type="password"
+                    maxLength={6}
+                    value={pinConfirm}
+                    onChange={(e) => setPinConfirm(e.target.value.replace(/\D/g, ''))}
+                    placeholder="Ex: 1234"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-mono text-center tracking-widest text-sm focus:border-green-600 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={!pinInput || pinInput.length < 4}
+                  className="px-3.5 py-1.5 bg-green-700 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>{hasPin ? 'Mettre à jour le PIN' : 'Enregistrer le PIN'}</span>
+                </button>
+              </div>
+            </form>
+
+            {/* Windows Hello / Biometric Enrolment */}
+            <div className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-indigo-950/80 border border-indigo-800 text-indigo-300 flex items-center justify-center shrink-0">
+                  <Fingerprint className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="font-semibold text-xs text-white">Biométrie Windows Hello / Empreinte</p>
+                  <p className="text-[11px] text-slate-400">
+                    {hasHello
+                      ? 'Clé biométrique WebAuthn liée à cette machine.'
+                      : 'Authentification sans mot de passe via le lecteur d\'empreinte ou la caméra Windows.'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {hasHello ? (
+                  <button
+                    type="button"
+                    onClick={handleRemoveHello}
+                    className="px-3 py-1.5 bg-slate-800 hover:bg-rose-950/60 hover:text-rose-300 text-slate-300 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    Désactiver
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleRegisterHello}
+                    disabled={helloLoading}
+                    className="px-3.5 py-1.5 bg-indigo-700 hover:bg-indigo-600 disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Fingerprint className="w-3.5 h-3.5" />
+                    <span>{helloLoading ? 'Activation...' : 'Activer Windows Hello'}</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Idle Timeout Auto-lock */}
+            <div className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-slate-200 text-xs flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-blue-400" />
+                  Verrouillage automatique en cas d'inactivité
+                </span>
+                <span className="text-[11px] font-mono text-green-400 font-bold">
+                  {idleTimeout === 0 ? 'Désactivé' : `${idleTimeout} min`}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                {[
+                  { value: 0, label: 'Désactivé' },
+                  { value: 5, label: '5 minutes' },
+                  { value: 15, label: '15 minutes' },
+                  { value: 30, label: '30 minutes' },
+                ].map((item) => (
+                  <button
+                    key={item.value}
+                    type="button"
+                    onClick={() => handleTimeoutChange(item.value)}
+                    className={`p-2 rounded-lg text-center text-xs font-medium border transition-colors cursor-pointer ${
+                      idleTimeout === item.value
+                        ? 'bg-green-700/20 border-green-600 text-green-300 font-bold'
+                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-850'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

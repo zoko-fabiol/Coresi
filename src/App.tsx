@@ -46,7 +46,9 @@ import {
   OcrResultRecord,
 } from './types';
 import { DataService } from './services/dataService';
-import { testConnection } from './firebase';
+import { testConnection, signOutUser } from './firebase';
+import { QuickAccessService } from './services/auth/quickAccessService';
+import { useIdleTimer } from './hooks/useIdleTimer';
 import {
   ROLE_CONFIGS,
   isModuleAllowedForRole,
@@ -87,15 +89,29 @@ import { NewInvoiceModal } from './components/modals/NewInvoiceModal';
 import { NewEmployeeModal } from './components/modals/NewEmployeeModal';
 import { NewMaterialModal } from './components/modals/NewMaterialModal';
 import { AuthModal } from './components/auth/AuthModal';
+import { QuickUnlockModal } from './components/auth/QuickUnlockModal';
 import { ConstructionLoader } from './components/shared/ConstructionLoader';
 
 export default function App() {
   const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
+  const [isSessionLocked, setIsSessionLocked] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<UserProfile>(DataService.getCurrentUser());
   const [currentModule, setCurrentModule] = useState<string>(
     getDefaultModuleForRole(DataService.getCurrentUser().role)
   );
+
+  // Inactivity auto-lock timer (configurable in Settings)
+  const idleTimeoutMinutes = QuickAccessService.getIdleTimeout();
+  useIdleTimer({
+    timeoutMinutes: idleTimeoutMinutes,
+    onIdle: () => {
+      if (!isInitialLoading) {
+        setIsSessionLocked(true);
+      }
+    },
+    isEnabled: !isSessionLocked && !isInitialLoading && idleTimeoutMinutes > 0,
+  });
 
   // Application Data States
   const [projects, setProjects] = useState<Project[]>([]);
@@ -311,6 +327,7 @@ export default function App() {
         currentUser={currentUser}
         onOpenScanner={() => handleOpenScanner()}
         onOpenSettings={() => setSettingsOpen(true)}
+        onLockSession={() => setIsSessionLocked(true)}
         onOpenNotifications={() => setNotificationsOpen(true)}
         unreadNotificationsCount={notifications.filter((n) => !n.read).length}
         onOpenAuthModal={() => setAuthModalOpen(true)}
@@ -841,6 +858,22 @@ export default function App() {
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         onSuccess={() => reloadData()}
+      />
+
+      {/* Screen Lock / Quick Unlock (PIN & Windows Hello) */}
+      <QuickUnlockModal
+        isOpen={isSessionLocked}
+        currentUser={currentUser}
+        onUnlock={() => {
+          setIsSessionLocked(false);
+          showToast('Session déverrouillée avec succès.');
+        }}
+        onSignOut={() => {
+          setIsSessionLocked(false);
+          signOutUser();
+          showToast('Session fermée.');
+        }}
+        showToast={showToast}
       />
 
       {/* Notification Center Modal */}

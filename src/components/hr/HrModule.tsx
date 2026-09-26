@@ -23,6 +23,8 @@ import {
 import { Employee, DocumentRecord, SalaryAdvance, EmployeeLeave, TechnicalCertification } from '../../types';
 import { DataService } from '../../services/dataService';
 import { DetailSidebar, SidebarSection, SidebarField, SidebarStatusBadge, SidebarDivider } from '../shared/DetailSidebar';
+import { AttendanceTab } from './sections/AttendanceTab';
+import { LeavesAndOvertimeTab } from './sections/LeavesAndOvertimeTab';
 
 interface HrModuleProps {
   employees: Employee[];
@@ -31,6 +33,7 @@ interface HrModuleProps {
   onSelectDocument: (doc: DocumentRecord) => void;
   onNewEmployee: () => void;
   onRefresh: () => void;
+  showToast?: (msg: string) => void;
 }
 
 export const HrModule: React.FC<HrModuleProps> = ({
@@ -40,8 +43,9 @@ export const HrModule: React.FC<HrModuleProps> = ({
   onSelectDocument,
   onNewEmployee,
   onRefresh,
+  showToast,
 }) => {
-  const [activeTab, setActiveTab] = useState<'employees' | 'certifications' | 'missions'>('employees');
+  const [activeTab, setActiveTab] = useState<'employees' | 'attendance' | 'leaves_overtime' | 'certifications' | 'missions'>('employees');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'actif' | 'archive' | 'all'>('actif');
@@ -74,57 +78,83 @@ export const HrModule: React.FC<HrModuleProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-stone-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="p-1.5 bg-indigo-500/20 text-indigo-400 rounded-lg border border-indigo-500/30">
+            <span className="p-1.5 bg-green-500/10 text-green-700 dark:text-green-400 rounded-lg border border-green-500/20">
               <Users className="w-5 h-5" />
             </span>
-            <h2 className="text-xl font-bold text-white tracking-tight">
-              Ressources Humaines &amp; Main-d'Œuvre Qualifiée
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+              Ressources Humaines &amp; Main-d'Œuvre Industrielle
             </h2>
           </div>
-          <p className="text-xs text-slate-400">
-            Dossiers du personnel, qualifications industrielles (soudeurs ASME, tuyauterie), congés, missions et archivage avec rétention d'historique.
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Dossiers du personnel, qualifications de soudage ASME / Tuyauterie, registre de pointage journalier, heures supplémentaires et congés.
           </p>
         </div>
 
         <button
           onClick={onNewEmployee}
-          className="px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl text-xs flex items-center gap-2 shadow-lg transition-transform active:scale-95 cursor-pointer"
+          className="px-4 py-2.5 bg-green-700 hover:bg-green-600 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-md shadow-green-700/20 transition-transform active:scale-95 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Ajouter un Collaborateur</span>
         </button>
       </div>
 
-      {/* 3 Top Tabs */}
-      <div className="bg-slate-900 p-1.5 rounded-xl border border-slate-800 flex flex-wrap items-center gap-1.5 text-xs">
+      {/* Top 5 Tabs */}
+      <div className="bg-white dark:bg-slate-900 p-1.5 rounded-xl border border-stone-200 dark:border-slate-800 flex flex-wrap items-center gap-1.5 text-xs shadow-xs">
         <button
           onClick={() => setActiveTab('employees')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-            activeTab === 'employees' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+          className={`px-3.5 py-2 rounded-lg font-bold transition-all cursor-pointer ${
+            activeTab === 'employees' ? 'bg-green-700 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
-          Personnel &amp; Fiches Individuelles ({employees.length})
+          Personnel &amp; Fiches ({employees.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('attendance')}
+          className={`px-3.5 py-2 rounded-lg font-bold transition-all cursor-pointer ${
+            activeTab === 'attendance' ? 'bg-green-700 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          Pointage &amp; Présences
+        </button>
+        <button
+          onClick={() => setActiveTab('leaves_overtime')}
+          className={`px-3.5 py-2 rounded-lg font-bold transition-all cursor-pointer ${
+            activeTab === 'leaves_overtime' ? 'bg-green-700 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          Heures Sup &amp; Congés
         </button>
         <button
           onClick={() => setActiveTab('certifications')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-            activeTab === 'certifications' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+          className={`px-3.5 py-2 rounded-lg font-bold transition-all cursor-pointer ${
+            activeTab === 'certifications' ? 'bg-green-700 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
-          Habilitations &amp; Certifications Métiers ({allCertifications.length})
+          Habilitations Métiers ({allCertifications.length})
         </button>
         <button
           onClick={() => setActiveTab('missions')}
-          className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-            activeTab === 'missions' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+          className={`px-3.5 py-2 rounded-lg font-bold transition-all cursor-pointer ${
+            activeTab === 'missions' ? 'bg-green-700 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
-          Missions de Terrain &amp; Congés ({allLeaves.length})
+          Missions de Terrain ({allLeaves.length})
         </button>
       </div>
+
+      {/* TAB 2: ATTENDANCE */}
+      {activeTab === 'attendance' && (
+        <AttendanceTab employees={employees} showToast={showToast} />
+      )}
+
+      {/* TAB 3: LEAVES & OVERTIME */}
+      {activeTab === 'leaves_overtime' && (
+        <LeavesAndOvertimeTab employees={employees} showToast={showToast} />
+      )}
 
       {/* TAB 1: EMPLOYEES */}
       {activeTab === 'employees' && (

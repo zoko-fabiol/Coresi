@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   Bell,
+  Lock,
 } from "lucide-react";
 import { UserProfile, UserRole } from "../../types";
 import { ROLE_CONFIGS } from "../../services/rolePermissions";
@@ -26,6 +27,7 @@ interface NavbarProps {
   currentUser: UserProfile;
   onOpenScanner: () => void;
   onOpenSettings: () => void;
+  onLockSession?: () => void;
   onOpenNotifications?: () => void;
   unreadNotificationsCount?: number;
   onOpenAuthModal?: () => void;
@@ -40,6 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   currentUser,
   onOpenScanner,
   onOpenSettings,
+  onLockSession,
   onOpenNotifications,
   unreadNotificationsCount = 0,
   onOpenAuthModal,
@@ -227,6 +230,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {unreadNotificationsCount > 9 ? "9+" : unreadNotificationsCount}
               </span>
             )}
+          </button>
+        )}
+
+        {/* Session Lock Button */}
+        {onLockSession && (
+          <button
+            onClick={onLockSession}
+            className="p-2 rounded-xl text-slate-500 hover:text-amber-600 hover:bg-amber-500/10 dark:text-slate-400 dark:hover:text-amber-400 dark:hover:bg-amber-500/10 transition-all cursor-pointer active:scale-95 shrink-0"
+            title="Verrouiller la session (Code PIN / Windows Hello)"
+            aria-label="Verrouiller la session"
+          >
+            <Lock className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         )}
 

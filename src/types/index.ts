@@ -212,6 +212,15 @@ export interface Employee {
   location?: string;
   salary: number;
   contractType: ContractType;
+  cnssNumber?: string;
+  bankName?: string;
+  bankIban?: string;
+  birthDate?: string;
+  maritalStatus?: 'celibataire' | 'marie' | 'divorce' | 'veuf';
+  childrenCount?: number;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  photoUrl?: string;
   assignedProjectId?: string;
   assignedProjectName?: string;
   status: EmployeeStatus;
@@ -219,6 +228,34 @@ export interface Employee {
   documentsCount?: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AttendanceRecord {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  matricule: string;
+  date: string; // YYYY-MM-DD
+  checkInTime: string; // HH:mm
+  checkOutTime?: string; // HH:mm
+  status: 'present' | 'retard' | 'absent' | 'mission' | 'conge';
+  delayMinutes: number;
+  overtimeMinutes: number;
+  siteName?: string;
+  comment?: string;
+}
+
+export interface OvertimeRecord {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  matricule: string;
+  date: string;
+  hoursCount: number;
+  rate: '25%' | '50%' | '100%';
+  taskDescription: string;
+  status: 'soumis' | 'valide' | 'rejete';
+  validatedBy?: string;
 }
 
 export type MaterialCategory =
