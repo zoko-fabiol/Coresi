@@ -554,7 +554,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-base text-white">Smart Scanner Industriel CORESI</h3>
-                <span className="text-xs bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded-full font-medium">
+                <span className="text-xs bg-green-950 text-green-400 border border-green-800 px-2 py-0.5 rounded-full font-medium">
                   Style Adobe Scan
                 </span>
               </div>
@@ -586,7 +586,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
             <div className="flex flex-col items-center">
               {/* Guidance HUD Banner */}
               <div className="w-full mb-3 flex items-center justify-between bg-slate-800/80 border border-slate-700 px-4 py-2 rounded-xl text-xs sm:text-sm">
-                <div className="flex items-center gap-2 text-cyan-300">
+                <div className="flex items-center gap-2 text-green-300">
                   <Sparkles className="w-4 h-4 animate-pulse" />
                   <span>{guidanceMessage}</span>
                 </div>
@@ -615,22 +615,22 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
                   <div className="absolute inset-8 sm:inset-12 pointer-events-none z-20 flex flex-col justify-between">
                     {/* Corner Reticles */}
                     <div className="flex justify-between">
-                      <div className="w-8 h-8 border-t-4 border-l-4 border-cyan-400 rounded-tl-lg shadow-[0_0_12px_rgba(6,182,212,0.8)]" />
-                      <div className="w-8 h-8 border-t-4 border-r-4 border-cyan-400 rounded-tr-lg shadow-[0_0_12px_rgba(6,182,212,0.8)]" />
+                      <div className="w-8 h-8 border-t-4 border-l-4 border-green-400 rounded-tl-lg shadow-[0_0_12px_rgba(74,222,128,0.8)]" />
+                      <div className="w-8 h-8 border-t-4 border-r-4 border-green-400 rounded-tr-lg shadow-[0_0_12px_rgba(74,222,128,0.8)]" />
                     </div>
 
                     {/* Animated Scanning Laser Line */}
-                    <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_15px_#22d3ee] animate-bounce" />
+                    <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent shadow-[0_0_15px_#4ade80] animate-bounce" />
 
                     <div className="flex justify-between">
-                      <div className="w-8 h-8 border-b-4 border-l-4 border-cyan-400 rounded-bl-lg shadow-[0_0_12px_rgba(6,182,212,0.8)]" />
-                      <div className="w-8 h-8 border-b-4 border-r-4 border-cyan-400 rounded-br-lg shadow-[0_0_12px_rgba(6,182,212,0.8)]" />
+                      <div className="w-8 h-8 border-b-4 border-l-4 border-green-400 rounded-bl-lg shadow-[0_0_12px_rgba(74,222,128,0.8)]" />
+                      <div className="w-8 h-8 border-b-4 border-r-4 border-green-400 rounded-br-lg shadow-[0_0_12px_rgba(74,222,128,0.8)]" />
                     </div>
 
                     {/* Center detection status tag */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="bg-cyan-950/80 backdrop-blur-md border border-cyan-500/50 px-4 py-1.5 rounded-full text-cyan-200 text-xs font-semibold flex items-center gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
+                      <div className="bg-green-950/80 backdrop-blur-md border border-green-500/50 px-4 py-1.5 rounded-full text-green-200 text-xs font-semibold flex items-center gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />
                         <span>Document Détecté • Prêt à capturer</span>
                       </div>
                     </div>
@@ -648,7 +648,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
                     <div className="flex flex-wrap items-center justify-center gap-3">
                       <button
                         onClick={capturePhoto}
-                        className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-lg"
+                        className="px-4 py-2 bg-gradient-to-r from-green-700 to-green-600 hover:from-green-600 hover:to-green-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-lg"
                       >
                         <Sparkles className="w-4 h-4" />
                         Générer un Scan Document de Chantier
@@ -705,7 +705,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
                   disabled={isCapturing}
                   className="group relative flex items-center justify-center w-16 h-16 rounded-full bg-white hover:bg-slate-100 p-1 shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-transform active:scale-95"
                 >
-                  <div className="w-13 h-13 rounded-full border-2 border-slate-900 bg-cyan-600 group-hover:bg-cyan-500 flex items-center justify-center text-white">
+                  <div className="w-13 h-13 rounded-full border-2 border-slate-900 bg-green-700 group-hover:bg-green-600 flex items-center justify-center text-white">
                     <Camera className="w-6 h-6" />
                   </div>
                 </button>
@@ -742,7 +742,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
                     alt={`Page ${activePageIndex + 1}`}
                     className="max-h-full max-w-full object-contain rounded shadow-lg"
                   />
-                  <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded text-xs font-mono text-cyan-300 border border-slate-700">
+                  <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded text-xs font-mono text-green-300 border border-slate-700">
                     Page {activePageIndex + 1} / {pages.length}
                   </div>
                 </div>
@@ -767,7 +767,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
 
                   <button
                     onClick={handleAddAnotherPage}
-                    className="p-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg flex items-center gap-1.5 text-xs font-medium transition-colors"
+                    className="p-2 bg-slate-800 hover:bg-slate-700 text-green-400 rounded-lg flex items-center gap-1.5 text-xs font-medium transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Ajouter page</span>
@@ -791,7 +791,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
                         onClick={() => handleFilterChange(f.id as any)}
                         className={`py-2 px-1 text-center rounded-xl text-xs font-medium border transition-all ${
                           pages[activePageIndex].filter === f.id
-                            ? 'bg-cyan-600/30 text-cyan-300 border-cyan-500 shadow-md'
+                            ? 'bg-green-700/30 text-green-300 border-green-500 shadow-md'
                             : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-800 hover:text-slate-200'
                         }`}
                       >
@@ -807,7 +807,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between">
                     <span>Pages du document</span>
-                    <span className="text-cyan-400">{pages.length}</span>
+                    <span className="text-green-400">{pages.length}</span>
                   </h4>
 
                   <div className="grid grid-cols-3 lg:grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1">
@@ -817,7 +817,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
                         onClick={() => setActivePageIndex(idx)}
                         className={`cursor-pointer relative aspect-[1/1.3] rounded-lg overflow-hidden border-2 transition-all ${
                           activePageIndex === idx
-                            ? 'border-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.5)]'
+                            ? 'border-green-400 shadow-[0_0_10px_rgba(59,122,44,0.5)]'
                             : 'border-slate-800 hover:border-slate-600 opacity-70'
                         }`}
                       >
@@ -830,7 +830,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
 
                     <button
                       onClick={handleAddAnotherPage}
-                      className="aspect-[1/1.3] rounded-lg border-2 border-dashed border-slate-700 hover:border-cyan-500 bg-slate-900 flex flex-col items-center justify-center text-slate-400 hover:text-cyan-300 text-xs gap-1 transition-colors"
+                      className="aspect-[1/1.3] rounded-lg border-2 border-dashed border-slate-700 hover:border-green-500 bg-slate-900 flex flex-col items-center justify-center text-slate-400 hover:text-green-300 text-xs gap-1 transition-colors"
                     >
                       <Plus className="w-5 h-5" />
                       <span>Ajouter</span>
@@ -849,7 +849,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
 
                   <button
                     onClick={proceedToOcr}
-                    className="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold text-sm rounded-xl flex items-center justify-center gap-2 shadow-lg transition-transform active:scale-[0.98]"
+                    className="w-full py-3 bg-gradient-to-r from-green-700 to-green-600 hover:from-green-600 hover:to-green-500 text-white font-semibold text-sm rounded-xl flex items-center justify-center gap-2 shadow-lg transition-transform active:scale-[0.98]"
                   >
                     <Sparkles className="w-4 h-4" />
                     <span>Lancer OCR &amp; Métadonnées</span>
@@ -866,7 +866,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
               <div className="w-full lg:w-1/2 flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-cyan-400" />
+                    <FileText className="w-4 h-4 text-green-400" />
                     Texte reconnu (OCR)
                   </h4>
                   <span className="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800 px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1">
@@ -880,7 +880,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
                     rows={13}
                     value={ocrText}
                     onChange={(e) => setOcrText(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs font-mono text-slate-300 leading-relaxed focus:border-cyan-500 focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs font-mono text-slate-300 leading-relaxed focus:border-green-600 focus:outline-none"
                     placeholder="Texte brut reconnu..."
                   />
                   <div className="text-[11px] text-slate-500 mt-1 italic">
@@ -1027,7 +1027,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
                       onClick={() => setActionChoice('ged')}
                       className={`p-2 rounded-lg border text-center transition-all ${
                         actionChoice === 'ged'
-                          ? 'bg-cyan-600/30 border-cyan-500 text-cyan-200'
+                          ? 'bg-green-700/30 border-green-500 text-green-200'
                           : 'bg-slate-900 border-slate-700 text-slate-400 hover:bg-slate-800'
                       }`}
                     >
@@ -1075,7 +1075,7 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
             <div className="py-16 flex flex-col items-center justify-center text-center max-w-md mx-auto">
               <div className="relative w-16 h-16 mb-4">
                 <div className="absolute inset-0 rounded-full border-4 border-slate-800" />
-                <div className="absolute inset-0 rounded-full border-4 border-cyan-500 border-t-transparent animate-spin" />
+                <div className="absolute inset-0 rounded-full border-4 border-green-500 border-t-transparent animate-spin" />
               </div>
 
               <h4 className="text-lg font-bold text-white mb-2">Traitement documentaire en cours</h4>
@@ -1083,11 +1083,11 @@ export const SmartScannerModal: React.FC<SmartScannerModalProps> = ({
 
               <div className="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
                 <div
-                  className="bg-gradient-to-r from-cyan-500 to-emerald-500 h-2.5 rounded-full transition-all duration-300"
+                  className="bg-gradient-to-r from-green-600 to-emerald-500 h-2.5 rounded-full transition-all duration-300"
                   style={{ width: `${savingProgress}%` }}
                 />
               </div>
-              <span className="text-xs font-mono text-cyan-400 mt-2">{savingProgress}%</span>
+              <span className="text-xs font-mono text-green-400 mt-2">{savingProgress}%</span>
             </div>
           )}
         </div>

@@ -111,7 +111,7 @@ export const DgDashboard: React.FC<DgDashboardProps> = ({
       {/* Welcome & Quick Action Hero */}
       <div className="module-header-gradient p-6 sm:p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all shadow-sm dark:shadow-2xl">
         <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-3 bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-cyan-800 dark:text-cyan-300 shadow-xs backdrop-blur-xs">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-3 bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-green-800 dark:text-green-300 shadow-xs backdrop-blur-xs">
             <span className="badge-live w-2 h-2 rounded-full bg-emerald-500 text-emerald-500 shrink-0" />
             CORESI INTERNATIONAL SARL • Direction Générale
           </div>
@@ -129,7 +129,7 @@ export const DgDashboard: React.FC<DgDashboardProps> = ({
             onClick={() => setReportModalOpen(true)}
             className="w-full sm:w-auto px-4 py-3 font-semibold rounded-2xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer bg-white/90 hover:bg-slate-50 text-slate-800 border border-slate-200 dark:bg-slate-900/80 dark:hover:bg-slate-800 dark:text-slate-200 dark:border-slate-700 shadow-xs active:scale-95"
           >
-            <Printer className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+            <Printer className="w-4 h-4 text-green-700 dark:text-green-400" />
             <span className="font-semibold">Rapport Exécutif DG</span>
           </button>
 
@@ -145,8 +145,8 @@ export const DgDashboard: React.FC<DgDashboardProps> = ({
         </div>
 
         {/* Ambient orb decorations */}
-        <div className="ambient-orb w-80 h-80 bg-cyan-500/10 right-0 top-0 blur-[60px]" />
-        <div className="ambient-orb w-48 h-48 bg-indigo-500/8 right-40 bottom-0 blur-[40px]" />
+        <div className="ambient-orb w-80 h-80 bg-green-600/10 right-0 top-0 blur-[60px]" />
+        <div className="ambient-orb w-48 h-48 bg-orange-500/10 right-40 bottom-0 blur-[40px]" />
       </div>
 
       {/* Industrial Priority Alerts Banner (Point 8) */}
@@ -214,7 +214,7 @@ export const DgDashboard: React.FC<DgDashboardProps> = ({
                 Budget : <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{(totalBudget / 1000000).toFixed(1)} M FCFA</span>
               </p>
             </div>
-            <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-cyan-600 dark:text-cyan-400 font-bold">
+            <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-green-700 dark:text-green-400 font-bold">
               <span>Voir les chantiers</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
@@ -256,7 +256,7 @@ export const DgDashboard: React.FC<DgDashboardProps> = ({
           >
             <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-3">
               <span className="font-semibold uppercase tracking-wider text-[10px]">GED &amp; Documents</span>
-              <span className="p-2 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 rounded-xl">
+              <span className="p-2 bg-green-600/10 text-green-700 dark:text-green-400 rounded-xl">
                 <FileText className="w-4 h-4" />
               </span>
             </div>
@@ -264,7 +264,7 @@ export const DgDashboard: React.FC<DgDashboardProps> = ({
               <p className="kpi-number text-3xl font-black text-slate-900 dark:text-white mb-1">{documents.length}</p>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">100% indexés OCR &amp; Cloudinary</p>
             </div>
-            <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-cyan-600 dark:text-cyan-400 font-bold">
+            <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-green-700 dark:text-green-400 font-bold">
               <span>Archives GED</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
@@ -302,7 +302,7 @@ export const DgDashboard: React.FC<DgDashboardProps> = ({
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
             <span>Pilotage Intégré des Opérations &amp; Chantiers</span>
-            <span className="text-[10px] bg-cyan-50 text-cyan-800 dark:bg-cyan-950/80 dark:text-cyan-300 px-2.5 py-0.5 rounded-full font-mono font-bold border border-cyan-200 dark:border-cyan-800">
+            <span className="text-[10px] bg-green-50 text-green-800 dark:bg-green-950/80 dark:text-green-300 px-2.5 py-0.5 rounded-full font-mono font-bold border border-green-200 dark:border-green-800">
               9 Modules Connectés
             </span>
           </h3>
@@ -401,7 +401,7 @@ export const DgDashboard: React.FC<DgDashboardProps> = ({
           >
             <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
               <span className="font-semibold truncate">Multi-Sites</span>
-              <MapPin className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
+              <MapPin className="w-3.5 h-3.5 text-green-600 shrink-0" />
             </div>
             <div>
               <p className="text-xl font-black font-mono tracking-tight text-slate-900 dark:text-white">
@@ -424,7 +424,7 @@ export const DgDashboard: React.FC<DgDashboardProps> = ({
             </div>
             <button
               onClick={() => onNavigate('projects')}
-              className="text-xs text-cyan-600 dark:text-cyan-400 hover:underline font-bold flex items-center gap-1 cursor-pointer"
+              className="text-xs text-green-700 dark:text-green-400 hover:underline font-bold flex items-center gap-1 cursor-pointer"
             >
               <span>Tous les projets</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -444,21 +444,21 @@ export const DgDashboard: React.FC<DgDashboardProps> = ({
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-50 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-green-50 dark:bg-green-950/80 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800">
                           {prj.code}
                         </span>
                         <span className="text-[11px] capitalize text-slate-500 dark:text-slate-400 font-medium">
                           {prj.category.replace('_', ' ')}
                         </span>
                       </div>
-                      <h4 className="font-bold text-sm text-slate-900 dark:text-white hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">
+                      <h4 className="font-bold text-sm text-slate-900 dark:text-white hover:text-green-700 dark:hover:text-green-400 transition-colors">
                         {prj.name}
                       </h4>
                       <p className="text-xs text-slate-500 dark:text-slate-400">{prj.clientName} • {prj.location}</p>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-xs font-mono font-black text-cyan-600 dark:text-cyan-400">{prj.progress}% réalisé</span>
+                      <span className="text-xs font-mono font-black text-green-700 dark:text-green-400">{prj.progress}% réalisé</span>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
                         {prj.spent.toLocaleString('fr-FR')} / {prj.budget.toLocaleString('fr-FR')} FCFA
                       </p>
@@ -469,7 +469,7 @@ export const DgDashboard: React.FC<DgDashboardProps> = ({
                   <div className="space-y-1.5 mt-2">
                     <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
                       <div
-                        className="bg-gradient-to-r from-cyan-500 to-blue-600 h-2 rounded-full transition-all duration-500"
+                        className="bg-gradient-to-r from-green-600 to-emerald-500 h-2 rounded-full transition-all duration-500"
                         style={{ width: `${prj.progress}%` }}
                       />
                     </div>
@@ -513,13 +513,13 @@ export const DgDashboard: React.FC<DgDashboardProps> = ({
                   <img
                     src={doc.cloudinary.secureUrl}
                     alt=""
-                    className="w-10 h-13 object-cover rounded-xl border border-slate-200 dark:border-slate-700 shrink-0 group-hover:border-cyan-500 transition-colors"
+                    className="w-10 h-13 object-cover rounded-xl border border-slate-200 dark:border-slate-700 shrink-0 group-hover:border-green-600 transition-colors"
                   />
                   <div className="overflow-hidden flex-1">
-                    <p className="font-bold text-xs text-slate-900 dark:text-white truncate group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                    <p className="font-bold text-xs text-slate-900 dark:text-white truncate group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors">
                       {doc.title}
                     </p>
-                    <p className="font-mono text-[10px] text-cyan-600 dark:text-cyan-400 font-bold">{doc.documentNumber}</p>
+                    <p className="font-mono text-[10px] text-green-700 dark:text-green-400 font-bold">{doc.documentNumber}</p>
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate font-medium">
                       {doc.context.projectName || doc.category}
                     </p>

@@ -130,7 +130,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+          <div className="w-12 h-12 rounded-xl bg-green-600/10 border border-green-600/20 flex items-center justify-center text-green-400">
             <ClipboardList className="w-6 h-6" />
           </div>
           <div>
@@ -143,7 +143,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
 
         <button
           onClick={() => setNewReportOpen(true)}
-          className="px-4 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl flex items-center gap-2 text-sm transition-colors shadow-lg shadow-cyan-500/20"
+          className="px-4 py-2.5 bg-green-700 hover:bg-green-600 text-white font-bold rounded-xl flex items-center gap-2 text-sm transition-colors shadow-lg shadow-green-700/20 cursor-pointer"
         >
           <Plus className="w-4 h-4" /> Rédiger un Rapport / PV
         </button>
@@ -163,9 +163,9 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
             <button
               key={tab.id}
               onClick={() => setSelectedType(tab.id)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
                 selectedType === tab.id
-                  ? 'bg-cyan-500 text-slate-950 shadow-md'
+                  ? 'bg-green-700 text-white shadow-md'
                   : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
               }`}
             >
@@ -181,7 +181,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
             placeholder="Rechercher rapport, PV..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+            className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-green-600"
           />
         </div>
       </div>
@@ -195,7 +195,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
           >
             <div>
               <div className="flex items-start justify-between gap-2 mb-3">
-                <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-slate-800 text-cyan-400 border border-slate-700">
+                <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-slate-800 text-green-400 border border-slate-700">
                   {rep.reference}
                 </span>
                 <span
@@ -209,7 +209,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                 </span>
               </div>
 
-              <h3 className="font-bold text-white text-base mb-2 group-hover:text-cyan-400 transition-colors line-clamp-2">
+              <h3 className="font-bold text-white text-base mb-2 group-hover:text-green-400 transition-colors line-clamp-2">
                 {rep.title}
               </h3>
 
@@ -250,7 +250,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                 )}
                 <button
                   onClick={() => handleDownloadPdf(rep)}
-                  className="p-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-xl transition-colors"
+                  className="p-1.5 bg-green-600/10 hover:bg-green-600/20 text-green-400 border border-green-600/30 rounded-xl transition-colors cursor-pointer"
                   title="Télécharger en PDF"
                 >
                   <Download className="w-4 h-4" />
@@ -346,7 +346,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
 
             {selectedReport.recommendations && (
               <SidebarSection title="5. Recommandations">
-                <p className="text-xs bg-cyan-50 dark:bg-cyan-950/20 p-3 rounded-xl border border-cyan-200 dark:border-cyan-900/40 text-cyan-700 dark:text-cyan-200">
+                <p className="text-xs bg-green-50 dark:bg-green-950/20 p-3 rounded-xl border border-green-200 dark:border-green-900/40 text-green-700 dark:text-green-200">
                   {selectedReport.recommendations}
                 </p>
               </SidebarSection>
@@ -485,7 +485,7 @@ export const ReportsModule: React.FC<ReportsModuleProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-sm"
+                  className="px-4 py-2 bg-green-700 hover:bg-green-600 text-white font-bold rounded-xl text-sm transition-colors cursor-pointer"
                 >
                   Enregistrer et Soumettre
                 </button>

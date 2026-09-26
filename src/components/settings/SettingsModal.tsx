@@ -60,7 +60,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       <div className="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-100">
         <div className="bg-slate-950 px-5 py-3.5 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 bg-cyan-500/20 text-cyan-400 rounded-lg">
+            <span className="p-1.5 bg-green-600/20 text-green-400 rounded-lg">
               <Settings className="w-5 h-5" />
             </span>
             <h3 className="font-bold text-base text-white">Paramètres &amp; Configuration Système</h3>
@@ -77,7 +77,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* Role switcher for commercial demo */}
           <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
             <div className="flex items-center gap-2 text-white font-semibold">
-              <UserCheck className="w-4 h-4 text-cyan-400" />
+              <UserCheck className="w-4 h-4 text-green-400" />
               <span>Simulateur de Rôle Utilisateur (Présentation Commerciale)</span>
             </div>
             <p className="text-slate-400">
@@ -101,7 +101,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   }}
                   className={`p-2.5 rounded-xl border text-left flex items-center justify-between transition-colors ${
                     currentUser.role === r.role
-                      ? 'bg-cyan-600/20 border-cyan-500 text-cyan-200'
+                      ? 'bg-green-700/20 border-green-600 text-green-200'
                       : 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-850'
                   }`}
                 >
@@ -110,7 +110,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     <p className="text-[11px] text-slate-400">{r.name} • {r.dept.toUpperCase()}</p>
                   </div>
                   {currentUser.role === r.role && (
-                    <span className="text-xs bg-cyan-500 text-slate-950 font-bold px-2 py-0.5 rounded-full">
+                    <span className="text-xs bg-green-700 text-white font-bold px-2 py-0.5 rounded-full">
                       Actif
                     </span>
                   )}
@@ -143,7 +143,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 onClick={() => setTheme('dark')}
                 className={`p-3 rounded-xl border text-left flex items-center gap-3 transition-colors cursor-pointer ${
                   theme === 'dark'
-                    ? 'bg-cyan-600/20 border-cyan-500 text-white'
+                    ? 'bg-green-700/20 border-green-600 text-white'
                     : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-850'
                 }`}
               >
@@ -161,7 +161,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 onClick={() => setTheme('light')}
                 className={`p-3 rounded-xl border text-left flex items-center gap-3 transition-colors cursor-pointer ${
                   theme === 'light'
-                    ? 'bg-cyan-600/20 border-cyan-500 text-white'
+                    ? 'bg-green-700/20 border-green-600 text-white'
                     : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-850'
                 }`}
               >
@@ -179,7 +179,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* Cloudinary Configuration */}
           <form onSubmit={handleSaveCloudinary} className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
             <div className="flex items-center gap-2 text-white font-semibold">
-              <Cloud className="w-4 h-4 text-cyan-400" />
+              <Cloud className="w-4 h-4 text-green-400" />
               <span>Configuration du Stockage Cloudinary (GED &amp; Scans)</span>
             </div>
             <p className="text-slate-400">
@@ -194,7 +194,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   value={cloudinaryConfig.cloudName}
                   onChange={(e) => setCloudinaryConfig({ ...cloudinaryConfig, cloudName: e.target.value })}
                   placeholder="ex: coresi-industrial"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white focus:border-cyan-500 focus:outline-none"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white focus:border-green-600 focus:outline-none"
                 />
               </div>
 
@@ -205,7 +205,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   value={cloudinaryConfig.uploadPreset}
                   onChange={(e) => setCloudinaryConfig({ ...cloudinaryConfig, uploadPreset: e.target.value })}
                   placeholder="ex: coresi_ged_unsigned"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white focus:border-cyan-500 focus:outline-none"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white focus:border-green-600 focus:outline-none"
                 />
               </div>
 
@@ -215,7 +215,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   type="text"
                   value={cloudinaryConfig.folder}
                   onChange={(e) => setCloudinaryConfig({ ...cloudinaryConfig, folder: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white focus:border-cyan-500 focus:outline-none"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white focus:border-green-600 focus:outline-none"
                 />
               </div>
             </div>
@@ -226,7 +226,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </span>
               <button
                 type="submit"
-                className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-semibold flex items-center gap-1.5 transition-colors"
+                className="px-4 py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Enregistrer</span>
@@ -247,7 +247,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <span>Base de Données Cloud Firestore</span>
             </div>
             <p className="text-slate-400">
-              Projet Firebase lié : <span className="font-mono text-cyan-300">{firebaseConfig.projectId}</span>
+              Projet Firebase lié : <span className="font-mono text-green-400">{firebaseConfig.projectId}</span>
             </p>
             <p className="text-slate-400">
               Règles Firestore : <span className="text-emerald-400 font-semibold">Déployées &amp; Sécurisées</span>

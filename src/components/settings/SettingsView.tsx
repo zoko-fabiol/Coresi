@@ -124,7 +124,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="p-1.5 bg-cyan-500/20 text-cyan-400 rounded-lg">
+            <span className="p-1.5 bg-green-600/20 text-green-400 rounded-lg">
               <Settings className="w-5 h-5" />
             </span>
             <h2 className="text-xl font-bold text-white tracking-tight">
@@ -141,10 +141,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-white font-bold text-sm">
-            <UserCheck className="w-5 h-5 text-cyan-400" />
+            <UserCheck className="w-5 h-5 text-green-400" />
             <span>Simulateur de Rôle Utilisateur (Présentation Commerciale)</span>
           </div>
-          <span className="text-xs text-cyan-400 bg-cyan-950 px-3 py-1 rounded-lg border border-cyan-800">
+          <span className="text-xs text-green-400 bg-green-950 px-3 py-1 rounded-lg border border-green-800">
             Bascule instantanée
           </span>
         </div>
@@ -164,7 +164,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 onClick={() => handleSelectRole(r)}
                 className={`p-4 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer group ${
                   isSelected
-                    ? 'bg-gradient-to-br from-cyan-950/80 to-blue-950/60 border-cyan-500 text-cyan-100 shadow-lg ring-1 ring-cyan-500/50'
+                    ? 'bg-gradient-to-br from-green-950/80 to-emerald-950/60 border-green-500 text-green-100 shadow-lg ring-1 ring-green-500/50'
                     : 'bg-slate-950 border-slate-800 text-slate-300 hover:bg-slate-850 hover:border-slate-700'
                 }`}
               >
@@ -172,7 +172,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   <div className="flex items-center gap-2.5">
                     <span
                       className={`p-2 rounded-lg ${
-                        isSelected ? 'bg-cyan-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-400 group-hover:text-cyan-400'
+                        isSelected ? 'bg-green-700 text-white font-bold' : 'bg-slate-800 text-slate-400 group-hover:text-green-400'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
@@ -184,7 +184,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   </div>
 
                   {isSelected && (
-                    <span className="text-[10px] bg-cyan-500 text-slate-950 font-extrabold px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] bg-green-700 text-white font-extrabold px-2 py-0.5 rounded-full">
                       Actif
                     </span>
                   )}
@@ -192,7 +192,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
                 <p className="text-[11px] text-slate-400 mb-3">{r.description}</p>
 
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs text-cyan-400 font-semibold">
+                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs text-green-400 font-semibold">
                   <span>Accéder à l'espace {r.targetModule.toUpperCase()}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -205,7 +205,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       {/* Cloudinary Configuration */}
       <form onSubmit={handleSaveCloudinary} className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4">
         <div className="flex items-center gap-2 text-white font-bold text-sm">
-          <Cloud className="w-5 h-5 text-cyan-400" />
+          <Cloud className="w-5 h-5 text-green-400" />
           <span>Configuration du Stockage Cloudinary (GED &amp; Scans)</span>
         </div>
         <p className="text-xs text-slate-400">
@@ -220,7 +220,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               value={cloudinaryConfig.cloudName}
               onChange={(e) => setCloudinaryConfig({ ...cloudinaryConfig, cloudName: e.target.value })}
               placeholder="ex: coresi-industrial"
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white focus:border-cyan-500 focus:outline-none"
+              className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white focus:border-green-600 focus:outline-none"
             />
           </div>
 
@@ -231,7 +231,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               value={cloudinaryConfig.uploadPreset}
               onChange={(e) => setCloudinaryConfig({ ...cloudinaryConfig, uploadPreset: e.target.value })}
               placeholder="ex: coresi_ged_unsigned"
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white focus:border-cyan-500 focus:outline-none"
+              className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white focus:border-green-600 focus:outline-none"
             />
           </div>
 
@@ -241,7 +241,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               type="text"
               value={cloudinaryConfig.folder}
               onChange={(e) => setCloudinaryConfig({ ...cloudinaryConfig, folder: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white focus:border-cyan-500 focus:outline-none"
+              className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white focus:border-green-600 focus:outline-none"
             />
           </div>
         </div>
@@ -252,7 +252,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </span>
           <button
             type="submit"
-            className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-4 py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" />
             <span>Enregistrer la Configuration</span>
@@ -274,7 +274,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <span>Base Cloud Firestore</span>
           </div>
           <p className="text-slate-400">
-            Projet Firebase lié : <span className="font-mono text-cyan-300">{firebaseConfig.projectId}</span>
+            Projet Firebase lié : <span className="font-mono text-green-400">{firebaseConfig.projectId}</span>
           </p>
           <p className="text-slate-400">
             Règles de sécurité : <span className="text-emerald-400 font-semibold">Déployées &amp; Conformes</span>

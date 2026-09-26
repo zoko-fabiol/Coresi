@@ -77,7 +77,7 @@ export const DetailSidebar: React.FC<DetailSidebarProps> = ({
   const actionVariantClass = (variant?: string) => {
     switch (variant) {
       case 'primary':
-        return 'bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-bold border-cyan-400 shadow-md shadow-cyan-500/20 active:scale-95';
+        return 'bg-gradient-to-r from-green-700 to-green-600 hover:from-green-600 hover:to-green-500 text-white font-bold border-green-500 shadow-md shadow-green-700/20 active:scale-95';
       case 'danger':
         return 'bg-rose-500/15 hover:bg-rose-500/25 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-700/60 font-semibold active:scale-95';
       case 'success':
@@ -102,7 +102,7 @@ export const DetailSidebar: React.FC<DetailSidebarProps> = ({
         {/* Sidebar Panel */}
         <div
           ref={sidebarRef}
-          className={`fixed top-0 right-0 bottom-0 z-50 ${widthClass} bg-white dark:bg-slate-900 border-l border-slate-200/70 dark:border-slate-800/70 shadow-[-12px_0_40px_rgba(6,182,212,0.08),-4px_0_20px_rgba(0,0,0,0.2)] flex flex-col transition-transform duration-300 ease-out ${
+          className={`fixed top-0 right-0 bottom-0 z-50 ${widthClass} bg-white dark:bg-slate-900 border-l border-slate-200/70 dark:border-slate-800/70 shadow-[-12px_0_40px_rgba(59,122,44,0.08),-4px_0_20px_rgba(0,0,0,0.2)] flex flex-col transition-transform duration-300 ease-out ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
           onClick={(e) => e.stopPropagation()}
@@ -114,7 +114,7 @@ export const DetailSidebar: React.FC<DetailSidebarProps> = ({
                 {/* Reference Code + Badge */}
                 <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                   {referenceCode && (
-                    <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950/80 dark:to-blue-950/50 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800 shadow-xs">
+                    <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/80 dark:to-emerald-950/50 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800 shadow-xs">
                       {referenceCode}
                     </span>
                   )}
@@ -164,13 +164,13 @@ export const DetailSidebar: React.FC<DetailSidebarProps> = ({
                     <button
                       key={doc.id}
                       onClick={() => onDocumentClick?.(doc)}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl bg-slate-100 dark:bg-slate-800/60 hover:bg-slate-200 dark:hover:bg-slate-800 border border-transparent hover:border-cyan-300 dark:hover:border-cyan-700 transition-all text-left group cursor-pointer"
+                      className="w-full flex items-center gap-3 p-3 rounded-xl bg-slate-100 dark:bg-slate-800/60 hover:bg-slate-200 dark:hover:bg-slate-800 border border-transparent hover:border-green-300 dark:hover:border-green-700 transition-all text-left group cursor-pointer"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
-                        <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
+                        <FileText className="w-4 h-4 text-green-700 dark:text-green-400" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-medium text-slate-800 dark:text-slate-200 truncate group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors">
+                        <p className="text-xs font-medium text-slate-800 dark:text-slate-200 truncate group-hover:text-green-700 dark:group-hover:text-green-300 transition-colors">
                           {doc.title}
                         </p>
                         <p className="text-[10px] text-slate-400 mt-0.5">
@@ -179,7 +179,7 @@ export const DetailSidebar: React.FC<DetailSidebarProps> = ({
                           {doc.date && <span>{doc.date}</span>}
                         </p>
                       </div>
-                      <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-500 transition-colors shrink-0" />
+                      <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-green-600 transition-colors shrink-0" />
                     </button>
                   ))}
                 </div>
@@ -281,7 +281,7 @@ export const SidebarStatusBadge: React.FC<SidebarStatusBadgeProps> = ({
     success: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700',
     warning: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-700',
     danger: 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-700',
-    info: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 border-cyan-200 dark:border-cyan-700',
+    info: 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 border-green-200 dark:border-green-700',
     neutral: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700',
   };
 

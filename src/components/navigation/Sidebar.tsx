@@ -180,7 +180,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Espace Métier
             </span>
-            <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border uppercase bg-cyan-50 text-cyan-800 border-cyan-200 dark:bg-cyan-950/80 dark:text-cyan-300 dark:border-cyan-800">
+            <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border uppercase bg-green-50 text-green-800 border-green-200 dark:bg-green-950/80 dark:text-green-300 dark:border-green-800">
               {currentUser.role}
             </span>
           </div>
@@ -208,7 +208,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 }}
                 className={`w-full px-3 py-2.5 rounded-xl flex items-center justify-between text-left transition-all cursor-pointer relative group ${
                   isActive
-                    ? 'bg-gradient-to-r from-cyan-500/10 to-transparent border border-cyan-300/80 dark:border-cyan-700/80 text-cyan-950 dark:text-cyan-200 shadow-xs'
+                    ? 'bg-gradient-to-r from-green-600/10 to-transparent border border-green-300/80 dark:border-green-700/80 text-green-950 dark:text-green-200 shadow-xs'
                     : 'text-slate-600 hover:text-slate-950 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-900 border border-transparent'
                 }`}
               >
@@ -219,7 +219,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <span
                     className={`p-1.5 rounded-lg transition-colors ${
                       isActive
-                        ? 'bg-cyan-600 text-white shadow-xs shadow-cyan-600/30'
+                        ? 'bg-green-700 text-white shadow-xs shadow-green-700/30'
                         : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:group-hover:bg-slate-800'
                     }`}
                   >
@@ -229,7 +229,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <p className={`text-xs leading-tight ${isActive ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
                       {item.label}
                     </p>
-                    <p className={`text-[10px] leading-tight ${isActive ? 'text-cyan-700 dark:text-cyan-400 font-medium' : 'text-slate-400 dark:text-slate-500'}`}>{item.subtext}</p>
+                    <p className={`text-[10px] leading-tight ${isActive ? 'text-green-700 dark:text-green-400 font-medium' : 'text-slate-400 dark:text-slate-500'}`}>{item.subtext}</p>
                   </div>
                 </div>
 
@@ -277,9 +277,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Drawer Header */}
             <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600 p-[1.5px] flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-green-700 via-green-600 to-orange-500 p-[1.5px] flex items-center justify-center">
                   <div className="w-full h-full bg-slate-950 rounded-md flex items-center justify-center">
-                    <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-amber-300 text-[8px] tracking-wider">COR</span>
+                    <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-amber-300 text-[8px] tracking-wider">COR</span>
                   </div>
                 </div>
                 <span className="font-bold text-sm text-slate-900 dark:text-white">Navigation</span>

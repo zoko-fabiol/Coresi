@@ -92,15 +92,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             aria-label="Menu de navigation"
           >
             {isMobileMenuOpen
-              ? <X className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+              ? <X className="w-5 h-5 text-green-700 dark:text-green-400" />
               : <Menu className="w-5 h-5 text-slate-700 dark:text-slate-300" />
             }
           </button>
         )}
 
-        <div className="logo-badge-glow w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600 p-[2px] flex items-center justify-center shrink-0">
+        <div className="logo-badge-glow w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-green-700 via-green-600 to-orange-500 p-[2px] flex items-center justify-center shrink-0">
           <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-            <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-amber-300 to-orange-400 text-[10px] sm:text-xs tracking-wider">
+            <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-amber-300 to-orange-400 text-[10px] sm:text-xs tracking-wider">
               COR
             </span>
           </div>
@@ -108,15 +108,15 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         <div className="hidden xs:block sm:block">
           <div className="flex items-center gap-1.5">
-            <h1 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white tracking-wide leading-none">
+            <h1 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-green-50 tracking-wide leading-none">
               CORESI
-              <span className="text-cyan-600 dark:text-cyan-400 font-bold hidden sm:inline"> INTERNATIONAL</span>
+              <span className="text-green-700 dark:text-green-400 font-bold hidden sm:inline"> INTERNATIONAL</span>
             </h1>
-            <span className="text-[9px] bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/80 px-1.5 py-0.5 rounded font-mono font-bold hidden sm:inline">
+            <span className="text-[9px] bg-orange-50 text-orange-700 border border-orange-200 dark:bg-orange-950/60 dark:text-orange-300 dark:border-orange-800/80 px-1.5 py-0.5 rounded font-mono font-bold hidden sm:inline">
               SARL
             </span>
           </div>
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 hidden lg:block leading-none mt-0.5 font-medium">
+          <p className="text-[10px] text-green-600/70 dark:text-green-600/60 hidden lg:block leading-none mt-0.5 font-medium">
             Chaudronnerie · Tuyauterie · GED Industrielle
           </p>
         </div>
@@ -126,9 +126,9 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="flex items-center gap-1 sm:gap-2 shrink-0">
 
         {firebaseUser ? (
-          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/80 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 text-xs backdrop-blur-sm">
-            <span className="badge-live w-2 h-2 rounded-full bg-emerald-500 text-emerald-500 shrink-0" />
-            <Cloud className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
+          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-green-200 dark:border-green-800/60 bg-green-50/80 dark:bg-green-950/30 text-green-800 dark:text-green-300 text-xs backdrop-blur-sm">
+            <span className="badge-live w-2 h-2 rounded-full bg-green-500 text-green-500 shrink-0" />
+            <Cloud className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
             <span className="font-mono font-semibold text-[11px] truncate max-w-[110px]">
               {authUser?.displayName || firebaseUser.email?.split("@")[0]}
             </span>
@@ -139,10 +139,10 @@ export const Navbar: React.FC<NavbarProps> = ({
         ) : (
           <button
             onClick={onOpenAuthModal}
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-cyan-200 dark:border-cyan-800/60 bg-cyan-50/70 hover:bg-cyan-100/80 dark:bg-cyan-950/40 dark:hover:bg-cyan-900/50 text-cyan-800 dark:text-cyan-300 text-xs font-semibold cursor-pointer transition-all active:scale-95"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-green-200 dark:border-green-800/60 bg-green-50/70 hover:bg-green-100/80 dark:bg-green-950/40 dark:hover:bg-green-900/50 text-green-800 dark:text-green-300 text-xs font-semibold cursor-pointer transition-all active:scale-95"
             title="Connexion securisee"
           >
-            <LogIn className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+            <LogIn className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
             <span className="hidden lg:inline text-[11px]">Connexion</span>
           </button>
         )}
@@ -150,12 +150,12 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Role Switcher md+ only */}
         <div className="relative hidden md:block">
           <button onClick={() => setRoleDropdownOpen(!roleDropdownOpen)} className="nav-action-btn" title="Changer de role">
-            <div className="w-5 h-5 rounded-lg bg-cyan-50 dark:bg-cyan-950/80 border border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300 flex items-center justify-center shrink-0">
+            <div className="w-5 h-5 rounded-lg bg-green-50 dark:bg-green-950/80 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 flex items-center justify-center shrink-0">
               <UserCheck className="w-3 h-3" />
             </div>
             <div className="text-left hidden lg:block">
-              <p className="text-[11px] font-bold text-slate-900 dark:text-white leading-none">{currentRoleConfig.shortLabel}</p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate max-w-[90px] leading-none mt-0.5">{currentUser.displayName}</p>
+              <p className="text-[11px] font-bold text-slate-900 dark:text-green-50 leading-none">{currentRoleConfig.shortLabel}</p>
+              <p className="text-[10px] text-green-600/70 dark:text-green-600/70 truncate max-w-[90px] leading-none mt-0.5">{currentUser.displayName}</p>
             </div>
             <ChevronDown className="w-3 h-3 text-slate-400 shrink-0" />
           </button>
@@ -176,19 +176,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <button
                         key={roleKey}
                         onClick={() => handleSelectRole(roleKey)}
-                        className={`w-full p-2.5 rounded-xl text-left flex items-start justify-between gap-2 transition-all cursor-pointer ${isSelected ? "bg-cyan-50 dark:bg-cyan-950/50 border border-cyan-200 dark:border-cyan-800" : "hover:bg-slate-50 dark:hover:bg-slate-800/60 border border-transparent"}`}
+                        className={`w-full p-2.5 rounded-xl text-left flex items-start justify-between gap-2 transition-all cursor-pointer ${isSelected ? "bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-800" : "hover:bg-green-50/60 dark:hover:bg-green-950/20 border border-transparent"}`}
                       >
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <span className="font-bold text-slate-900 dark:text-white text-xs">{cfg.title}</span>
+                            <span className="font-bold text-slate-900 dark:text-green-50 text-xs">{cfg.title}</span>
                             {roleKey === "dg" && (
-                              <span className="text-[9px] bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 px-1 py-px rounded border border-emerald-200 dark:border-emerald-800 font-bold">100%</span>
+                              <span className="text-[9px] bg-green-100 text-green-700 dark:bg-green-950/60 dark:text-green-300 px-1 py-px rounded border border-green-200 dark:border-green-800 font-bold">100%</span>
                             )}
                           </div>
-                          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{cfg.defaultUserName} · {cfg.department.toUpperCase()}</p>
+                          <p className="text-[10px] text-slate-500 dark:text-green-700 mt-0.5">{cfg.defaultUserName} · {cfg.department.toUpperCase()}</p>
                         </div>
                         {isSelected && (
-                          <span className="p-1 bg-cyan-600 text-white rounded-full mt-0.5 shrink-0"><Check className="w-3 h-3 stroke-[3]" /></span>
+                          <span className="p-1 bg-green-700 text-white rounded-full mt-0.5 shrink-0"><Check className="w-3 h-3 stroke-[3]" /></span>
                         )}
                       </button>
                     );

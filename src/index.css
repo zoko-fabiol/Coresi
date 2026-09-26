@@ -2,6 +2,24 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --color-cyan-50: #f0f7ec;
+  --color-cyan-100: #d4ebca;
+  --color-cyan-200: #a8d496;
+  --color-cyan-300: #8bc37a;
+  --color-cyan-400: #6db252;
+  --color-cyan-500: #4e9639;
+  --color-cyan-600: #3b7a2c;
+  --color-cyan-700: #2d6020;
+  --color-cyan-800: #1d4a14;
+  --color-cyan-900: #14350d;
+  --color-cyan-950: #0a1f07;
+
+  --color-coresi-primary: #3b7a2c;
+  --color-coresi-secondary: #e8731a;
+  --color-coresi-accent: #6b8e3b;
+}
+
 /* ========================================================
    CORESI INTERNATIONAL SARL — Design System Tokens
    Extracted from official logo and brand identity.
@@ -13,69 +31,75 @@
    ======================================================== */
 
 :root {
-  /* === CORESI Modern Industrial Tech Palette === */
-  --coresi-primary: #0891b2;
-  --coresi-primary-dark: #0e7490;
-  --coresi-primary-light: #06b6d4;
-  --coresi-primary-lighter: #22d3ee;
-  --coresi-primary-50: #ecfeff;
-  --coresi-primary-100: #cffafe;
-  --coresi-primary-200: #a5f3fc;
-  --coresi-primary-900: #164e63;
-  --coresi-primary-950: #083344;
+  /* === CORESI Brand Palette — Vert Forêt & Orange Officiel === */
+  /* Extracted from logo: maison verte, main orange, swoosh olive */
 
-  --coresi-secondary: #f59e0b;
-  --coresi-secondary-dark: #d97706;
-  --coresi-secondary-light: #fbbf24;
-  --coresi-secondary-50: #fffbeb;
-  --coresi-secondary-100: #fef3c7;
-  --coresi-secondary-200: #fde68a;
-  --coresi-secondary-900: #78350f;
+  /* PRIMARY — Vert Forêt CORESI (maison du logo) */
+  --coresi-primary:        #3B7A2C;
+  --coresi-primary-dark:   #2D6020;
+  --coresi-primary-light:  #4E9639;
+  --coresi-primary-lighter: #6DB252;
+  --coresi-primary-50:     #f0f7ec;
+  --coresi-primary-100:    #d4ebca;
+  --coresi-primary-200:    #a8d496;
+  --coresi-primary-900:    #1D4A14;
+  --coresi-primary-950:    #0F2A0A;
 
-  --coresi-accent: #0284c7;
-  --coresi-accent-light: #38bdf8;
-  --coresi-accent-dark: #0369a1;
+  /* SECONDARY — Orange CORESI (main du logo) */
+  --coresi-secondary:      #E8731A;
+  --coresi-secondary-dark: #C5581A;
+  --coresi-secondary-light: #F0944A;
+  --coresi-secondary-50:   #fef3e8;
+  --coresi-secondary-100:  #fde0bf;
+  --coresi-secondary-200:  #fbc588;
+  --coresi-secondary-900:  #6b2d08;
 
-  --coresi-tertiary: #6366f1;
+  /* ACCENT — Vert Olive (swoosh extérieur du logo) */
+  --coresi-accent:         #6B8E3B;
+  --coresi-accent-light:   #8BB050;
+  --coresi-accent-dark:    #527030;
+
+  /* TERTIARY — Brun terreux */
+  --coresi-tertiary:       #8B6914;
 
   /* === Semantic Colors === */
-  --coresi-success: #10b981;
-  --coresi-success-light: #ecfdf5;
-  --coresi-success-dark: #059669;
+  --coresi-success:        #2D8A4E;
+  --coresi-success-light:  #edf7f1;
+  --coresi-success-dark:   #1F6B39;
 
-  --coresi-warning: #f59e0b;
-  --coresi-warning-light: #fffbeb;
-  --coresi-warning-dark: #d97706;
+  --coresi-warning:        #E8731A;
+  --coresi-warning-light:  #fef3e8;
+  --coresi-warning-dark:   #C5581A;
 
-  --coresi-danger: #f43f5e;
-  --coresi-danger-light: #fff1f2;
-  --coresi-danger-dark: #e11d48;
+  --coresi-danger:         #dc2626;
+  --coresi-danger-light:   #fef2f2;
+  --coresi-danger-dark:    #b91c1c;
 
-  --coresi-info: #0284c7;
-  --coresi-info-light: #f0f9ff;
-  --coresi-info-dark: #0369a1;
+  --coresi-info:           #3B7A2C;
+  --coresi-info-light:     #f0f7ec;
+  --coresi-info-dark:      #2D6020;
 
-  /* === Light Theme Surfaces (Clean Swiss-Industrial) === */
-  --coresi-background: #f8fafc;
-  --coresi-surface: #ffffff;
-  --coresi-surface-hover: #f1f5f9;
-  --coresi-surface-alt: #f8fafc;
+  /* === Light Theme Surfaces === */
+  --coresi-background:     #f7f9f6;
+  --coresi-surface:        #ffffff;
+  --coresi-surface-hover:  #f0f5ee;
+  --coresi-surface-alt:    #f4f8f2;
   --coresi-surface-elevated: #ffffff;
 
   /* === Light Theme Text === */
-  --coresi-text: #0f172a;
-  --coresi-text-secondary: #334155;
-  --coresi-text-muted: #64748b;
-  --coresi-text-inverse: #ffffff;
+  --coresi-text:           #0f1f0d;
+  --coresi-text-secondary: #2d4a28;
+  --coresi-text-muted:     #5a7a52;
+  --coresi-text-inverse:   #ffffff;
 
   /* === Light Theme Borders & Shadows === */
-  --coresi-border: #e2e8f0;
-  --coresi-border-light: #f1f5f9;
-  --coresi-border-strong: #cbd5e1;
+  --coresi-border:         #d4e8cc;
+  --coresi-border-light:   #e8f3e4;
+  --coresi-border-strong:  #a8c89a;
 
-  --coresi-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
-  --coresi-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
-  --coresi-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --coresi-shadow-sm: 0 1px 3px 0 rgba(59, 122, 44, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --coresi-shadow-md: 0 4px 6px -1px rgba(59, 122, 44, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --coresi-shadow-lg: 0 10px 15px -3px rgba(59, 122, 44, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
 
   /* === Radius System === */
   --coresi-radius-sm: 0.5rem;
@@ -93,28 +117,29 @@
   --coresi-space-2xl: 3rem;
 }
 
-/* === Dark Theme Token Overrides (OLED Slate & Glow) === */
+/* === Dark Theme Token Overrides — Vert-Noir OLED (logo inspired) === */
 :root.dark,
 html.dark,
 .dark {
-  --coresi-background: #070d18;
-  --coresi-surface: #0c1424;
-  --coresi-surface-hover: #131d33;
-  --coresi-surface-alt: #0a1120;
-  --coresi-surface-elevated: #111c30;
+  /* Backgrounds — vert-noir OLED, pas de bleu slate */
+  --coresi-background:    #060e06;
+  --coresi-surface:       #0a1a08;
+  --coresi-surface-hover: #0f2410;
+  --coresi-surface-alt:   #081506;
+  --coresi-surface-elevated: #112010;
 
-  --coresi-text: #f8fafc;
-  --coresi-text-secondary: #cbd5e1;
-  --coresi-text-muted: #94a3b8;
-  --coresi-text-inverse: #070d18;
+  --coresi-text:          #f0f7ec;
+  --coresi-text-secondary: #c8dfc0;
+  --coresi-text-muted:    #7aab6e;
+  --coresi-text-inverse:  #060e06;
 
-  --coresi-border: #1e293b;
-  --coresi-border-light: #162238;
-  --coresi-border-strong: #334155;
+  --coresi-border:        #1a3318;
+  --coresi-border-light:  #112610;
+  --coresi-border-strong: #2d5228;
 
-  --coresi-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
-  --coresi-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-  --coresi-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --coresi-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --coresi-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --coresi-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
 }
 
 
@@ -933,50 +958,57 @@ html.light ::-webkit-scrollbar-thumb:hover {
    Industrial Tech × Glassmorphism × Micro-animations
    ======================================================== */
 
-/* --- Gradient Text Utility --- */
-.gradient-text-cyan {
-  background: linear-gradient(135deg, #06b6d4, #0891b2, #6366f1);
+/* --- Gradient Text Utilities --- */
+.gradient-text-brand {
+  background: linear-gradient(135deg, #3B7A2C, #4E9639, #E8731A);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.gradient-text-amber {
-  background: linear-gradient(135deg, #f59e0b, #ea580c);
+.gradient-text-green {
+  background: linear-gradient(135deg, #3B7A2C, #6B8E3B);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* --- Premium Navbar Glassmorphism --- */
+.gradient-text-orange {
+  background: linear-gradient(135deg, #E8731A, #C5581A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- Premium Navbar Glassmorphism — vert sauge léger --- */
 .navbar-glass {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px) saturate(1.8);
   -webkit-backdrop-filter: blur(20px) saturate(1.8);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.7);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 4px 16px -8px rgba(6,182,212,0.08);
+  border-bottom: 1px solid rgba(212, 232, 204, 0.8);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 4px 16px -8px rgba(59,122,44,0.1);
 }
 
 .dark .navbar-glass {
-  background: rgba(7, 13, 24, 0.92);
+  background: rgba(6, 14, 6, 0.94);
   backdrop-filter: blur(20px) saturate(1.4);
   -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border-bottom: 1px solid rgba(30, 41, 59, 0.6);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.3), 0 4px 20px -8px rgba(6,182,212,0.12);
+  border-bottom: 1px solid rgba(26, 51, 24, 0.7);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.4), 0 4px 20px -8px rgba(59,122,44,0.15);
 }
 
-/* --- COR Logo Badge Glow --- */
+/* --- COR Logo Badge Glow — vert forêt + lueur orange --- */
 .logo-badge-glow {
   position: relative;
-  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.15), 0 4px 12px rgba(6, 182, 212, 0.2);
+  box-shadow: 0 0 0 2px rgba(59, 122, 44, 0.2), 0 4px 12px rgba(232, 115, 26, 0.2);
   transition: box-shadow 0.3s ease;
 }
 
 .logo-badge-glow:hover {
-  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25), 0 6px 20px rgba(6, 182, 212, 0.3);
+  box-shadow: 0 0 0 3px rgba(59, 122, 44, 0.3), 0 6px 20px rgba(232, 115, 26, 0.3);
 }
 
-/* --- KPI Card Premium Lift --- */
+/* --- KPI Card Premium Lift — lueur vert forêt --- */
 .kpi-card {
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
@@ -987,7 +1019,7 @@ html.light ::-webkit-scrollbar-thumb:hover {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent 60%, rgba(6,182,212,0.04));
+  background: linear-gradient(135deg, transparent 60%, rgba(59,122,44,0.05));
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.25s ease;
@@ -995,8 +1027,8 @@ html.light ::-webkit-scrollbar-thumb:hover {
 
 .kpi-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 16px 32px -8px rgba(6, 182, 212, 0.18), 0 6px 8px -3px rgba(0,0,0,0.06);
-  border-color: rgba(6, 182, 212, 0.3) !important;
+  box-shadow: 0 16px 32px -8px rgba(59, 122, 44, 0.22), 0 6px 8px -3px rgba(0,0,0,0.06);
+  border-color: rgba(59, 122, 44, 0.3) !important;
 }
 
 .kpi-card:hover::before {
@@ -1004,8 +1036,8 @@ html.light ::-webkit-scrollbar-thumb:hover {
 }
 
 .dark .kpi-card:hover {
-  box-shadow: 0 16px 32px -8px rgba(6, 182, 212, 0.25), 0 6px 12px -2px rgba(0,0,0,0.5);
-  border-color: rgba(6, 182, 212, 0.25) !important;
+  box-shadow: 0 16px 32px -8px rgba(59, 122, 44, 0.3), 0 6px 12px -2px rgba(0,0,0,0.6);
+  border-color: rgba(59, 122, 44, 0.25) !important;
 }
 
 /* --- Animated Badge Dot --- */
@@ -1038,9 +1070,9 @@ html.light ::-webkit-scrollbar-thumb:hover {
 
 .shimmer {
   background: linear-gradient(90deg, 
-    rgba(148,163,184,0.1) 25%, 
-    rgba(148,163,184,0.25) 50%, 
-    rgba(148,163,184,0.1) 75%
+    rgba(168,196,150,0.1) 25%, 
+    rgba(168,196,150,0.25) 50%, 
+    rgba(168,196,150,0.1) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.8s ease-in-out infinite;
@@ -1048,9 +1080,9 @@ html.light ::-webkit-scrollbar-thumb:hover {
 
 .dark .shimmer {
   background: linear-gradient(90deg, 
-    rgba(30,41,59,0.6) 25%, 
-    rgba(51,65,85,0.6) 50%, 
-    rgba(30,41,59,0.6) 75%
+    rgba(26,51,24,0.6) 25%, 
+    rgba(45,82,40,0.6) 50%, 
+    rgba(26,51,24,0.6) 75%
   );
   background-size: 200% 100%;
 }
@@ -1075,9 +1107,9 @@ html.light ::-webkit-scrollbar-thumb:hover {
 }
 
 .dark .mobile-dock {
-  background: rgba(12, 20, 36, 0.92);
-  border: 1px solid rgba(30,41,59,0.7);
-  box-shadow: 0 8px 32px -8px rgba(0,0,0,0.5), 0 0 0 1px rgba(6,182,212,0.08);
+  background: rgba(10, 26, 8, 0.94);
+  border: 1px solid rgba(26,51,24,0.8);
+  box-shadow: 0 8px 32px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(59,122,44,0.1);
 }
 
 .mobile-dock-btn {
@@ -1098,23 +1130,23 @@ html.light ::-webkit-scrollbar-thumb:hover {
 }
 
 .mobile-dock-btn:hover {
-  background: rgba(6,182,212,0.08);
-  color: #0891b2;
+  background: rgba(59,122,44,0.1);
+  color: #3B7A2C;
 }
 
 .mobile-dock-btn.active {
-  background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(99,102,241,0.1));
-  color: #0891b2;
+  background: linear-gradient(135deg, rgba(59,122,44,0.18), rgba(107,142,59,0.12));
+  color: #3B7A2C;
 }
 
 .dark .mobile-dock-btn {
-  color: #94a3b8;
+  color: #7aab6e;
 }
 
 .dark .mobile-dock-btn:hover,
 .dark .mobile-dock-btn.active {
-  color: #22d3ee;
-  background: rgba(6,182,212,0.12);
+  color: #6DB252;
+  background: rgba(59,122,44,0.15);
 }
 
 /* --- Slide Up Animation for Drawers --- */
@@ -1166,14 +1198,14 @@ html.light ::-webkit-scrollbar-thumb:hover {
   will-change: transform;
 }
 
-/* --- Sidebar Active Indicator Line --- */
+/* --- Sidebar Active Indicator — vert forêt → vert olive --- */
 .sidebar-active-bar {
   position: absolute;
   left: 0;
   top: 20%;
   bottom: 20%;
   width: 3px;
-  background: linear-gradient(to bottom, #06b6d4, #6366f1);
+  background: linear-gradient(to bottom, #3B7A2C, #6B8E3B);
   border-radius: 0 4px 4px 0;
 }
 
@@ -1193,11 +1225,11 @@ html.light ::-webkit-scrollbar-thumb:hover {
 }
 
 .table-row-premium:hover {
-  background-color: rgba(6, 182, 212, 0.04) !important;
+  background-color: rgba(59, 122, 44, 0.05) !important;
 }
 
 .dark .table-row-premium:hover {
-  background-color: rgba(6, 182, 212, 0.06) !important;
+  background-color: rgba(59, 122, 44, 0.08) !important;
 }
 
 /* --- Scanner Button Glow --- */
@@ -1216,13 +1248,13 @@ html.light ::-webkit-scrollbar-thumb:hover {
   box-shadow: 0 2px 8px rgba(245,158,11,0.3);
 }
 
-/* --- Module Page Header Premium --- */
+/* --- Module Page Header — vert forêt ambiant --- */
 .module-header-gradient {
-  background: linear-gradient(135deg, rgba(6,182,212,0.06) 0%, transparent 50%, rgba(99,102,241,0.04) 100%);
+  background: linear-gradient(135deg, rgba(59,122,44,0.07) 0%, transparent 50%, rgba(107,142,59,0.04) 100%);
 }
 
 .dark .module-header-gradient {
-  background: linear-gradient(135deg, rgba(6,182,212,0.08) 0%, transparent 50%, rgba(99,102,241,0.06) 100%);
+  background: linear-gradient(135deg, rgba(59,122,44,0.1) 0%, transparent 50%, rgba(232,115,26,0.05) 100%);
 }
 
 /* --- Navbar action button premium --- */
@@ -1243,9 +1275,9 @@ html.light ::-webkit-scrollbar-thumb:hover {
 }
 
 .nav-action-btn:hover {
-  background: rgba(241, 245, 249, 0.95);
-  border-color: rgba(6, 182, 212, 0.3);
-  color: #0891b2;
+  background: rgba(240, 245, 238, 0.98);
+  border-color: rgba(59, 122, 44, 0.3);
+  color: #3B7A2C;
 }
 
 .nav-action-btn:active {
@@ -1253,15 +1285,15 @@ html.light ::-webkit-scrollbar-thumb:hover {
 }
 
 .dark .nav-action-btn {
-  background: rgba(15, 23, 42, 0.8);
-  border-color: rgba(30, 41, 59, 0.8);
-  color: #cbd5e1;
+  background: rgba(10, 26, 8, 0.85);
+  border-color: rgba(26, 51, 24, 0.8);
+  color: #c8dfc0;
 }
 
 .dark .nav-action-btn:hover {
-  background: rgba(30, 41, 59, 0.9);
-  border-color: rgba(6, 182, 212, 0.3);
-  color: #22d3ee;
+  background: rgba(15, 36, 16, 0.95);
+  border-color: rgba(59, 122, 44, 0.4);
+  color: #6DB252;
 }
 
 /* --- Google Fonts fallback Inter weight utility --- */
