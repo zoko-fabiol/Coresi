@@ -18,10 +18,12 @@ import {
   UserCheck,
   AlertOctagon,
   X,
+  Scale,
 } from 'lucide-react';
 import { Expense, Invoice, DocumentRecord, Project, SalaryAdvance, FinancialLoss, CashMovement } from '../../types';
 import { DataService } from '../../services/dataService';
 import { DetailSidebar, SidebarSection, SidebarField, SidebarStatusBadge, SidebarDivider } from '../shared/DetailSidebar';
+import { FiscalObligationsTab } from './FiscalObligationsTab';
 
 interface FinanceModuleProps {
   expenses: Expense[];
@@ -46,7 +48,7 @@ export const FinanceModule: React.FC<FinanceModuleProps> = ({
   onNewInvoice,
   onRefresh,
 }) => {
-  const [activeTab, setActiveTab] = useState<'invoices' | 'expenses' | 'caisse_banque' | 'avances' | 'pertes'>('invoices');
+  const [activeTab, setActiveTab] = useState<'invoices' | 'expenses' | 'caisse_banque' | 'avances' | 'pertes' | 'fiscalite'>('invoices');
 
   // DetailSidebar selection state for all rows
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
@@ -58,6 +60,7 @@ export const FinanceModule: React.FC<FinanceModuleProps> = ({
   const salaryAdvances = DataService.getSalaryAdvances();
   const financialLosses = DataService.getFinancialLosses();
   const cashMovements = DataService.getCashMovements();
+  const fiscalObligations = DataService.getFiscalObligations();
 
   // Modals for Advances and Losses
   const [newAdvanceOpen, setNewAdvanceOpen] = useState<boolean>(false);
@@ -249,6 +252,15 @@ export const FinanceModule: React.FC<FinanceModuleProps> = ({
           }`}
         >
           Pertes &amp; Rebuts ({financialLosses.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('fiscalite')}
+          className={`px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-1.5 ${
+            activeTab === 'fiscalite' ? 'bg-cyan-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-slate-200'
+          }`}
+        >
+          <Scale className="w-3.5 h-3.5" />
+          <span>Fiscalité &amp; Quittances ({fiscalObligations.length})</span>
         </button>
       </div>
 
@@ -615,6 +627,11 @@ export const FinanceModule: React.FC<FinanceModuleProps> = ({
             </table>
           </div>
         </div>
+      )}
+
+      {/* TAB 6: FISCALITÉ & QUITTANCES (CGA SPE INSPIRATION) */}
+      {activeTab === 'fiscalite' && (
+        <FiscalObligationsTab obligations={fiscalObligations} onRefresh={onRefresh} />
       )}
 
       {/* Modal: New Advance */}

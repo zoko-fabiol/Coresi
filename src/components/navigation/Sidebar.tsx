@@ -68,7 +68,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: 'projects',
       label: 'Chantiers & Projets',
-      subtext: 'Tuyauterie & BTP',
+      subtext: 'Tuyauterie, BTP & Kanban',
       icon: FolderKanban,
       badge: activeProjectsCount,
       badgeClass: 'bg-[--coresi-info-light] text-[--coresi-info-dark] border-blue-300 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800',
@@ -94,7 +94,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: 'finances',
       label: 'Finances & Factures',
-      subtext: 'Dépenses & Caisse',
+      subtext: 'Trésorerie & Fiscalité',
       icon: DollarSign,
     },
     {

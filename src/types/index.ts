@@ -413,5 +413,59 @@ export interface OfflineQueueItem {
   synced: boolean;
 }
 
+export type FiscalObligationType =
+  | 'tva_mensuelle'
+  | 'acompte_is'
+  | 'retenue_tsr'
+  | 'cnss_ouvriers'
+  | 'patente_annuelle'
+  | 'quitus_fiscal'
+  | 'taxe_voirie';
+
+export type FiscalObligationStatus =
+  | 'a_declarer'
+  | 'en_cours'
+  | 'valide_quittance'
+  | 'en_retard';
+
+export interface FiscalObligation {
+  id: string;
+  code: string;
+  type: FiscalObligationType;
+  title: string;
+  period: string;
+  dueDate: string;
+  declarationAmount: number;
+  paidAmount: number;
+  status: FiscalObligationStatus;
+  quittanceUrl?: string;
+  quittanceRef?: string;
+  quittanceDate?: string;
+  notes?: string;
+  projectId?: string;
+  projectName?: string;
+  organisme: 'DGI' | 'CNSS' | 'MAIRIE' | 'DOUANES';
+}
+
+export type ProjectPhase = 'etude_appro' | 'atelier_soudure' | 'montage_site' | 'epreuve_reception';
+
+export interface ProjectTask {
+  id: string;
+  projectId: string;
+  title: string;
+  phase: ProjectPhase;
+  assignedTo?: string;
+  dueDate: string;
+  priority: 'basse' | 'normale' | 'haute' | 'urgente';
+  completed: boolean;
+  notes?: string;
+  attachments?: {
+    name: string;
+    url: string;
+    type?: string;
+    size?: string;
+  }[];
+}
+
 export * from './advancedModules';
 

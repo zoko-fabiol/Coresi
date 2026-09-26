@@ -13,8 +13,10 @@ import {
   Clock,
   ExternalLink,
   Search,
+  LayoutGrid,
 } from 'lucide-react';
 import { Project, DocumentRecord, Expense } from '../../types';
+import { ProjectsKanbanView } from './ProjectsKanbanView';
 
 interface ProjectsModuleProps {
   projects: Project[];
@@ -36,6 +38,7 @@ export const ProjectsModule: React.FC<ProjectsModuleProps> = ({
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'kanban'>('grid');
 
   const filteredProjects = projects.filter((p) => {
     if (statusFilter !== 'all' && p.status !== statusFilter) return false;
@@ -64,21 +67,53 @@ export const ProjectsModule: React.FC<ProjectsModuleProps> = ({
             </h2>
           </div>
           <p className="text-xs text-slate-400">
-            Suivi opérationnel, avancement physique, budgets chantiers et rattachement des documents numérisés.
+            Suivi opérationnel, avancement physique, budgets chantiers et démarches par étapes.
           </p>
         </div>
 
-        <button
-          onClick={onNewProject}
-          className="px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl text-xs flex items-center gap-2 shadow-lg transition-transform active:scale-95 self-start sm:self-auto cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Nouveau Projet</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* View mode toggle */}
+          <div className="bg-slate-950 p-1 rounded-xl border border-slate-800 flex items-center gap-1 text-xs">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
+                viewMode === 'grid'
+                  ? 'bg-cyan-600 text-white shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>Chantiers ({projects.length})</span>
+            </button>
+            <button
+              onClick={() => setViewMode('kanban')}
+              className={`px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
+                viewMode === 'kanban'
+                  ? 'bg-cyan-600 text-white shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <FolderKanban className="w-3.5 h-3.5" />
+              <span>Démarches &amp; Kanban</span>
+            </button>
+          </div>
+
+          <button
+            onClick={onNewProject}
+            className="px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl text-xs flex items-center gap-2 shadow-lg transition-transform active:scale-95 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Nouveau Projet</span>
+          </button>
+        </div>
       </div>
 
-      {/* Filter bar */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      {viewMode === 'kanban' ? (
+        <ProjectsKanbanView projects={projects} />
+      ) : (
+        <>
+          {/* Filter bar */}
+          <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
           <input
@@ -247,6 +282,8 @@ export const ProjectsModule: React.FC<ProjectsModuleProps> = ({
           );
         })}
       </div>
+        </>
+      )}
     </div>
   );
 };

@@ -11,6 +11,9 @@ import {
   UserProfile,
   StockMovement,
   TechnicalCertification,
+  FiscalObligation,
+  ProjectTask,
+  ProjectPhase,
 } from '../types';
 import {
   OperationalSite,
@@ -48,6 +51,8 @@ import {
   INITIAL_LEAVES,
   INITIAL_STOCK_MOVEMENTS,
   INITIAL_CERTIFICATIONS,
+  INITIAL_FISCAL_OBLIGATIONS,
+  INITIAL_PROJECT_TASKS,
 } from './seedData';
 import {
   INITIAL_SITES,
@@ -1220,6 +1225,67 @@ export class DataService {
     this.notifyListeners();
   }
 
+  // ========================================================
+  // 10. FISCAL OBLIGATIONS & DÉMARCHES
+  // ========================================================
+  public static getFiscalObligations(): FiscalObligation[] {
+    return getLocal<FiscalObligation[]>('fiscal_obligations', INITIAL_FISCAL_OBLIGATIONS);
+  }
+
+  public static async saveFiscalObligation(record: FiscalObligation): Promise<void> {
+    const list = this.getFiscalObligations();
+    const idx = list.findIndex((o) => o.id === record.id);
+    if (idx >= 0) {
+      list[idx] = record;
+    } else {
+      list.unshift(record);
+    }
+    setLocal('fiscal_obligations', list);
+    setDoc(doc(db, 'fiscalObligations', record.id), record).catch(() => {});
+    this.logAudit(
+      'fiscal_obligation_updated',
+      'fiscalObligation',
+      record.id,
+      `Obligation fiscale "${record.title}" - Statut: ${record.status} - Montant: ${record.declarationAmount} FCFA`
+    );
+    this.notifyListeners();
+  }
+
+  // ========================================================
+  // 11. PROJECT TASKS & KANBAN PHASES
+  // ========================================================
+  public static getProjectTasks(projectId?: string): ProjectTask[] {
+    const all = getLocal<ProjectTask[]>('project_tasks', INITIAL_PROJECT_TASKS);
+    if (projectId) {
+      return all.filter((t) => t.projectId === projectId);
+    }
+    return all;
+  }
+
+  public static async saveProjectTask(task: ProjectTask): Promise<void> {
+    const list = getLocal<ProjectTask[]>('project_tasks', INITIAL_PROJECT_TASKS);
+    const idx = list.findIndex((t) => t.id === task.id);
+    if (idx >= 0) {
+      list[idx] = task;
+    } else {
+      list.push(task);
+    }
+    setLocal('project_tasks', list);
+    setDoc(doc(db, 'projectTasks', task.id), task).catch(() => {});
+    this.notifyListeners();
+  }
+
+  public static async updateProjectTaskPhase(taskId: string, phase: ProjectPhase): Promise<void> {
+    const list = getLocal<ProjectTask[]>('project_tasks', INITIAL_PROJECT_TASKS);
+    const task = list.find((t) => t.id === taskId);
+    if (task) {
+      task.phase = phase;
+      setLocal('project_tasks', list);
+      setDoc(doc(db, 'projectTasks', taskId), task).catch(() => {});
+      this.notifyListeners();
+    }
+  }
+
   // Reset to initial demo data
   public static resetToDemoData(): void {
     setLocal('projects', INITIAL_PROJECTS);
@@ -1256,6 +1322,8 @@ export class DataService {
     setLocal('bank_transactions', INITIAL_BANK_TRANSACTIONS);
     setLocal('notifications', INITIAL_NOTIFICATIONS);
     setLocal('ocr_results', INITIAL_OCR_RESULTS);
+    setLocal('fiscal_obligations', INITIAL_FISCAL_OBLIGATIONS);
+    setLocal('project_tasks', INITIAL_PROJECT_TASKS);
 
     this.logAudit('system_reset', 'system', 'all', 'Réinitialisation complète des données industrielles de démonstration (Modules de Base & Modules Avancés).');
     this.notifyListeners();
