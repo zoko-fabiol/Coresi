@@ -16,12 +16,14 @@ import {
   Hotel,
   Receipt,
   Banknote,
+  Printer,
 } from 'lucide-react';
 import { Mission, MissionExpense } from '../../types/advancedModules';
 import { MissionService } from '../../services/missionService';
 import { DataService } from '../../services/dataService';
 import { Employee, Project } from '../../types';
 import { DetailSidebar, SidebarSection, SidebarField, SidebarDivider } from '../shared/DetailSidebar';
+import { PrintDocumentModal, PrintDocumentData } from '../shared/PrintDocumentModal';
 
 interface MissionsModuleProps {
   missions: Mission[];
@@ -43,6 +45,7 @@ export const MissionsModule: React.FC<MissionsModuleProps> = ({
   const [selectedMission, setSelectedMission] = useState<Mission | null>(null);
   const [expenseModalOpen, setExpenseModalOpen] = useState(false);
   const [liquidationModalOpen, setLiquidationModalOpen] = useState(false);
+  const [printDoc, setPrintDoc] = useState<PrintDocumentData | null>(null);
 
   // New Mission Form State
   const [misEmployeeId, setMisEmployeeId] = useState(employees[0]?.id || '');
@@ -165,9 +168,69 @@ export const MissionsModule: React.FC<MissionsModuleProps> = ({
     }
   };
 
+  const handlePrintMission = (mis: Mission) => {
+    const docData: PrintDocumentData = {
+      type: 'mission_order',
+      title: `ORDRE DE MISSION OFFICIEL - ${mis.reference}`,
+      reference: mis.reference,
+      date: mis.startDate,
+      recipientName: mis.employeeName,
+      recipientRole: mis.employeeRole,
+      recipientMatricule: mis.employeeMatricule || 'MAT-001',
+      recipientDepartment: 'Direction Opérations / Chantier',
+      siteName: mis.projectName || 'Base Industrielle',
+      statusLabel: mis.status.toUpperCase(),
+      missionDestination: mis.destination,
+      periodLabel: `${mis.startDate} au ${mis.endDate} (${mis.durationDays} jours)`,
+      totalHT: mis.estimatedCost,
+      totalTTC: mis.estimatedCost,
+      tableColumns: ['Rubrique de Prise en Charge', 'Mode Prévu', 'Imputation', 'Montant Alloué (FCFA)'],
+      tableRows: [
+        [
+          `Moyen de transport : ${
+            mis.transportType === 'avion'
+              ? 'Avion Commercial'
+              : mis.transportType === 'navire_offshore'
+              ? 'Navire Ravitaillement Offshore'
+              : 'Route (Véhicule Chantier)'
+          }`,
+          'Transport Pro',
+          mis.projectName || 'Chantier',
+          ((mis.estimatedCost || 0) * 0.4).toLocaleString('fr-FR') + ' F',
+        ],
+        [
+          `Hébergement & Logement : ${
+            mis.accommodation === 'base_vie' ? 'Base Vie Chantier / Offshore' : 'Hôtel Agréé'
+          }`,
+          'Hébergement',
+          mis.projectName || 'Chantier',
+          ((mis.estimatedCost || 0) * 0.35).toLocaleString('fr-FR') + ' F',
+        ],
+        [
+          'Perdiem & Indemnités de subsistance journalière',
+          `${mis.durationDays} jours`,
+          'Forfait Vie',
+          ((mis.estimatedCost || 0) * 0.25).toLocaleString('fr-FR') + ' F',
+        ],
+      ],
+      summaryItems: [
+        {
+          label: 'Avance Accordée',
+          value: `${(mis.advanceGiven || mis.advanceRequested || 0).toLocaleString('fr-FR')} FCFA`,
+          highlight: true,
+        },
+        { label: 'Dépenses Réelles', value: `${(mis.actualTotalCost || 0).toLocaleString('fr-FR')} FCFA` },
+        { label: 'Solde Financier', value: `${(mis.balanceAmount || 0).toLocaleString('fr-FR')} FCFA` },
+        { label: 'Moyen Transport', value: mis.transportType.toUpperCase() },
+      ],
+      notes: `Objet de la mission : ${mis.purpose}. Ordre de mission strict délivré sous l'autorité de la Direction Générale. Le collaborateur s'engage à respecter scrupuleusement les consignes de sûreté et de sécurité QHSE. Les justificatifs originaux doivent être produits sous 8 jours ouvrés pour liquidation.`,
+      visaText: 'Direction Générale - Dr. Joseph Ndoundo',
+    };
+    setPrintDoc(docData);
+  };
+
   const handleDownloadPdf = (mis: Mission) => {
-    MissionService.generateMissionOrderPdf(mis);
-    showToast(`Ordre de mission PDF généré : ${mis.reference}`);
+    handlePrintMission(mis);
   };
 
   const filteredMissions = missions.filter(
@@ -301,11 +364,12 @@ export const MissionsModule: React.FC<MissionsModuleProps> = ({
                   </button>
                 )}
                 <button
-                  onClick={() => handleDownloadPdf(mis)}
-                  className="p-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-xl transition-colors"
-                  title="Télécharger Ordre de Mission PDF"
+                  onClick={() => handlePrintMission(mis)}
+                  className="p-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-xl transition-colors inline-flex items-center gap-1 text-xs font-semibold"
+                  title="Aperçu & Imprimer Ordre de Mission A4"
                 >
-                  <Download className="w-4 h-4" />
+                  <Printer className="w-4 h-4" />
+                  <span className="hidden sm:inline">Aperçu A4</span>
                 </button>
               </div>
             </div>
@@ -345,6 +409,12 @@ export const MissionsModule: React.FC<MissionsModuleProps> = ({
         actions={
           selectedMission
             ? [
+                {
+                  label: 'Aperçu & Imprimer A4',
+                  icon: <Printer className="w-3.5 h-3.5" />,
+                  onClick: () => selectedMission && handlePrintMission(selectedMission),
+                  variant: 'secondary' as const,
+                },
                 ...(selectedMission.status !== 'soldee'
                   ? [
                       {
@@ -355,12 +425,6 @@ export const MissionsModule: React.FC<MissionsModuleProps> = ({
                       },
                     ]
                   : []),
-                {
-                  label: 'Ordre de Mission PDF',
-                  icon: <Download className="w-3.5 h-3.5" />,
-                  onClick: () => selectedMission && handleDownloadPdf(selectedMission),
-                  variant: 'primary' as const,
-                },
               ]
             : []
         }
@@ -746,6 +810,12 @@ export const MissionsModule: React.FC<MissionsModuleProps> = ({
         </div>
       )}
 
+      {/* Universal A4 Document Preview Modal */}
+      <PrintDocumentModal
+        isOpen={!!printDoc}
+        onClose={() => setPrintDoc(null)}
+        documentData={printDoc}
+      />
     </div>
   );
 };

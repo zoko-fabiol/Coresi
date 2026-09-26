@@ -13,6 +13,7 @@ import {
   Calendar,
   Settings,
   MapPin,
+  Printer,
 } from 'lucide-react';
 import {
   Equipment,
@@ -23,6 +24,7 @@ import { GmaoService, MaintenanceAlert } from '../../services/gmaoService';
 import { DataService } from '../../services/dataService';
 import { Project } from '../../types';
 import { DetailSidebar, SidebarSection, SidebarField, SidebarDivider } from '../shared/DetailSidebar';
+import { PrintDocumentModal, PrintDocumentData } from '../shared/PrintDocumentModal';
 
 interface GmaoModuleProps {
   equipment: Equipment[];
@@ -49,6 +51,7 @@ export const GmaoModule: React.FC<GmaoModuleProps> = ({
   const [closeNotes, setCloseNotes] = useState('');
   const [viewEquipment, setViewEquipment] = useState<Equipment | null>(null);
   const [viewWorkOrder, setViewWorkOrder] = useState<MaintenanceWorkOrder | null>(null);
+  const [printDoc, setPrintDoc] = useState<PrintDocumentData | null>(null);
 
   // New Equipment Form State
   const [eqName, setEqName] = useState('');
@@ -142,6 +145,48 @@ export const GmaoModule: React.FC<GmaoModuleProps> = ({
     setCloseNotes('');
     onRefresh();
     showToast('Intervention clôturée et équipement remis en service.');
+  };
+
+  const handlePrintWorkOrder = (wo: MaintenanceWorkOrder) => {
+    const proj = projects.find((p) => p.id === wo.projectId);
+    const docData: PrintDocumentData = {
+      type: 'work_order',
+      title: `ORDRE DE TRAVAIL & MAINTENANCE : ${wo.equipmentName}`,
+      reference: wo.reference,
+      date: wo.openedAt ? wo.openedAt.split('T')[0] : new Date().toISOString().split('T')[0],
+      recipientName: wo.assignedTechnicianName,
+      recipientRole: 'Technicien de Maintenance Agréé',
+      recipientDepartment: 'Département GMAO & Ateliers',
+      siteName: proj?.name || 'Base Industrielle Pointe-Noire',
+      statusLabel: wo.status.toUpperCase(),
+      equipmentName: wo.equipmentName,
+      equipmentCode: wo.reference,
+      normeReference: 'ASME B31.3 / ISO 9001:2015',
+      inspectionResult: wo.status === 'cloture' ? 'CONFORME APRÈS ESSAIS' : 'EN COURS D\'INTERVENTION',
+      totalHT: wo.totalCost || 0,
+      totalTTC: wo.totalCost || 0,
+      tableColumns: ['Désignation des Travaux & Diagnostic', 'Type', 'Imputation', 'Coût Réalisé (FCFA)'],
+      tableRows: [
+        [
+          wo.failureDescription || 'Maintenance et révision systématique',
+          wo.type.toUpperCase(),
+          proj?.code || 'ATELIER',
+          (wo.totalCost || 0).toLocaleString('fr-FR') + ' F',
+        ],
+        ...(wo.diagnostic ? [
+          [`Rapport technique & diagnostic : ${wo.diagnostic}`, 'EXPERTISE', 'QHSE', 'Inclus']
+        ] : []),
+      ],
+      summaryItems: [
+        { label: 'Priorité OT', value: wo.priority.toUpperCase(), highlight: wo.priority === 'urgente' },
+        { label: 'Statut OT', value: wo.status.replace(/_/g, ' ').toUpperCase(), highlight: wo.status === 'cloture' },
+        { label: 'Date Clôture', value: wo.closedAt ? wo.closedAt.split('T')[0] : 'En cours' },
+        { label: 'Chantier / Base', value: proj?.code || 'BASE-PNR' },
+      ],
+      notes: 'Consignes de sécurité : Port obligatoire des EPI (lunettes étanches, casque avec jugulaire, gants anti-coupure). Consignation électrique obligatoire avant intervention sur circuit puissance.',
+      visaText: 'Superviseur GMAO / Chef d\'Atelier',
+    };
+    setPrintDoc(docData);
   };
 
   const filteredEquipment = equipment.filter(
@@ -377,7 +422,18 @@ export const GmaoModule: React.FC<GmaoModuleProps> = ({
                         {wo.status.replace(/_/g, ' ')}
                       </span>
                     </td>
-                    <td className="p-4 text-right">
+                    <td className="p-4 text-right space-x-1.5 whitespace-nowrap">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePrintWorkOrder(wo);
+                        }}
+                        className="p-1.5 hover:bg-slate-700/60 text-slate-400 hover:text-emerald-400 rounded-lg transition-colors inline-flex items-center gap-1 text-xs font-semibold"
+                        title="Aperçu & Imprimer OT A4"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Aperçu A4</span>
+                      </button>
                       {wo.status !== 'cloture' && (
                         <button
                           onClick={(e) => {
@@ -726,12 +782,20 @@ export const GmaoModule: React.FC<GmaoModuleProps> = ({
           color: viewWorkOrder.status === 'cloture' ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700'
             : 'bg-amber-900/40 text-amber-300 border-amber-700',
         } : undefined}
-        actions={viewWorkOrder && viewWorkOrder.status !== 'cloture' ? [{
-          label: 'Clôturer OT',
-          icon: <CheckCircle className="w-3.5 h-3.5" />,
-          onClick: () => { setClosingOrderId(viewWorkOrder.id); setViewWorkOrder(null); },
-          variant: 'success' as const,
-        }] : []}
+        actions={viewWorkOrder ? [
+          {
+            label: 'Aperçu & Imprimer A4',
+            icon: <Printer className="w-3.5 h-3.5" />,
+            onClick: () => handlePrintWorkOrder(viewWorkOrder),
+            variant: 'secondary' as const,
+          },
+          ...(viewWorkOrder.status !== 'cloture' ? [{
+            label: 'Clôturer OT',
+            icon: <CheckCircle className="w-3.5 h-3.5" />,
+            onClick: () => { setClosingOrderId(viewWorkOrder.id); setViewWorkOrder(null); },
+            variant: 'success' as const,
+          }] : []),
+        ] : []}
       >
         {viewWorkOrder && (
           <>
@@ -763,6 +827,13 @@ export const GmaoModule: React.FC<GmaoModuleProps> = ({
           </>
         )}
       </DetailSidebar>
+
+      {/* Universal A4 Document Preview Modal */}
+      <PrintDocumentModal
+        isOpen={!!printDoc}
+        onClose={() => setPrintDoc(null)}
+        documentData={printDoc}
+      />
     </div>
   );
 };

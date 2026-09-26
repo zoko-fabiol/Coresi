@@ -12,6 +12,7 @@ import {
   KeyRound,
   ArrowRight,
   Sparkles,
+  Loader2,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { UserRole } from '../../types';
@@ -227,20 +228,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 px-4 bg-gradient-to-r from-[--coresi-primary] to-[--coresi-primary-dark] hover:from-[--coresi-primary-light] hover:to-[--coresi-primary] text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[rgba(59,122,44,0.2)] transition-all cursor-pointer disabled:opacity-50"
+              className="w-full py-3 px-4 bg-[#3B7A2C] hover:bg-[#2D6020] text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-950/20 active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
-                <span>Patientez...</span>
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <span>Traitement en cours...</span>
+                </>
               ) : (
                 <>
-                  {mode === 'login' && <LogIn className="w-4 h-4" />}
-                  {mode === 'register' && <User className="w-4 h-4" />}
-                  {mode === 'forgot' && <KeyRound className="w-4 h-4" />}
-                  <span>
+                  {mode === 'login' && <LogIn className="w-4 h-4 text-white" />}
+                  {mode === 'register' && <User className="w-4 h-4 text-white" />}
+                  {mode === 'forgot' && <KeyRound className="w-4 h-4 text-white" />}
+                  <span className="font-extrabold tracking-wide text-white">
                     {mode === 'login' && 'Se connecter'}
                     {mode === 'register' && 'Créer le compte'}
                     {mode === 'forgot' && 'Envoyer le lien'}
                   </span>
+                  <ArrowRight className="w-3.5 h-3.5 text-white/80" />
                 </>
               )}
             </button>

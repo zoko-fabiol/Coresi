@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Camera,
@@ -17,12 +17,18 @@ import {
   CheckCircle,
   Image as ImageIcon,
   Sparkles,
+  Check,
+  RotateCcw,
+  Sliders,
+  ChevronRight,
+  Printer,
 } from 'lucide-react';
 import { Project, DocumentRecord, Expense, Employee, Material, ProjectPhoto } from '../../types';
 import { DataService } from '../../services/dataService';
 import { jsPDF } from 'jspdf';
 import { CloudinaryService } from '../../services/cloudinaryService';
 import { DetailSidebar } from '../shared/DetailSidebar';
+import { PrintDocumentModal, PrintDocumentData } from '../shared/PrintDocumentModal';
 
 interface ProjectDetailModalProps {
   project: Project | null;
@@ -54,6 +60,13 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'finances' | 'team' | 'materials' | 'photos'>('overview');
   const [editingProgress, setEditingProgress] = useState<number>(project?.progress || 0);
   const [generatingReport, setGeneratingReport] = useState<boolean>(false);
+  const [printDoc, setPrintDoc] = useState<PrintDocumentData | null>(null);
+
+  useEffect(() => {
+    if (project) {
+      setEditingProgress(project.progress || 0);
+    }
+  }, [project?.id, project?.progress, isOpen]);
 
   if (!isOpen || !project) return null;
 
@@ -64,6 +77,39 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   const projectPhotos: ProjectPhoto[] = DataService.getProjectPhotos(project.id);
 
   const spentRatio = Math.min(100, Math.round((project.spent / project.budget) * 100));
+
+  const handlePreviewProjectReport = () => {
+    const docData: PrintDocumentData = {
+      type: 'project_summary',
+      title: `SYNTHÈSE TECHNIQUE & FINANCIÈRE DE CHANTIER - ${project.code}`,
+      reference: `RAP-${project.code}-${new Date().getMonth() + 1}`,
+      date: new Date().toISOString().split('T')[0],
+      clientName: project.clientName,
+      siteName: `${project.name} (${project.location})`,
+      periodLabel: `Du ${project.startDate} au ${project.endDate}`,
+      statusLabel: project.status.toUpperCase(),
+      totalHT: project.spent,
+      totalTTC: project.budget,
+      tableColumns: ['Indicateur Chantier', 'Valeur Réalisée / Cible', 'Taux & Performance', 'Commentaires'],
+      tableRows: [
+        ['Avancement Physique des Travaux', `${project.progress}%`, `${project.progress}%`, 'Conforme au planning jalons'],
+        ['Budget Global Alloué (TTC)', `${project.budget.toLocaleString('fr-FR')} FCFA`, '100%', 'Plafond contractuel'],
+        ['Dépenses & Engagements Cumulés', `${project.spent.toLocaleString('fr-FR')} FCFA`, `${spentRatio}%`, `Solde restant : ${(project.budget - project.spent).toLocaleString('fr-FR')} FCFA`],
+        ['Effectif Mobilisé sur Site', `${projectWorkers.length} agents qualifiés`, 'Opérationnel', 'Personnel agréé CORESI'],
+        ['Équipements & Engins Affectés', `${projectMaterials.length} matériels lourds`, 'En service', 'Parc outillage certifié'],
+        ['Pièces GED Archivées', `${projectDocs.length} documents / PV`, 'Archivé GED', 'Traçabilité complète'],
+      ],
+      summaryItems: [
+        { label: 'Avancement Travaux', value: `${project.progress}%`, highlight: true },
+        { label: 'Consommation Budget', value: `${spentRatio}%` },
+        { label: 'Chef de Projet', value: project.managerName },
+        { label: 'Localisation', value: project.location },
+      ],
+      notes: 'Rapport officiel CORESI. Conforme aux spécifications techniques et aux normes de soudage ASME IX / ISO 9606-1.',
+      visaText: 'Dr. Joseph Ndoundo - Directeur Général',
+    };
+    setPrintDoc(docData);
+  };
 
   // Generate real PDF Progress Report for this Project and archive it to GED!
   const handleGenerateProjectReport = async () => {
@@ -165,7 +211,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   };
 
   return (
-    <DetailSidebar
+    <>
+      <DetailSidebar
       isOpen={isOpen}
       onClose={onClose}
       title={project.name}
@@ -189,7 +236,13 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
       }}
       actions={[
         {
-          label: generatingReport ? 'Génération...' : 'Rapport PDF',
+          label: 'Aperçu A4 Synthèse',
+          icon: <Printer className="w-3.5 h-3.5 text-emerald-400" />,
+          onClick: handlePreviewProjectReport,
+          variant: 'secondary',
+        },
+        {
+          label: generatingReport ? 'Génération...' : 'Archiver PDF GED',
           icon: <Sparkles className="w-3.5 h-3.5 text-cyan-400" />,
           onClick: handleGenerateProjectReport,
           disabled: generatingReport,
@@ -279,32 +332,161 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                   </span>
                   <span className="text-[11px] text-slate-400 ml-1">({spentRatio}% consommé)</span>
                 </div>
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-slate-400">Avancement Physique</span>
-                    <span className="text-base font-bold font-mono text-cyan-400">{project.progress}%</span>
+                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3 sm:col-span-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1 rounded-lg bg-green-500/10 text-green-400 border border-green-500/20">
+                        <Sliders className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-slate-200">Avancement Physique des Travaux</span>
+                        <p className="text-[10px] text-slate-400">Ajustez le curseur pour voir la projection en direct avant d'enregistrer</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="text-right">
+                        <span className="text-[10px] text-slate-400 block leading-none">Niveau Actuel</span>
+                        <span className="text-xs font-mono font-semibold text-slate-300">{project.progress}%</span>
+                      </div>
+                      <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+                      <div className="px-2.5 py-1 rounded-xl bg-green-950/80 border border-green-700 text-green-300 font-mono text-sm font-black flex items-center gap-1.5 shadow-xs">
+                        <span>Cible : {editingProgress}%</span>
+                        {editingProgress !== project.progress && (
+                          <span className={`text-[10px] px-1 py-0.2 rounded font-bold ${editingProgress > project.progress ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}`}>
+                            {editingProgress > project.progress ? `+${editingProgress - project.progress}%` : `${editingProgress - project.progress}%`}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="w-full bg-slate-800 rounded-full h-2 mb-2">
-                    <div
-                      className="bg-cyan-500 h-2 rounded-full transition-all"
-                      style={{ width: `${project.progress}%` }}
-                    />
+
+                  {/* Dual-layer Live Progress Bar */}
+                  <div className="space-y-1">
+                    <div className="w-full bg-slate-900 rounded-full h-3.5 p-0.5 border border-slate-800 relative overflow-hidden flex items-center">
+                      {/* Dynamic target ghost preview bar */}
+                      <div
+                        className="h-full rounded-full transition-all duration-150 opacity-40 bg-gradient-to-r from-emerald-400 to-green-500 absolute left-0.5 top-0.5"
+                        style={{ width: `calc(${editingProgress}% - 4px)` }}
+                      />
+                      {/* Solid registered baseline bar */}
+                      <div
+                        className="h-full rounded-full transition-all duration-300 bg-[#3B7A2C] relative z-10 shadow-xs"
+                        style={{ width: `${project.progress}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-[9px] text-slate-500 font-mono px-0.5">
+                      <span>0% (Démarrage)</span>
+                      <span>50% (Mi-parcours)</span>
+                      <span>100% (Réception provisoire)</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={editingProgress}
-                      onChange={(e) => setEditingProgress(Number(e.target.value))}
-                      className="w-full accent-cyan-500"
-                    />
-                    <button
-                      onClick={() => onUpdateProjectProgress(project.id, editingProgress)}
-                      className="px-2 py-0.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-[10px] font-semibold"
-                    >
-                      Enregistrer
-                    </button>
+
+                  {/* Controls: Step buttons, Slider, and Quick Milestones */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center pt-1">
+                    <div className="sm:col-span-8 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setEditingProgress((prev) => Math.max(0, prev - 5))}
+                        className="px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white rounded-lg text-xs font-mono font-bold transition-colors cursor-pointer shrink-0"
+                        title="-5%"
+                      >
+                        -5%
+                      </button>
+
+                      <div className="flex-1 relative flex items-center">
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={editingProgress}
+                          onChange={(e) => setEditingProgress(Number(e.target.value))}
+                          className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-[#3B7A2C]"
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setEditingProgress((prev) => Math.min(100, prev + 5))}
+                        className="px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white rounded-lg text-xs font-mono font-bold transition-colors cursor-pointer shrink-0"
+                        title="+5%"
+                      >
+                        +5%
+                      </button>
+
+                      <div className="w-16 shrink-0 relative">
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={editingProgress}
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            if (!isNaN(val)) setEditingProgress(Math.max(0, Math.min(100, val)));
+                          }}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-center font-mono font-bold text-white focus:border-green-600 focus:outline-none"
+                        />
+                        <span className="absolute right-2 top-1.5 text-[10px] text-slate-400 pointer-events-none">%</span>
+                      </div>
+                    </div>
+
+                    {/* Milestones & Save action */}
+                    <div className="sm:col-span-4 flex items-center justify-end gap-2">
+                      {editingProgress !== project.progress && (
+                        <button
+                          type="button"
+                          onClick={() => setEditingProgress(project.progress || 0)}
+                          className="p-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+                          title="Annuler les modifications et revenir à la valeur enregistrée"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => onUpdateProjectProgress(project.id, editingProgress)}
+                        disabled={editingProgress === project.progress}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                          editingProgress !== project.progress
+                            ? 'bg-[#3B7A2C] hover:bg-[#2D6020] text-white shadow-md shadow-emerald-950/30 active:scale-95'
+                            : 'bg-slate-900 text-slate-500 border border-slate-800 cursor-not-allowed'
+                        }`}
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                        <span>
+                          {editingProgress !== project.progress
+                            ? `Enregistrer : ${editingProgress}%`
+                            : `À jour (${project.progress}%)`}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Fast Milestone Pills */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[10px]">
+                    <span className="text-slate-500 mr-1">Paliers rapides :</span>
+                    {[
+                      { val: 10, label: '10% Démarrage' },
+                      { val: 25, label: '25% Ébauche' },
+                      { val: 50, label: '50% Montage' },
+                      { val: 75, label: '75% Soudure/CND' },
+                      { val: 90, label: '90% Épreuves' },
+                      { val: 100, label: '100% Terminé' },
+                    ].map((p) => (
+                      <button
+                        key={p.val}
+                        type="button"
+                        onClick={() => setEditingProgress(p.val)}
+                        className={`px-2 py-0.5 rounded-md border font-mono transition-colors cursor-pointer ${
+                          editingProgress === p.val
+                            ? 'bg-green-700/30 border-green-600 text-green-300 font-bold'
+                            : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-850'
+                        }`}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -506,6 +688,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             </div>
           )}
         </div>
-    </DetailSidebar>
+      </DetailSidebar>
+
+      {/* Universal A4 Document Preview Modal */}
+      <PrintDocumentModal
+        isOpen={!!printDoc}
+        onClose={() => setPrintDoc(null)}
+        documentData={printDoc}
+      />
+    </>
   );
 };

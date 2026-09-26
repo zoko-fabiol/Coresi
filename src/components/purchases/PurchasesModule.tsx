@@ -14,6 +14,7 @@ import {
   Package,
   ClipboardList,
   Download,
+  Printer,
 } from 'lucide-react';
 import {
   PurchaseRequest,
@@ -25,6 +26,7 @@ import { PurchaseService } from '../../services/purchaseService';
 import { DataService } from '../../services/dataService';
 import { Supplier, Project } from '../../types';
 import { DetailSidebar, SidebarSection, SidebarField, SidebarDivider } from '../shared/DetailSidebar';
+import { PrintDocumentModal, PrintDocumentData } from '../shared/PrintDocumentModal';
 
 interface PurchasesModuleProps {
   requests: PurchaseRequest[];
@@ -53,6 +55,96 @@ export const PurchasesModule: React.FC<PurchasesModuleProps> = ({
   const [selectedRequest, setSelectedRequest] = useState<PurchaseRequest | null>(null);
   const [viewRequest, setViewRequest] = useState<PurchaseRequest | null>(null);
   const [viewOrder, setViewOrder] = useState<PurchaseOrder | null>(null);
+  const [printDoc, setPrintDoc] = useState<PrintDocumentData | null>(null);
+
+  const handlePrintOrder = (order: PurchaseOrder) => {
+    const ht = Math.round(order.totalAmount / 1.18);
+    const tva = order.totalAmount - ht;
+    const docData: PrintDocumentData = {
+      type: 'purchase_order',
+      title: 'Bon de Commande Fournisseur Officiel',
+      reference: order.reference,
+      date: order.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
+      supplierName: order.supplierName,
+      siteName: order.projectName || 'Base Principale',
+      totalHT: ht,
+      tva: tva,
+      totalTTC: order.totalAmount,
+      statusLabel: order.status.replace(/_/g, ' ').toUpperCase(),
+      tableColumns: ['Désignation Article', 'Quantité', 'Unité', 'Prix Estimé', 'Total Ligne'],
+      tableRows: (order.items || []).map((it) => [
+        it.description,
+        it.quantity,
+        it.unit || 'unités',
+        `${(it.estimatedUnitPrice || 0).toLocaleString('fr-FR')} FCFA`,
+        `${(it.estimatedTotalPrice || it.quantity * (it.estimatedUnitPrice || 0)).toLocaleString('fr-FR')} FCFA`,
+      ]),
+      summaryItems: [
+        { label: 'Total TTC Commande', value: `${order.totalAmount.toLocaleString('fr-FR')} FCFA`, highlight: true },
+        { label: 'Conditions Règlement', value: order.paymentTerms || 'Virement bancaire 30j' },
+        { label: 'Date Livraison Attendue', value: order.expectedDeliveryDate || 'Sous quinzaine' },
+      ],
+      notes: `Fourniture industrielle conforme aux spécifications techniques CORESI et normes de tuyauterie/chaudronnerie. Tout retard de livraison engage des pénalités contractuelles.`,
+      visaText: 'Responsable Approvisionnements & Achats',
+    };
+    setPrintDoc(docData);
+  };
+
+  const handlePrintRequest = (req: PurchaseRequest) => {
+    const docData: PrintDocumentData = {
+      type: 'purchase_request',
+      title: "Demande d'Achat Interne (DA)",
+      reference: req.reference,
+      date: req.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
+      recipientName: req.requesterName,
+      recipientDepartment: 'Opérations & Chantiers',
+      siteName: req.projectName || 'Base Principale',
+      statusLabel: req.status.toUpperCase(),
+      tableColumns: ['Désignation Besoin', 'Quantité', 'Unité', 'Prix Estimé', 'Total Estimé'],
+      tableRows: (req.items || []).map((it) => [
+        it.description,
+        it.quantity,
+        it.unit || 'unités',
+        `${(it.estimatedUnitPrice || 0).toLocaleString('fr-FR')} FCFA`,
+        `${(it.estimatedTotalPrice || it.quantity * (it.estimatedUnitPrice || 0)).toLocaleString('fr-FR')} FCFA`,
+      ]),
+      summaryItems: [
+        { label: 'Total Estimé', value: `${req.estimatedAmount.toLocaleString('fr-FR')} FCFA`, highlight: true },
+        { label: 'Priorité', value: req.priority.toUpperCase() },
+      ],
+      notes: `Motif d'achat : ${req.reason}. Circuit d'approbation interne validé.`,
+      visaText: `Demandeur : ${req.requesterName}`,
+    };
+    setPrintDoc(docData);
+  };
+
+  const handlePrintReceipt = (rec: GoodsReceipt) => {
+    const docData: PrintDocumentData = {
+      type: 'goods_receipt',
+      title: 'Procès-Verbal de Réception Marchandises',
+      reference: rec.receiptNumber,
+      date: rec.receivedDate || new Date().toISOString().split('T')[0],
+      siteName: rec.warehouseLocation || 'Magasin Central',
+      supplierName: rec.supplierName,
+      statusLabel: rec.status.toUpperCase(),
+      tableColumns: ['Désignation Article', 'Qté Commandée', 'Qté Reçue', 'Qté Acceptée', 'Statut Qualité'],
+      tableRows: (rec.items || []).map((it) => [
+        it.description,
+        it.orderedQuantity,
+        it.receivedQuantity,
+        it.acceptedQuantity,
+        it.acceptedQuantity === it.receivedQuantity ? 'CONFORME' : 'AVEC RÉSERVES',
+      ]),
+      summaryItems: [
+        { label: 'Total Articles', value: rec.items?.length || 0, highlight: true },
+        { label: 'N° BL Livreur', value: rec.deliveryNoteNumber || 'BL-DIRECT' },
+        { label: 'Réceptionnaire', value: rec.receivedBy },
+      ],
+      notes: rec.observations || 'Matériel vérifié en conformité avec la commande et les exigences qualité chantier.',
+      visaText: `Magasinier : ${rec.receivedBy}`,
+    };
+    setPrintDoc(docData);
+  };
 
   // New Request Form State
   const [reqProjectId, setReqProjectId] = useState(projects[0]?.id || '');
@@ -389,6 +481,7 @@ export const PurchasesModule: React.FC<PurchasesModuleProps> = ({
                   <th className="p-4">Montant Total TTC</th>
                   <th className="p-4">Délai Livraison</th>
                   <th className="p-4">Statut</th>
+                  <th className="p-4 text-right">Imprimer A4</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
@@ -411,11 +504,20 @@ export const PurchasesModule: React.FC<PurchasesModuleProps> = ({
                         {order.status.replace(/_/g, ' ')}
                       </span>
                     </td>
+                    <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => handlePrintOrder(order)}
+                        className="p-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 transition-colors cursor-pointer"
+                        title="Aperçu & Imprimer Bon de Commande A4"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                      </button>
+                    </td>
                   </tr>
                 ))}
                 {filteredOrders.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="p-8 text-center text-slate-500">
+                    <td colSpan={7} className="p-8 text-center text-slate-500">
                       Aucun bon de commande émis.
                     </td>
                   </tr>
@@ -435,10 +537,11 @@ export const PurchasesModule: React.FC<PurchasesModuleProps> = ({
                 <tr>
                   <th className="p-4">N° Réception</th>
                   <th className="p-4">Bon Commande Lié</th>
-                  <th className="p-4">Fournisseur & BL</th>
+                  <th className="p-4">Fournisseur &amp; BL</th>
                   <th className="p-4">Réceptionnaire</th>
                   <th className="p-4">Date Réception</th>
                   <th className="p-4">Impact Stock</th>
+                  <th className="p-4 text-right">Imprimer A4</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
@@ -456,6 +559,15 @@ export const PurchasesModule: React.FC<PurchasesModuleProps> = ({
                       <span className="text-xs px-2.5 py-1 rounded-full font-bold uppercase bg-emerald-950 text-emerald-300 border border-emerald-800 flex items-center gap-1 w-fit">
                         <CheckCircle className="w-3.5 h-3.5" /> Stock Mis à Jour
                       </span>
+                    </td>
+                    <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => handlePrintReceipt(rec)}
+                        className="p-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 transition-colors cursor-pointer"
+                        title="Aperçu & Imprimer PV de Réception A4"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -755,6 +867,12 @@ export const PurchasesModule: React.FC<PurchasesModuleProps> = ({
         actions={
           viewRequest
             ? [
+                {
+                  label: 'Aperçu A4 DA',
+                  icon: <Printer className="w-3.5 h-3.5" />,
+                  onClick: () => handlePrintRequest(viewRequest),
+                  variant: 'secondary' as const,
+                },
                 ...(viewRequest.status === 'submitted'
                   ? [{
                       label: 'Approuver cette DA',
@@ -847,6 +965,18 @@ export const PurchasesModule: React.FC<PurchasesModuleProps> = ({
               }
             : undefined
         }
+        actions={
+          viewOrder
+            ? [
+                {
+                  label: 'Aperçu & Imprimer Bon de Commande',
+                  icon: <Printer className="w-3.5 h-3.5 text-white" />,
+                  onClick: () => handlePrintOrder(viewOrder),
+                  variant: 'primary' as const,
+                },
+              ]
+            : []
+        }
       >
         {viewOrder && (
           <>
@@ -881,6 +1011,13 @@ export const PurchasesModule: React.FC<PurchasesModuleProps> = ({
           </>
         )}
       </DetailSidebar>
+
+      {/* Universal A4 Document Print Modal */}
+      <PrintDocumentModal
+        isOpen={!!printDoc}
+        onClose={() => setPrintDoc(null)}
+        documentData={printDoc}
+      />
     </div>
   );
 };

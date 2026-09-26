@@ -19,11 +19,13 @@ import {
   AlertOctagon,
   X,
   Scale,
+  Printer,
 } from 'lucide-react';
 import { Expense, Invoice, DocumentRecord, Project, SalaryAdvance, FinancialLoss, CashMovement } from '../../types';
 import { DataService } from '../../services/dataService';
 import { DetailSidebar, SidebarSection, SidebarField, SidebarStatusBadge, SidebarDivider } from '../shared/DetailSidebar';
 import { FiscalObligationsTab } from './FiscalObligationsTab';
+import { PrintDocumentModal, PrintDocumentData } from '../shared/PrintDocumentModal';
 
 interface FinanceModuleProps {
   expenses: Expense[];
@@ -56,6 +58,42 @@ export const FinanceModule: React.FC<FinanceModuleProps> = ({
   const [selectedCashMove, setSelectedCashMove] = useState<CashMovement | null>(null);
   const [selectedAdvance, setSelectedAdvance] = useState<SalaryAdvance | null>(null);
   const [selectedLoss, setSelectedLoss] = useState<FinancialLoss | null>(null);
+  const [printDoc, setPrintDoc] = useState<PrintDocumentData | null>(null);
+
+  const handlePrintInvoice = (inv: Invoice) => {
+    const ht = Math.round(inv.totalAmount / 1.18);
+    const tva = inv.totalAmount - ht;
+    const docData: PrintDocumentData = {
+      type: 'invoice',
+      title: inv.type === 'client' ? `Facture Commerciale Client` : `Facture Fournisseur`,
+      reference: inv.invoiceNumber,
+      date: inv.issueDate || new Date().toISOString().split('T')[0],
+      clientName: inv.partyName,
+      siteName: inv.projectName,
+      totalHT: ht,
+      tva: tva,
+      totalTTC: inv.totalAmount,
+      statusLabel: inv.status === 'paye' ? 'Facture Acquittée' : inv.status === 'partiel' ? 'Paiement Partiel' : 'En Attente de Règlement',
+      tableColumns: ['Réf / Désignation', 'Imputation Chantier', 'Échéance', 'Statut Règlement', 'Montant TTC'],
+      tableRows: [
+        [
+          `Prestations de tuyauterie & soudure industrielle (${inv.invoiceNumber})`,
+          inv.projectName || 'Base Principale',
+          inv.dueDate,
+          inv.status.toUpperCase(),
+          `${inv.totalAmount.toLocaleString('fr-FR')} FCFA`,
+        ],
+      ],
+      summaryItems: [
+        { label: 'Total Facturé TTC', value: `${inv.totalAmount.toLocaleString('fr-FR')} FCFA`, highlight: true },
+        { label: 'Déjà Encaissé', value: `${inv.paidAmount.toLocaleString('fr-FR')} FCFA` },
+        { label: 'Reste à Régler', value: `${(inv.totalAmount - inv.paidAmount).toLocaleString('fr-FR')} FCFA`, highlight: inv.totalAmount > inv.paidAmount },
+      ],
+      notes: `Règlement attendu avant le ${inv.dueDate}. Conforme au système comptable SYSCOHADA et réglementation fiscale CEMAC / Congo.`,
+      visaText: 'Direction Financière & Comptabilité',
+    };
+    setPrintDoc(docData);
+  };
 
   const salaryAdvances = DataService.getSalaryAdvances();
   const financialLosses = DataService.getFinancialLosses();
@@ -325,23 +363,32 @@ export const FinanceModule: React.FC<FinanceModuleProps> = ({
                         </span>
                       </td>
                       <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
-                        {linkedDoc ? (
+                        <div className="flex items-center gap-2">
                           <button
-                            onClick={() => onSelectDocument(linkedDoc)}
-                            className="text-cyan-400 hover:text-cyan-300 text-xs flex items-center gap-1 cursor-pointer"
+                            onClick={() => handlePrintInvoice(inv)}
+                            className="p-1.5 rounded-lg bg-green-50 hover:bg-green-100 dark:bg-green-950/60 dark:hover:bg-green-900/60 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800 transition-colors cursor-pointer"
+                            title="Aperçu A4 & Imprimer Facture"
                           >
-                            <FileCheck className="w-3.5 h-3.5 text-emerald-400" />
-                            <span>Voir GED</span>
+                            <Printer className="w-3.5 h-3.5" />
                           </button>
-                        ) : (
-                          <button
-                            onClick={() => onOpenScannerForFinance('facture')}
-                            className="text-slate-500 hover:text-amber-400 text-xs flex items-center gap-1 cursor-pointer"
-                          >
-                            <Camera className="w-3.5 h-3.5" />
-                            <span>Numériser</span>
-                          </button>
-                        )}
+                          {linkedDoc ? (
+                            <button
+                              onClick={() => onSelectDocument(linkedDoc)}
+                              className="text-cyan-400 hover:text-cyan-300 text-xs flex items-center gap-1 cursor-pointer"
+                            >
+                              <FileCheck className="w-3.5 h-3.5 text-emerald-400" />
+                              <span>GED</span>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => onOpenScannerForFinance('facture')}
+                              className="text-slate-500 hover:text-amber-400 text-xs flex items-center gap-1 cursor-pointer"
+                            >
+                              <Camera className="w-3.5 h-3.5" />
+                              <span>Numériser</span>
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -797,6 +844,12 @@ export const FinanceModule: React.FC<FinanceModuleProps> = ({
               if (linkedDoc) onSelectDocument(linkedDoc);
             }}
             actions={[
+              {
+                label: 'Aperçu & Imprimer A4',
+                icon: <Printer className="w-3.5 h-3.5 text-green-400" />,
+                onClick: () => handlePrintInvoice(selectedInvoice),
+                variant: 'secondary' as const,
+              },
               ...(linkedDoc ? [{
                 label: 'Consulter dans GED',
                 icon: <FileCheck className="w-3.5 h-3.5" />,
@@ -972,6 +1025,13 @@ export const FinanceModule: React.FC<FinanceModuleProps> = ({
           </SidebarSection>
         </DetailSidebar>
       )}
+
+      {/* Universal A4 Document Print Modal */}
+      <PrintDocumentModal
+        isOpen={!!printDoc}
+        onClose={() => setPrintDoc(null)}
+        documentData={printDoc}
+      />
     </div>
   );
 };

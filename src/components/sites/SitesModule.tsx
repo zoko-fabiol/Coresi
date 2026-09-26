@@ -14,6 +14,7 @@ import {
   DollarSign,
   FolderKanban,
   Package,
+  Printer,
 } from 'lucide-react';
 import {
   OperationalSite,
@@ -23,6 +24,7 @@ import { SiteService } from '../../services/siteService';
 import { DataService } from '../../services/dataService';
 import { Material, Employee, Project } from '../../types';
 import { DetailSidebar, SidebarSection, SidebarField, SidebarDivider } from '../shared/DetailSidebar';
+import { PrintDocumentModal, PrintDocumentData } from '../shared/PrintDocumentModal';
 
 interface SitesModuleProps {
   sites: OperationalSite[];
@@ -49,6 +51,7 @@ export const SitesModule: React.FC<SitesModuleProps> = ({
   const [newTransferOpen, setNewTransferOpen] = useState(false);
   const [viewSite, setViewSite] = useState<OperationalSite | null>(null);
   const [viewTransfer, setViewTransfer] = useState<SiteStockTransfer | null>(null);
+  const [printDoc, setPrintDoc] = useState<PrintDocumentData | null>(null);
 
   // New Site Form State
   const [siteName, setSiteName] = useState('');
@@ -136,6 +139,39 @@ export const SitesModule: React.FC<SitesModuleProps> = ({
     await SiteService.receiveTransfer(id, currentUser.displayName);
     onRefresh();
     showToast('Transfert réceptionné et stock du site mis à jour.');
+  };
+
+  const handlePrintTransfer = (trf: SiteStockTransfer) => {
+    const docData: PrintDocumentData = {
+      type: 'stock_transfer',
+      title: `BORDEREAU DE TRANSFERT INTER-SITES : ${trf.reference}`,
+      reference: trf.reference,
+      date: new Date().toISOString().split('T')[0],
+      recipientName: trf.requestedBy,
+      recipientRole: 'Responsable Logistique / Chantier',
+      recipientDepartment: 'Logistique & Gestion des Stocks',
+      siteName: `${trf.sourceSiteName} ➔ ${trf.targetSiteName}`,
+      statusLabel: trf.status.replace(/_/g, ' ').toUpperCase(),
+      tableColumns: ['Code Matériel', 'Désignation & Spécifications', 'Quantité', 'Unité', 'Statut Contrôle'],
+      tableRows: [
+        [
+          trf.materialCode,
+          trf.materialName,
+          trf.quantity,
+          trf.unit,
+          trf.status === 'receptionne' ? 'CONFORME (100%)' : 'EN COURS D\'ACHEMINEMENT',
+        ],
+      ],
+      summaryItems: [
+        { label: 'Site Expéditeur', value: trf.sourceSiteName },
+        { label: 'Site Destinataire', value: trf.targetSiteName, highlight: true },
+        { label: 'Statut Transit', value: trf.status.replace(/_/g, ' ').toUpperCase() },
+        { label: 'Demandeur', value: trf.requestedBy },
+      ],
+      notes: `Observations bordereau : ${trf.notes || 'Matériel vérifié en bon état de fonctionnement au départ'}. Expédié par : ${trf.dispatchedBy || 'En attente'}. Réceptionné par : ${trf.receivedBy || 'En attente'}. Toute anomalie ou avarie de transport doit être consignée contradictoirement sous 24h.`,
+      visaText: 'Responsable Magasin Central & Logistique',
+    };
+    setPrintDoc(docData);
   };
 
   const filteredSites = sites.filter(
@@ -326,7 +362,18 @@ export const SitesModule: React.FC<SitesModuleProps> = ({
                         {trf.status.replace(/_/g, ' ')}
                       </span>
                     </td>
-                    <td className="p-4 text-right space-x-2 whitespace-nowrap">
+                    <td className="p-4 text-right space-x-1.5 whitespace-nowrap">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePrintTransfer(trf);
+                        }}
+                        className="p-1.5 hover:bg-slate-700/60 text-slate-400 hover:text-emerald-400 rounded-lg transition-colors inline-flex items-center gap-1 text-xs font-semibold mr-1"
+                        title="Aperçu & Imprimer Bordereau A4"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Aperçu A4</span>
+                      </button>
                       {trf.status === 'demande' && (
                         <button
                           onClick={(e) => { e.stopPropagation(); handleDispatch(trf.id); }}
@@ -585,6 +632,12 @@ export const SitesModule: React.FC<SitesModuleProps> = ({
             : 'bg-amber-900/40 text-amber-300 border-amber-700',
         } : undefined}
         actions={viewTransfer ? [
+          {
+            label: 'Aperçu & Imprimer A4',
+            icon: <Printer className="w-3.5 h-3.5" />,
+            onClick: () => handlePrintTransfer(viewTransfer),
+            variant: 'secondary' as const,
+          },
           ...(viewTransfer.status === 'demande' ? [{
             label: 'Expédier', icon: <Truck className="w-3.5 h-3.5" />,
             onClick: () => { handleDispatch(viewTransfer.id); setViewTransfer(null); },
@@ -613,6 +666,13 @@ export const SitesModule: React.FC<SitesModuleProps> = ({
           </>
         )}
       </DetailSidebar>
+
+      {/* Universal A4 Document Preview Modal */}
+      <PrintDocumentModal
+        isOpen={!!printDoc}
+        onClose={() => setPrintDoc(null)}
+        documentData={printDoc}
+      />
     </div>
   );
 };
