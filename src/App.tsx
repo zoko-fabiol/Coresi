@@ -102,7 +102,16 @@ export default function App() {
   );
 
   // Inactivity auto-lock timer (configurable in Settings)
-  const idleTimeoutMinutes = QuickAccessService.getIdleTimeout();
+  const [idleTimeoutMinutes] = useState<number>(() => {
+    try {
+      return typeof QuickAccessService?.getIdleTimeout === 'function'
+        ? QuickAccessService.getIdleTimeout()
+        : 15;
+    } catch {
+      return 15;
+    }
+  });
+
   useIdleTimer({
     timeoutMinutes: idleTimeoutMinutes,
     onIdle: () => {

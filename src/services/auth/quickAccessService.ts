@@ -48,37 +48,62 @@ export const QuickAccessService = {
     return !!readRecord(email);
   },
 
-  getPreferredMethod(email: string): 'pin' | 'windows-hello' {
+  getPreferredMethod(email: string): 'pin' | 'windows-hello' | 'hello' {
     try {
       const val = localStorage.getItem(preferenceKey(email));
-      return val === 'windows-hello' ? 'windows-hello' : 'pin';
+      if (val === 'windows-hello' || val === 'hello') return 'windows-hello';
+      return 'pin';
     } catch {
       return 'pin';
     }
   },
 
-  setPreferredMethod(email: string, method: 'pin' | 'windows-hello'): void {
-    localStorage.setItem(preferenceKey(email), method === 'windows-hello' ? 'windows-hello' : 'pin');
+  setPreferredMethod(email: string, method: 'pin' | 'windows-hello' | 'hello' | string): void {
+    const normalized = method === 'windows-hello' || method === 'hello' ? 'windows-hello' : 'pin';
+    localStorage.setItem(preferenceKey(email), normalized);
   },
 
-  getLockTimeoutMinutes(email: string): number {
+  getLockTimeoutMinutes(email = 'global'): number {
     try {
-      const raw = localStorage.getItem(timeoutKey(email));
+      const raw = localStorage.getItem(timeoutKey(email)) || localStorage.getItem(timeoutKey('global'));
+      if (raw === '0') return 0;
       const value = Number(raw);
-      return Number.isFinite(value) && value > 0 ? value : 15; // default 15 min
+      return Number.isFinite(value) && value >= 0 ? value : 15; // default 15 min
     } catch {
       return 15;
     }
   },
 
-  setLockTimeoutMinutes(email: string, minutes: number): number {
-    const normalized = Number(minutes);
+  setLockTimeoutMinutes(email: string | number, minutes?: number): number {
+    let targetEmail = 'global';
+    let targetMinutes = 15;
+    if (typeof email === 'number') {
+      targetMinutes = email;
+    } else {
+      targetEmail = email || 'global';
+      targetMinutes = typeof minutes === 'number' ? minutes : 15;
+    }
+
+    const normalized = Number(targetMinutes);
     if (!Number.isFinite(normalized) || normalized <= 0) {
-      localStorage.setItem(timeoutKey(email), '0');
+      localStorage.setItem(timeoutKey(targetEmail), '0');
+      localStorage.setItem(timeoutKey('global'), '0');
       return 0;
     }
-    localStorage.setItem(timeoutKey(email), String(Math.floor(normalized)));
+    const val = String(Math.floor(normalized));
+    localStorage.setItem(timeoutKey(targetEmail), val);
+    localStorage.setItem(timeoutKey('global'), val);
     return Math.floor(normalized);
+  },
+
+  // Alias for getLockTimeoutMinutes
+  getIdleTimeout(email = 'global'): number {
+    return this.getLockTimeoutMinutes(email);
+  },
+
+  // Alias for setLockTimeoutMinutes
+  setIdleTimeout(minutes: number, email = 'global'): number {
+    return this.setLockTimeoutMinutes(email, minutes);
   },
 
   async setPin(email: string, pin: string): Promise<PinRecord> {
@@ -102,11 +127,17 @@ export const QuickAccessService = {
     localStorage.removeItem(storageKey(email));
   },
 
+  // Alias for clearPin
+  removePin(email: string): void {
+    this.clearPin(email);
+  },
+
   clearPreference(email: string): void {
     localStorage.removeItem(preferenceKey(email));
   },
 
-  clearLockTimeout(email: string): void {
+  clearLockTimeout(email = 'global'): void {
     localStorage.removeItem(timeoutKey(email));
+    localStorage.removeItem(timeoutKey('global'));
   },
 };

@@ -132,7 +132,31 @@ export const WindowsHelloService = {
     return !!assertion;
   },
 
+  // Alias for authenticate
+  async verifyCredential(email: string): Promise<boolean> {
+    try {
+      return await this.authenticate(email);
+    } catch {
+      return false;
+    }
+  },
+
+  // Alias for enroll returning boolean
+  async registerCredential(email: string, displayName = ''): Promise<boolean> {
+    try {
+      const rec = await this.enroll(email, displayName);
+      return !!rec;
+    } catch {
+      return false;
+    }
+  },
+
   clear(email: string): void {
     localStorage.removeItem(storageKey(email));
+  },
+
+  // Alias for clear
+  removeCredential(email: string): void {
+    this.clear(email);
   },
 };
