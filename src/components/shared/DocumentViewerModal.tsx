@@ -121,8 +121,8 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
         {/* HEADER BAR */}
         <div className="bg-slate-950 px-4 py-3 sm:px-6 sm:py-3.5 border-b border-slate-800 flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-green-700/20 text-green-400 border border-green-600/30 flex items-center justify-center shrink-0">
-              <FileText className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-xl bg-white dark:bg-[#121F16] border border-stone-200 dark:border-emerald-800/60 p-0.5 flex items-center justify-center shrink-0 shadow-xs">
+              <img src="/logo.png" alt="CORESI" className="w-full h-full object-contain" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
@@ -374,8 +374,8 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
 
             {/* Visa Certification Stamp */}
             <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 text-center space-y-2">
-              <div className="w-10 h-10 rounded-xl bg-green-700/20 text-green-400 border border-green-600/30 flex items-center justify-center mx-auto">
-                <ShieldCheck className="w-5 h-5" />
+              <div className="w-12 h-12 rounded-xl bg-white dark:bg-[#121F16] border border-stone-200 dark:border-emerald-800/60 p-1 flex items-center justify-center mx-auto shadow-sm">
+                <img src="/logo.png" alt="CORESI" className="w-full h-full object-contain" />
               </div>
               <p className="text-[11px] font-bold text-white uppercase tracking-wider">
                 CORESI INTERNATIONAL SARL

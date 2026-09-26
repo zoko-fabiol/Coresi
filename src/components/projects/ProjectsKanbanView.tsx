@@ -293,26 +293,26 @@ export const ProjectsKanbanView: React.FC<ProjectsKanbanViewProps> = ({ projects
                               <span>Pièces jointes &amp; Photos ({task.attachments.length})</span>
                             </span>
                             <div className="flex flex-wrap gap-1.5">
-                              {task.attachments.map((att) => (
+                              {task.attachments.map((att, attIdx) => (
                                 <button
-                                  key={att.id}
+                                  key={att.id || `att-${attIdx}-${att.name}`}
                                   onClick={() =>
                                     setViewerItem({
                                       url: att.url,
                                       name: `${task.projectCode} - ${att.name}`,
-                                      type: att.type,
+                                      type: att.type || (att.url?.match(/\.(jpg|jpeg|png|webp)/i) ? 'image' : 'pdf'),
                                       metadata: {
                                         Chantier: prj?.name || task.projectCode,
                                         Étape: col.label,
                                         Responsable: task.assignedTo,
-                                        Date: att.uploadedAt.split('T')[0],
+                                        Date: (att.uploadedAt || new Date().toISOString()).split('T')[0],
                                       },
                                     })
                                   }
                                   className="text-[10px] px-2 py-1 bg-slate-950 hover:bg-cyan-950/40 text-cyan-300 hover:text-cyan-200 border border-slate-700/80 rounded flex items-center gap-1 transition-colors cursor-pointer"
                                   title="Inspecter avec zoom HD & rotation"
                                 >
-                                  {att.type === 'image' ? (
+                                  {(att.type === 'image' || att.url?.match(/\.(jpg|jpeg|png|webp)/i)) ? (
                                     <ImageIcon className="w-3 h-3 text-emerald-400" />
                                   ) : (
                                     <FileText className="w-3 h-3 text-blue-400" />

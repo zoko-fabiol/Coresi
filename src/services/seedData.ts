@@ -1191,8 +1191,15 @@ export const INITIAL_PROJECT_TASKS: ProjectTask[] = [
     priority: 'haute',
     completed: true,
     attachments: [
-      { name: 'Plan_ISO_Ligne_HP_Djeno.pdf', url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1200&q=80', size: '3.4 Mo' }
-    ]
+      {
+        id: 'att-iso-001',
+        name: 'Plan_ISO_Ligne_HP_Djeno.pdf',
+        url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1200&q=80',
+        type: 'pdf',
+        size: '3.4 Mo',
+        uploadedAt: '2026-09-12T10:00:00Z',
+      },
+    ],
   },
   {
     id: 'ptsk-002',
@@ -1214,8 +1221,15 @@ export const INITIAL_PROJECT_TASKS: ProjectTask[] = [
     priority: 'haute',
     completed: false,
     attachments: [
-      { name: 'Photo_Controle_Cordon_Soudure_Spool_A1.jpg', url: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=80', size: '2.8 Mo' }
-    ]
+      {
+        id: 'att-soudure-001',
+        name: 'Photo_Controle_Cordon_Soudure_Spool_A1.jpg',
+        url: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=80',
+        type: 'image',
+        size: '2.8 Mo',
+        uploadedAt: '2026-09-20T14:30:00Z',
+      },
+    ],
   },
   {
     id: 'ptsk-004',

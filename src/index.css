@@ -1302,3 +1302,45 @@ html.light ::-webkit-scrollbar-thumb:hover {
   font-optical-sizing: auto;
 }
 
+/* --- Construction Crane & Girder Keyframes (CORESI Industrial Loader) --- */
+@keyframes craneTrolley {
+  0%, 100% {
+    transform: translateX(-35px);
+  }
+  50% {
+    transform: translateX(45px);
+  }
+}
+
+@keyframes beamSway {
+  0%, 100% {
+    transform: rotate(-1.5deg);
+  }
+  50% {
+    transform: rotate(1.5deg);
+  }
+}
+
+@keyframes stripesProgress {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 48px 0;
+  }
+}
+
+.animate-crane-trolley {
+  animation: craneTrolley 3.5s ease-in-out infinite;
+}
+
+.animate-beam-sway {
+  transform-origin: center top;
+  animation: beamSway 2.2s ease-in-out infinite;
+}
+
+.animate-stripes-progress {
+  animation: stripesProgress 1.4s linear infinite;
+}
+
+

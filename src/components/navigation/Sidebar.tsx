@@ -256,6 +256,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
           Seul le DG a accès à tous les onglets en temps réel. Cloisonnement strict des données.
         </p>
       </div>
+
+      {/* Brand signature */}
+      <div className="mt-3 pt-3 border-t border-slate-200/60 dark:border-slate-800/60 flex items-center gap-2.5 px-1">
+        <div className="w-8 h-8 rounded-xl bg-white dark:bg-[#121F16] border border-stone-200 dark:border-emerald-800/60 p-1 flex items-center justify-center shrink-0 shadow-xs">
+          <img src="/logo.png" alt="CORESI Logo" className="w-full h-full object-contain" />
+        </div>
+        <div className="text-[10px] leading-tight">
+          <span className="font-extrabold text-slate-800 dark:text-emerald-200 block">CORESI SARL</span>
+          <span className="text-slate-400 dark:text-emerald-400/70 font-medium">ERP Industriel &amp; GED</span>
+        </div>
+      </div>
     </>
   );
 
@@ -277,12 +288,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Drawer Header */}
             <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-green-700 via-green-600 to-orange-500 p-[1.5px] flex items-center justify-center">
-                  <div className="w-full h-full bg-slate-950 rounded-md flex items-center justify-center">
-                    <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-amber-300 text-[8px] tracking-wider">COR</span>
-                  </div>
+                <div className="w-8 h-8 rounded-xl bg-white dark:bg-[#121F16] border border-stone-200 dark:border-emerald-800/60 p-1 flex items-center justify-center shrink-0 shadow-xs">
+                  <img src="/logo.png" alt="CORESI" className="w-full h-full object-contain" />
                 </div>
-                <span className="font-bold text-sm text-slate-900 dark:text-white">Navigation</span>
+                <div className="leading-tight">
+                  <span className="font-extrabold text-xs text-slate-900 dark:text-white block">CORESI</span>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Navigation</span>
+                </div>
               </div>
               <div className="flex items-center gap-1.5">
                 {/* Theme toggle in mobile drawer */}

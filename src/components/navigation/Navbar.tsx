@@ -98,12 +98,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         )}
 
-        <div className="logo-badge-glow w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-green-700 via-green-600 to-orange-500 p-[2px] flex items-center justify-center shrink-0">
-          <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-            <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-amber-300 to-orange-400 text-[10px] sm:text-xs tracking-wider">
-              COR
-            </span>
-          </div>
+        <div className="logo-badge-glow w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white dark:bg-[#121F16] border border-stone-200 dark:border-emerald-800/60 p-1 flex items-center justify-center shrink-0 shadow-sm transition-transform hover:scale-105">
+          <img
+            src="/logo.png"
+            alt="CORESI Logo"
+            className="w-full h-full object-contain filter drop-shadow-xs"
+          />
         </div>
 
         <div className="hidden xs:block sm:block">

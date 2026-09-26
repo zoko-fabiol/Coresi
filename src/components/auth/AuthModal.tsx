@@ -86,12 +86,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         {/* Header — CORESI branded */}
         <div className="p-6 border-b border-[--coresi-border] flex items-center justify-between bg-gradient-to-r from-[--coresi-primary-50] via-white to-[--coresi-secondary-50] dark:from-[--coresi-surface] dark:via-[--coresi-surface] dark:to-[rgba(59,122,44,0.1)]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[--coresi-primary] to-[--coresi-accent] p-0.5 shadow-md flex items-center justify-center">
-              <div className="w-full h-full bg-white dark:bg-[--coresi-surface] rounded-[10px] flex items-center justify-center">
-                <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[--coresi-primary] to-[--coresi-secondary] text-sm tracking-wider">
-                  C
-                </span>
-              </div>
+            <div className="w-12 h-12 rounded-xl bg-white dark:bg-[#121F16] border border-stone-200 dark:border-emerald-800/60 p-1 shadow-md flex items-center justify-center shrink-0">
+              <img
+                src="/logo.png"
+                alt="CORESI Logo"
+                className="w-full h-full object-contain filter drop-shadow-xs"
+              />
             </div>
             <div>
               <h2 className="font-bold text-base text-[--coresi-text]">

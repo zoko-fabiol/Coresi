@@ -87,8 +87,10 @@ import { NewInvoiceModal } from './components/modals/NewInvoiceModal';
 import { NewEmployeeModal } from './components/modals/NewEmployeeModal';
 import { NewMaterialModal } from './components/modals/NewMaterialModal';
 import { AuthModal } from './components/auth/AuthModal';
+import { ConstructionLoader } from './components/shared/ConstructionLoader';
 
 export default function App() {
+  const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<UserProfile>(DataService.getCurrentUser());
   const [currentModule, setCurrentModule] = useState<string>(
@@ -198,7 +200,15 @@ export default function App() {
         console.log('CORESI ERP: Connexion Cloud Firestore validée.');
       }
     });
-    return () => unsubData();
+
+    const splashTimer = setTimeout(() => {
+      setIsInitialLoading(false);
+    }, 1200);
+
+    return () => {
+      unsubData();
+      clearTimeout(splashTimer);
+    };
   }, []);
 
   // Handle Role Switching with automatic tab adjustment
@@ -289,6 +299,10 @@ export default function App() {
 
   const isCurrentModuleAllowed = isModuleAllowedForRole(currentModule, currentUser.role);
   const isCurrentModuleActive = isModuleActive(currentModule);
+
+  if (isInitialLoading) {
+    return <ConstructionLoader fullScreen message="Démarrage de la plateforme CORESI Gestion & GED..." />;
+  }
 
   return (
     <div className="h-screen h-[100dvh] w-full bg-[--coresi-background] text-[--coresi-text] flex flex-col font-sans overflow-hidden">
