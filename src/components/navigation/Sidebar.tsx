@@ -50,12 +50,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const roleConfig = ROLE_CONFIGS[currentUser.role] || ROLE_CONFIGS.invite;
   const { theme, toggleTheme } = useTheme();
 
+  const POLES = [
+    { id: 'operations', label: 'Opérations & Chantiers' },
+    { id: 'finances', label: 'Finances & Fiscalité' },
+    { id: 'systeme', label: 'RH & Gouvernance' },
+  ];
+
   const allMenuItems = [
     {
       id: 'dashboard',
       label: 'Tableau de bord',
       subtext: 'Direction Générale (DG)',
       icon: LayoutDashboard,
+      pole: 'operations',
     },
     {
       id: 'ged',
@@ -64,6 +71,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: FolderOpen,
       badge: documentsCount,
       badgeClass: 'bg-[--coresi-primary-50] text-[--coresi-primary-dark] border-[--coresi-primary-200] dark:bg-[--coresi-primary-950] dark:text-[--coresi-primary-light] dark:border-[--coresi-primary-900]',
+      pole: 'operations',
     },
     {
       id: 'projects',
@@ -72,90 +80,105 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: FolderKanban,
       badge: activeProjectsCount,
       badgeClass: 'bg-[--coresi-info-light] text-[--coresi-info-dark] border-blue-300 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800',
+      pole: 'operations',
     },
     {
       id: 'sites',
       label: 'Multi-Sites & Chantiers',
       subtext: 'Bases & Transferts',
       icon: MapPin,
-    },
-    {
-      id: 'purchases',
-      label: 'Achats & Commandes',
-      subtext: 'DA & Fournisseurs',
-      icon: ShoppingCart,
+      pole: 'operations',
     },
     {
       id: 'reports',
       label: 'Rapports & PV Techniques',
       subtext: 'Épreuves & Chantiers',
       icon: ClipboardList,
-    },
-    {
-      id: 'finances',
-      label: 'Finances & Factures',
-      subtext: 'Trésorerie & Fiscalité',
-      icon: DollarSign,
-    },
-    {
-      id: 'accounting',
-      label: 'Comptabilité Avancée',
-      subtext: 'SYSCOHADA & Grand Livre',
-      icon: BookOpen,
-    },
-    {
-      id: 'payroll',
-      label: 'Paie & Rémunérations',
-      subtext: 'Bulletins & CNSS',
-      icon: Banknote,
-    },
-    {
-      id: 'missions',
-      label: 'Missions & Déplacements',
-      subtext: 'Ordres & Frais',
-      icon: Compass,
-    },
-    {
-      id: 'maintenance',
-      label: 'Maintenance & GMAO',
-      subtext: 'Équipements & Pannes',
-      icon: Wrench,
-    },
-    {
-      id: 'hr',
-      label: 'Personnel & RH',
-      subtext: 'Équipes & Contrats',
-      icon: Users,
-    },
-    {
-      id: 'partners',
-      label: 'Clients & Fournisseurs',
-      subtext: 'Donneurs d\'ordre & Tiers',
-      icon: Building2,
+      pole: 'operations',
     },
     {
       id: 'materials',
       label: 'Parc Matériel & Stocks',
       subtext: 'Outillage & Dépôts',
       icon: Layers,
+      pole: 'operations',
+    },
+    {
+      id: 'maintenance',
+      label: 'Maintenance & GMAO',
+      subtext: 'Équipements & Pannes',
+      icon: Wrench,
+      pole: 'operations',
+    },
+    {
+      id: 'purchases',
+      label: 'Achats & Commandes',
+      subtext: 'DA & Fournisseurs',
+      icon: ShoppingCart,
+      pole: 'finances',
+    },
+    {
+      id: 'finances',
+      label: 'Finances & Factures',
+      subtext: 'Trésorerie & Fiscalité',
+      icon: DollarSign,
+      pole: 'finances',
+    },
+    {
+      id: 'accounting',
+      label: 'Comptabilité Avancée',
+      subtext: 'SYSCOHADA & Grand Livre',
+      icon: BookOpen,
+      pole: 'finances',
+    },
+    {
+      id: 'partners',
+      label: 'Clients & Fournisseurs',
+      subtext: "Donneurs d'ordre & Tiers",
+      icon: Building2,
+      pole: 'finances',
+    },
+    {
+      id: 'hr',
+      label: 'Personnel & RH',
+      subtext: 'Équipes & Contrats',
+      icon: Users,
+      pole: 'systeme',
+    },
+    {
+      id: 'payroll',
+      label: 'Paie & Rémunérations',
+      subtext: 'Bulletins & CNSS',
+      icon: Banknote,
+      pole: 'systeme',
+    },
+    {
+      id: 'missions',
+      label: 'Missions & Déplacements',
+      subtext: 'Ordres & Frais',
+      icon: Compass,
+      pole: 'systeme',
     },
     {
       id: 'audit',
       label: 'Journal d\'Audit',
       subtext: 'Traçabilité & Accès',
       icon: ShieldAlert,
+      pole: 'systeme',
     },
     {
       id: 'admin',
       label: 'Administration',
       subtext: 'Configuration Système',
       icon: Settings,
+      pole: 'systeme',
     },
     {
       id: 'settings',
       label: 'Paramètres Rapides',
       subtext: 'Profil & Cloudinary',
       icon: Settings,
+      pole: 'systeme',
     },
   ];
 
@@ -172,12 +195,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   });
 
   const renderNavigationItems = (isMobile: boolean = false) => (
-    <>
-      <div className="space-y-2">
-        {/* Role Scope Header */}
-        <div className="px-3.5 py-3 bg-slate-50 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+    <div className="flex flex-col h-full justify-between">
+      {/* Role Scope Header */}
+      <div className="shrink-0 mb-2">
+        <div className="px-3 py-2 bg-slate-50 dark:bg-slate-900/90 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Espace Métier
             </span>
             <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border uppercase bg-green-50 text-green-800 border-green-200 dark:bg-green-950/80 dark:text-green-300 dark:border-green-800">
@@ -187,87 +210,102 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <p className="text-xs font-bold text-slate-900 dark:text-white truncate mt-1">{roleConfig.title}</p>
           <p className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">{roleConfig.description}</p>
         </div>
+      </div>
 
-        <div className="px-3 pt-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-          Onglets autorisés ({visibleMenuItems.length})
-        </div>
+      {/* Grouped Modules List */}
+      <div className="flex-1 overflow-y-auto space-y-3.5 pr-1 min-h-0 custom-scrollbar">
+        {POLES.map((pole) => {
+          const items = visibleMenuItems.filter((i) => i.pole === pole.id);
+          if (items.length === 0) return null;
 
-        <div className="space-y-1">
-          {visibleMenuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = currentModule === item.id;
+          return (
+            <div key={pole.id} className="space-y-1">
+              <div className="px-2 pt-1 pb-0.5 text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center justify-between">
+                <span>{pole.label}</span>
+                <span className="text-[8px] font-mono font-normal opacity-60">({items.length})</span>
+              </div>
 
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  onNavigate(item.id);
-                  if (isMobile && onCloseMobile) {
-                    onCloseMobile();
-                  }
-                }}
-                className={`w-full px-3 py-2.5 rounded-xl flex items-center justify-between text-left transition-all cursor-pointer relative group ${
-                  isActive
-                    ? 'bg-gradient-to-r from-green-600/10 to-transparent border border-green-300/80 dark:border-green-700/80 text-green-950 dark:text-green-200 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-950 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-900 border border-transparent'
-                }`}
-              >
-                {isActive && (
-                  <span className="sidebar-active-bar" />
-                )}
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`p-1.5 rounded-lg transition-colors ${
+              {items.map((item) => {
+                const Icon = item.icon;
+                const isActive = currentModule === item.id;
+
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      onNavigate(item.id);
+                      if (isMobile && onCloseMobile) {
+                        onCloseMobile();
+                      }
+                    }}
+                    className={`w-full px-2.5 py-1.5 rounded-lg flex items-center justify-between text-left transition-all cursor-pointer relative group ${
                       isActive
-                        ? 'bg-green-700 text-white shadow-xs shadow-green-700/30'
-                        : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:group-hover:bg-slate-800'
+                        ? 'bg-gradient-to-r from-green-600/10 to-transparent border border-green-300/80 dark:border-green-700/80 text-green-950 dark:text-green-200 shadow-xs'
+                        : 'text-slate-600 hover:text-slate-950 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-900 border border-transparent'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
-                  </span>
-                  <div>
-                    <p className={`text-xs leading-tight ${isActive ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
-                      {item.label}
-                    </p>
-                    <p className={`text-[10px] leading-tight ${isActive ? 'text-green-700 dark:text-green-400 font-medium' : 'text-slate-400 dark:text-slate-500'}`}>{item.subtext}</p>
-                  </div>
-                </div>
+                    {isActive && (
+                      <span className="sidebar-active-bar" />
+                    )}
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span
+                        className={`p-1.5 rounded-md transition-colors shrink-0 ${
+                          isActive
+                            ? 'bg-green-700 text-white shadow-xs shadow-green-700/30'
+                            : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:group-hover:bg-slate-800'
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className={`text-xs leading-tight truncate ${isActive ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-700 dark:text-slate-300'}`}>
+                          {item.label}
+                        </p>
+                        <p className={`text-[9.5px] leading-tight truncate ${isActive ? 'text-green-700 dark:text-green-400 font-medium' : 'text-slate-400 dark:text-slate-500'}`}>
+                          {item.subtext}
+                        </p>
+                      </div>
+                    </div>
 
-                {item.badge !== undefined && (
-                  <span
-                    className={`text-[10px] font-mono px-2 py-0.5 rounded-full border font-bold ${item.badgeClass || 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'}`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
+                    {item.badge !== undefined && (
+                      <span
+                        className={`text-[9.5px] font-mono px-1.5 py-0.2 rounded-full border font-bold shrink-0 ml-1 ${item.badgeClass || 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'}`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
 
       {/* Security & Access enforcement badge */}
-      <div className="bg-emerald-50/70 dark:bg-emerald-950/30 p-3 rounded-2xl border border-emerald-200/80 dark:border-emerald-800/50 text-[11px] text-emerald-900 dark:text-emerald-300 space-y-1 mt-4">
-        <p className="font-semibold flex items-center gap-1.5">
-          <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-          <span>Contrôle RBAC Actif</span>
-        </p>
-        <p className="text-[10px] text-emerald-800/80 dark:text-emerald-400/80">
-          Seul le DG a accès à tous les onglets en temps réel. Cloisonnement strict des données.
-        </p>
-      </div>
+      <div className="shrink-0 pt-2 space-y-2 border-t border-slate-200/60 dark:border-slate-800/60 mt-2">
+        <div className="bg-emerald-50/70 dark:bg-emerald-950/30 p-2 rounded-xl border border-emerald-200/80 dark:border-emerald-800/50 text-[10px] text-emerald-900 dark:text-emerald-300 space-y-0.5">
+          <p className="font-semibold flex items-center gap-1.5">
+            <Shield className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span>Contrôle RBAC Actif</span>
+          </p>
+          <p className="text-[9px] text-emerald-800/80 dark:text-emerald-400/80 leading-tight">
+            Accès DG complet en temps réel. Cloisonnement strict.
+          </p>
+        </div>
 
-      {/* Brand signature */}
-      <div className="mt-3 pt-3 border-t border-slate-200/60 dark:border-slate-800/60 flex items-center gap-2.5 px-1">
-        <div className="w-8 h-8 rounded-xl bg-white dark:bg-[#121F16] border border-stone-200 dark:border-emerald-800/60 p-1 flex items-center justify-center shrink-0 shadow-xs">
-          <img src="/logo.png" alt="CORESI Logo" className="w-full h-full object-contain" />
-        </div>
-        <div className="text-[10px] leading-tight">
-          <span className="font-extrabold text-slate-800 dark:text-emerald-200 block">CORESI SARL</span>
-          <span className="text-slate-400 dark:text-emerald-400/70 font-medium">ERP Industriel &amp; GED</span>
+        {/* Brand signature */}
+        <div className="flex items-center gap-2 px-1">
+          <div className="w-7 h-7 rounded-lg bg-white dark:bg-[#121F16] border border-stone-200 dark:border-emerald-800/60 p-0.5 flex items-center justify-center shrink-0 shadow-xs">
+            <img src="/logo.png" alt="CORESI Logo" className="w-full h-full object-contain" />
+          </div>
+          <div className="text-[9.5px] leading-tight">
+            <span className="font-extrabold text-slate-800 dark:text-emerald-200 block">CORESI SARL</span>
+            <span className="text-slate-400 dark:text-emerald-400/70 font-medium">ERP Industriel &amp; GED</span>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 
   return (
