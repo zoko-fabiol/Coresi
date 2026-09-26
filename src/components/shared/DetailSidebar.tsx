@@ -77,23 +77,23 @@ export const DetailSidebar: React.FC<DetailSidebarProps> = ({
   const actionVariantClass = (variant?: string) => {
     switch (variant) {
       case 'primary':
-        return 'bg-cyan-600 hover:bg-cyan-500 text-white border-cyan-500';
+        return 'bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-bold border-cyan-400 shadow-md shadow-cyan-500/20 active:scale-95';
       case 'danger':
-        return 'bg-red-600/20 hover:bg-red-600/40 text-red-300 border-red-700';
+        return 'bg-rose-500/15 hover:bg-rose-500/25 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-700/60 font-semibold active:scale-95';
       case 'success':
-        return 'bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border-emerald-700';
+        return 'bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700/60 font-semibold active:scale-95';
       default:
-        return 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700';
+        return 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 font-semibold active:scale-95';
     }
   };
 
   return (
     <>
-      {/* Backdrop — transparent clickable overlay */}
+      {/* Backdrop */}
       <div
         className={`fixed inset-0 z-40 transition-all duration-300 ${
           isOpen
-            ? 'opacity-100 pointer-events-auto bg-black/30 dark:bg-black/40 backdrop-blur-[2px]'
+            ? 'opacity-100 pointer-events-auto bg-black/35 dark:bg-black/50 backdrop-blur-[3px]'
             : 'opacity-0 pointer-events-none'
         }`}
         onClick={handleBackdropClick}
@@ -102,25 +102,25 @@ export const DetailSidebar: React.FC<DetailSidebarProps> = ({
         {/* Sidebar Panel */}
         <div
           ref={sidebarRef}
-          className={`fixed top-0 right-0 bottom-0 z-50 ${widthClass} bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-[-8px_0_30px_rgba(0,0,0,0.25)] flex flex-col transition-transform duration-300 ease-out ${
+          className={`fixed top-0 right-0 bottom-0 z-50 ${widthClass} bg-white dark:bg-slate-900 border-l border-slate-200/70 dark:border-slate-800/70 shadow-[-12px_0_40px_rgba(6,182,212,0.08),-4px_0_20px_rgba(0,0,0,0.2)] flex flex-col transition-transform duration-300 ease-out ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* ─── HEADER ─── */}
-          <div className="shrink-0 px-4 py-3.5 sm:px-5 sm:py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+          {/* HEADER */}
+          <div className="shrink-0 px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-200/70 dark:border-slate-800/70 navbar-glass">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
                 {/* Reference Code + Badge */}
                 <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                   {referenceCode && (
-                    <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">
+                    <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950/80 dark:to-blue-950/50 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800 shadow-xs">
                       {referenceCode}
                     </span>
                   )}
                   {badge && (
                     <span
-                      className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md border ${badge.color}`}
+                      className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full border status-pill ${badge.color}`}
                     >
                       {badge.text}
                     </span>
@@ -128,20 +128,20 @@ export const DetailSidebar: React.FC<DetailSidebarProps> = ({
                 </div>
 
                 {/* Title */}
-                <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words">
+                <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug break-words">
                   {title}
                 </h2>
                 {subtitle && (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 break-words">{subtitle}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 break-words font-medium">{subtitle}</p>
                 )}
               </div>
 
               {/* Close Button */}
               <button
                 onClick={onClose}
-                className="shrink-0 p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer"
-                title="Fermer (Échap)"
-                aria-label="Fermer le volet latéral"
+                className="shrink-0 p-2 rounded-xl bg-slate-100/80 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-all cursor-pointer active:scale-95 shadow-xs backdrop-blur-sm"
+                title="Fermer (Echap)"
+                aria-label="Fermer le volet lateral"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -189,13 +189,13 @@ export const DetailSidebar: React.FC<DetailSidebarProps> = ({
 
           {/* ─── ACTION BAR ─── */}
           {actions && actions.length > 0 && (
-            <div className="shrink-0 px-4 py-3 sm:px-5 sm:py-3.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex items-center gap-2 flex-wrap">
+            <div className="shrink-0 px-4 py-3 sm:px-6 sm:py-3.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-slate-200/80 dark:border-slate-800/80 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-md flex items-center gap-2 flex-wrap">
               {actions.map((action, idx) => (
                 <button
                   key={idx}
                   onClick={action.onClick}
                   disabled={action.disabled}
-                  className={`flex-1 sm:flex-initial min-w-[130px] justify-center px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${actionVariantClass(
+                  className={`flex-1 sm:flex-initial min-w-[130px] justify-center px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all border cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${actionVariantClass(
                     action.variant
                   )}`}
                 >

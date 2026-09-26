@@ -81,26 +81,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-slate-900 border border-slate-800 text-slate-100 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
-        {/* Header */}
-        <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-gradient-to-r from-slate-900 via-slate-900 to-cyan-950/40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,46,20,0.7)] backdrop-blur-sm animate-fadeIn">
+      <div className="bg-white dark:bg-[--coresi-surface-elevated] border border-[--coresi-border] dark:border-[--coresi-border-strong] text-[--coresi-text] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+        {/* Header — CORESI branded */}
+        <div className="p-6 border-b border-[--coresi-border] flex items-center justify-between bg-gradient-to-r from-[--coresi-primary-50] via-white to-[--coresi-secondary-50] dark:from-[--coresi-surface] dark:via-[--coresi-surface] dark:to-[rgba(59,122,44,0.1)]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-              <Shield className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[--coresi-primary] to-[--coresi-accent] p-0.5 shadow-md flex items-center justify-center">
+              <div className="w-full h-full bg-white dark:bg-[--coresi-surface] rounded-[10px] flex items-center justify-center">
+                <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[--coresi-primary] to-[--coresi-secondary] text-sm tracking-wider">
+                  C
+                </span>
+              </div>
             </div>
             <div>
-              <h2 className="font-bold text-base text-white">
+              <h2 className="font-bold text-base text-[--coresi-text]">
                 {mode === 'login' && 'Connexion Sécurisée'}
                 {mode === 'register' && 'Créer un Compte Collaborateur'}
                 {mode === 'forgot' && 'Réinitialiser le Mot de Passe'}
               </h2>
-              <p className="text-xs text-slate-400">CORESI INTERNATIONAL ERP</p>
+              <p className="text-xs text-[--coresi-text-muted]">CORESI INTERNATIONAL SARL</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+            className="text-[--coresi-text-muted] hover:text-[--coresi-text] p-1 rounded-lg hover:bg-[--coresi-surface-hover] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -109,15 +113,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         {/* Content */}
         <div className="p-6 space-y-4">
           {error && (
-            <div className="p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+            <div className="p-3 rounded-xl bg-[--coresi-danger-light] dark:bg-[rgba(220,38,38,0.1)] border border-red-200 dark:border-[rgba(220,38,38,0.3)] text-[--coresi-danger-dark] text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-[--coresi-danger] shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+            <div className="p-3 rounded-xl bg-[--coresi-success-light] dark:bg-[rgba(22,163,74,0.1)] border border-green-200 dark:border-[rgba(22,163,74,0.3)] text-[--coresi-success-dark] text-xs flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-[--coresi-success] shrink-0" />
               <span>{successMsg}</span>
             </div>
           )}
@@ -126,27 +130,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             {mode === 'register' && (
               <>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Nom complet</label>
+                  <label className="block text-xs font-semibold text-[--coresi-text-secondary] mb-1">Nom complet</label>
                   <div className="relative">
-                    <User className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                    <User className="w-4 h-4 text-[--coresi-text-muted] absolute left-3 top-3" />
                     <input
                       type="text"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="ex: Jean Dupont"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                      className="w-full bg-[--coresi-surface] dark:bg-[--coresi-surface] border border-[--coresi-border] rounded-xl pl-9 pr-3 py-2 text-xs text-[--coresi-text] placeholder-[--coresi-text-muted] focus:border-[--coresi-primary] focus:outline-none focus:ring-2 focus:ring-[rgba(59,122,44,0.2)]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Rôle</label>
+                    <label className="block text-xs font-semibold text-[--coresi-text-secondary] mb-1">Rôle</label>
                     <select
                       value={role}
                       onChange={(e) => setRole(e.target.value as UserRole)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none"
+                      className="w-full bg-[--coresi-surface] dark:bg-[--coresi-surface] border border-[--coresi-border] rounded-xl px-3 py-2 text-xs text-[--coresi-text] focus:border-[--coresi-primary] focus:outline-none focus:ring-2 focus:ring-[rgba(59,122,44,0.2)]"
                     >
                       <option value="employe">Employé</option>
                       <option value="chef_projet">Chef de Projet</option>
@@ -157,11 +161,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Département</label>
+                    <label className="block text-xs font-semibold text-[--coresi-text-secondary] mb-1">Département</label>
                     <select
                       value={department}
                       onChange={(e) => setDepartment(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none"
+                      className="w-full bg-[--coresi-surface] dark:bg-[--coresi-surface] border border-[--coresi-border] rounded-xl px-3 py-2 text-xs text-[--coresi-text] focus:border-[--coresi-primary] focus:outline-none focus:ring-2 focus:ring-[rgba(59,122,44,0.2)]"
                     >
                       <option value="operations">Opérations / Tuyauterie</option>
                       <option value="finance">Comptabilité & Finance</option>
@@ -173,15 +177,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Téléphone (optionnel)</label>
+                  <label className="block text-xs font-semibold text-[--coresi-text-secondary] mb-1">Téléphone (optionnel)</label>
                   <div className="relative">
-                    <Phone className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                    <Phone className="w-4 h-4 text-[--coresi-text-muted] absolute left-3 top-3" />
                     <input
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+241 ..."
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                      className="w-full bg-[--coresi-surface] dark:bg-[--coresi-surface] border border-[--coresi-border] rounded-xl pl-9 pr-3 py-2 text-xs text-[--coresi-text] placeholder-[--coresi-text-muted] focus:border-[--coresi-primary] focus:outline-none focus:ring-2 focus:ring-[rgba(59,122,44,0.2)]"
                     />
                   </div>
                 </div>
@@ -189,32 +193,32 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Adresse email</label>
+              <label className="block text-xs font-semibold text-[--coresi-text-secondary] mb-1">Adresse email</label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                <Mail className="w-4 h-4 text-[--coresi-text-muted] absolute left-3 top-3" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="nom@coresi.com"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                  className="w-full bg-[--coresi-surface] dark:bg-[--coresi-surface] border border-[--coresi-border] rounded-xl pl-9 pr-3 py-2 text-xs text-[--coresi-text] placeholder-[--coresi-text-muted] focus:border-[--coresi-primary] focus:outline-none focus:ring-2 focus:ring-[rgba(59,122,44,0.2)]"
                 />
               </div>
             </div>
 
             {mode !== 'forgot' && (
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Mot de passe</label>
+                <label className="block text-xs font-semibold text-[--coresi-text-secondary] mb-1">Mot de passe</label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                  <Lock className="w-4 h-4 text-[--coresi-text-muted] absolute left-3 top-3" />
                   <input
                     type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                    className="w-full bg-[--coresi-surface] dark:bg-[--coresi-surface] border border-[--coresi-border] rounded-xl pl-9 pr-3 py-2 text-xs text-[--coresi-text] placeholder-[--coresi-text-muted] focus:border-[--coresi-primary] focus:outline-none focus:ring-2 focus:ring-[rgba(59,122,44,0.2)]"
                   />
                 </div>
               </div>
@@ -223,7 +227,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 px-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-600/20 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full py-2.5 px-4 bg-gradient-to-r from-[--coresi-primary] to-[--coresi-primary-dark] hover:from-[--coresi-primary-light] hover:to-[--coresi-primary] text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[rgba(59,122,44,0.2)] transition-all cursor-pointer disabled:opacity-50"
             >
               {isLoading ? (
                 <span>Patientez...</span>
@@ -245,17 +249,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
           {/* Social Google Login */}
           {mode === 'login' && (
             <>
-              <div className="flex items-center my-3 text-slate-600">
-                <div className="flex-1 border-t border-slate-800" />
+              <div className="flex items-center my-3 text-[--coresi-text-muted]">
+                <div className="flex-1 border-t border-[--coresi-border]" />
                 <span className="px-3 text-[11px] uppercase tracking-wider">ou</span>
-                <div className="flex-1 border-t border-slate-800" />
+                <div className="flex-1 border-t border-[--coresi-border]" />
               </div>
 
               <button
                 type="button"
                 onClick={handleGoogleLogin}
                 disabled={isLoading}
-                className="w-full py-2 px-4 bg-slate-950 hover:bg-slate-800 text-slate-200 border border-slate-700 rounded-xl font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                className="w-full py-2 px-4 bg-[--coresi-surface-alt] hover:bg-[--coresi-surface-hover] text-[--coresi-text] border border-[--coresi-border] rounded-xl font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 <span>Connexion avec Google Workspace</span>
               </button>
@@ -263,20 +267,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
           )}
 
           {/* Mode Switcher Links */}
-          <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="pt-2 border-t border-[--coresi-border] flex items-center justify-between text-[11px] text-[--coresi-text-muted]">
             {mode === 'login' && (
               <>
                 <button
                   type="button"
                   onClick={() => setMode('forgot')}
-                  className="hover:text-cyan-400 transition-colors"
+                  className="hover:text-[--coresi-primary] transition-colors"
                 >
                   Mot de passe oublié ?
                 </button>
                 <button
                   type="button"
                   onClick={() => setMode('register')}
-                  className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors"
+                  className="text-[--coresi-primary] hover:text-[--coresi-primary-light] font-semibold transition-colors"
                 >
                   Nouveau compte
                 </button>
@@ -287,7 +291,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               <button
                 type="button"
                 onClick={() => setMode('login')}
-                className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors"
+                className="text-[--coresi-primary] hover:text-[--coresi-primary-light] font-semibold transition-colors"
               >
                 Déjà un compte ? Se connecter
               </button>
@@ -297,7 +301,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               <button
                 type="button"
                 onClick={() => setMode('login')}
-                className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors"
+                className="text-[--coresi-primary] hover:text-[--coresi-primary-light] font-semibold transition-colors"
               >
                 Retour à la connexion
               </button>

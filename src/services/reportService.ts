@@ -63,7 +63,7 @@ export class ReportService {
     const comp = AdminConfigService.getCompanySettings();
 
     // 1. Header Banner
-    doc.setFillColor(15, 23, 42); // slate-900
+    doc.setFillColor(59, 122, 44); // #3B7A2C CORESI Forest Green
     doc.rect(0, 0, 210, 36, 'F');
 
     doc.setTextColor(255, 255, 255);
@@ -73,13 +73,13 @@ export class ReportService {
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.5);
-    doc.setTextColor(203, 213, 225); // slate-300
+    doc.setTextColor(220, 239, 216); // CORESI primary-100
     doc.text(`${comp.legalForm} • ${comp.registrationNumber} • ${comp.taxId}`, 14, 21);
     doc.text(`${comp.address}, ${comp.city} — ${comp.country} | Tél: ${comp.phone}`, 14, 26);
 
-    // Accent line
-    doc.setFillColor(6, 182, 212); // cyan-500
-    doc.rect(0, 34, 210, 2, 'F');
+    // Accent line - CORESI Orange
+    doc.setFillColor(229, 140, 42); // #E58C2A CORESI Orange
+    doc.rect(0, 34, 210, 2.5, 'F');
 
     // 2. Document Title Box
     let y = 46;

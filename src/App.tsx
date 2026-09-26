@@ -291,7 +291,7 @@ export default function App() {
   const isCurrentModuleActive = isModuleActive(currentModule);
 
   return (
-    <div className="h-screen h-[100dvh] w-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-white overflow-hidden">
+    <div className="h-screen h-[100dvh] w-full bg-[--coresi-background] text-[--coresi-text] flex flex-col font-sans overflow-hidden">
       {/* Top Navigation Bar with Direct Role Switcher */}
       <Navbar
         currentUser={currentUser}
@@ -330,21 +330,21 @@ export default function App() {
         />
 
         {/* Main Workspace Area with aerated mobile padding */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3.5 sm:p-6 lg:p-8 pb-28 md:pb-8 bg-slate-50 dark:bg-slate-950 transition-all">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3.5 sm:p-6 lg:p-8 pb-28 md:pb-8 bg-[--coresi-background] transition-all">
           {/* Permission Guard: if an unauthorized tab is selected */}
           {!isCurrentModuleAllowed ? (
-            <div className="max-w-xl mx-auto my-16 bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-4 shadow-2xl">
-              <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+            <div className="max-w-xl mx-auto my-16 bg-[--coresi-surface] dark:bg-[--coresi-surface] border border-[--coresi-border] rounded-3xl p-8 text-center space-y-4 shadow-lg">
+              <div className="w-16 h-16 rounded-2xl bg-[--coresi-secondary-50] dark:bg-[rgba(229,140,42,0.1)] border border-[--coresi-secondary-200] dark:border-[rgba(229,140,42,0.2)] text-[--coresi-secondary] flex items-center justify-center mx-auto">
                 <Lock className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-bold text-white">Onglet Restreint par Profil</h3>
-              <p className="text-xs text-slate-300 leading-relaxed max-w-md mx-auto">
-                L'onglet <strong className="text-white uppercase font-mono">{currentModule}</strong> est réservé à un autre département. Votre profil actuel (<strong className="text-cyan-400">{currentRoleConfig.title}</strong>) ne possède pas les habilitations pour y accéder.
+              <h3 className="text-xl font-bold text-[--coresi-text]">Onglet Restreint par Profil</h3>
+              <p className="text-xs text-[--coresi-text-secondary] leading-relaxed max-w-md mx-auto">
+                L'onglet <strong className="text-[--coresi-text] uppercase font-mono">{currentModule}</strong> est réservé à un autre département. Votre profil actuel (<strong className="text-[--coresi-primary]">{currentRoleConfig.title}</strong>) ne possède pas les habilitations pour y accéder.
               </p>
               <div className="pt-2">
                 <button
                   onClick={() => setCurrentModule(currentRoleConfig.defaultModule)}
-                  className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl text-xs transition-colors flex items-center gap-2 mx-auto"
+                  className="px-5 py-2.5 bg-[--coresi-primary] hover:bg-[--coresi-primary-light] text-white font-bold rounded-xl text-xs transition-colors flex items-center gap-2 mx-auto cursor-pointer"
                 >
                   <span>Accéder à mon espace ({currentRoleConfig.defaultModule.toUpperCase()})</span>
                   <ArrowRight className="w-4 h-4" />
@@ -352,18 +352,18 @@ export default function App() {
               </div>
             </div>
           ) : !isCurrentModuleActive ? (
-            <div className="max-w-xl mx-auto my-16 bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-4 shadow-2xl">
-              <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center mx-auto">
+            <div className="max-w-xl mx-auto my-16 bg-[--coresi-surface] dark:bg-[--coresi-surface] border border-[--coresi-border] rounded-3xl p-8 text-center space-y-4 shadow-lg">
+              <div className="w-16 h-16 rounded-2xl bg-[--coresi-danger-light] dark:bg-[rgba(220,38,38,0.1)] border border-red-200 dark:border-[rgba(220,38,38,0.2)] text-[--coresi-danger] flex items-center justify-center mx-auto">
                 <Lock className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-bold text-white">Module Désactivé dans l'Administration</h3>
-              <p className="text-xs text-slate-300 leading-relaxed max-w-md mx-auto">
-                Le module <strong className="text-white uppercase font-mono">{currentModule}</strong> a été désactivé par la Direction Générale. Ses fonctionnalités, formulaires et écritures sont temporairement suspendus.
+              <h3 className="text-xl font-bold text-[--coresi-text]">Module Désactivé dans l'Administration</h3>
+              <p className="text-xs text-[--coresi-text-secondary] leading-relaxed max-w-md mx-auto">
+                Le module <strong className="text-[--coresi-text] uppercase font-mono">{currentModule}</strong> a été désactivé par la Direction Générale. Ses fonctionnalités, formulaires et écritures sont temporairement suspendus.
               </p>
               <div className="pt-2">
                 <button
                   onClick={() => setCurrentModule('dashboard')}
-                  className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl text-xs transition-colors flex items-center gap-2 mx-auto"
+                  className="px-5 py-2.5 bg-[--coresi-primary] hover:bg-[--coresi-primary-light] text-white font-bold rounded-xl text-xs transition-colors flex items-center gap-2 mx-auto cursor-pointer"
                 >
                   <span>Retour au Tableau de Bord</span>
                   <ArrowRight className="w-4 h-4" />
@@ -579,7 +579,7 @@ export default function App() {
                 <div className="max-w-2xl mx-auto">
                   <button
                     onClick={() => setSettingsOpen(true)}
-                    className="w-full py-4 bg-slate-900 border border-slate-800 hover:border-cyan-500/50 rounded-2xl text-center font-bold text-cyan-400"
+                    className="w-full py-4 bg-[--coresi-surface] border border-[--coresi-border] hover:border-[--coresi-primary] rounded-2xl text-center font-bold text-[--coresi-primary] cursor-pointer transition-colors"
                   >
                     Ouvrir le panneau des paramètres complets
                   </button>
@@ -590,78 +590,90 @@ export default function App() {
         </main>
       </div>
 
-      {/* Floating Action Bar on Mobile - Dynamically filtered by role with quick Menu access */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-2 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around z-40 text-xs shadow-lg">
+      {/* Floating Action Bar on Mobile - Modern Glass Dock */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800/80 px-3 py-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] flex items-center justify-around z-40 text-xs shadow-2xl transition-all">
         {isModuleAllowedForRole('dashboard', currentUser.role) && (
           <button
             onClick={() => setCurrentModule('dashboard')}
-            className={`p-2 flex flex-col items-center gap-1 transition-colors cursor-pointer ${
-              currentModule === 'dashboard' ? 'text-cyan-700 dark:text-cyan-400 font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+            className={`p-1.5 flex flex-col items-center gap-1 transition-all cursor-pointer active:scale-90 ${
+              currentModule === 'dashboard' ? 'text-cyan-600 dark:text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300'
             }`}
           >
-            <LayoutDashboard className="w-4 h-4" />
-            <span className="text-[10px]">Accueil</span>
+            <div className={`p-1 rounded-xl transition-colors ${currentModule === 'dashboard' ? 'bg-cyan-500/10 dark:bg-cyan-400/15' : ''}`}>
+              <LayoutDashboard className="w-4 h-4" />
+            </div>
+            <span className="text-[10px] font-medium leading-none">Accueil</span>
           </button>
         )}
 
         {isModuleAllowedForRole('finances', currentUser.role) && (
           <button
             onClick={() => setCurrentModule('finances')}
-            className={`p-2 flex flex-col items-center gap-1 transition-colors cursor-pointer ${
-              currentModule === 'finances' ? 'text-cyan-700 dark:text-cyan-400 font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+            className={`p-1.5 flex flex-col items-center gap-1 transition-all cursor-pointer active:scale-90 ${
+              currentModule === 'finances' ? 'text-cyan-600 dark:text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300'
             }`}
           >
-            <DollarSign className="w-4 h-4" />
-            <span className="text-[10px]">Finances</span>
+            <div className={`p-1 rounded-xl transition-colors ${currentModule === 'finances' ? 'bg-cyan-500/10 dark:bg-cyan-400/15' : ''}`}>
+              <DollarSign className="w-4 h-4" />
+            </div>
+            <span className="text-[10px] font-medium leading-none">Finances</span>
           </button>
         )}
 
         {isModuleAllowedForRole('projects', currentUser.role) && (
           <button
             onClick={() => setCurrentModule('projects')}
-            className={`p-2 flex flex-col items-center gap-1 transition-colors cursor-pointer ${
-              currentModule === 'projects' ? 'text-cyan-700 dark:text-cyan-400 font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+            className={`p-1.5 flex flex-col items-center gap-1 transition-all cursor-pointer active:scale-90 ${
+              currentModule === 'projects' ? 'text-cyan-600 dark:text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300'
             }`}
           >
-            <FolderKanban className="w-4 h-4" />
-            <span className="text-[10px]">Chantiers</span>
+            <div className={`p-1 rounded-xl transition-colors ${currentModule === 'projects' ? 'bg-cyan-500/10 dark:bg-cyan-400/15' : ''}`}>
+              <FolderKanban className="w-4 h-4" />
+            </div>
+            <span className="text-[10px] font-medium leading-none">Chantiers</span>
           </button>
         )}
 
         {isModuleAllowedForRole('hr', currentUser.role) && (
           <button
             onClick={() => setCurrentModule('hr')}
-            className={`p-2 flex flex-col items-center gap-1 transition-colors cursor-pointer ${
-              currentModule === 'hr' ? 'text-cyan-700 dark:text-cyan-400 font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+            className={`p-1.5 flex flex-col items-center gap-1 transition-all cursor-pointer active:scale-90 ${
+              currentModule === 'hr' ? 'text-cyan-600 dark:text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300'
             }`}
           >
-            <Users className="w-4 h-4" />
-            <span className="text-[10px]">Personnel</span>
+            <div className={`p-1 rounded-xl transition-colors ${currentModule === 'hr' ? 'bg-cyan-500/10 dark:bg-cyan-400/15' : ''}`}>
+              <Users className="w-4 h-4" />
+            </div>
+            <span className="text-[10px] font-medium leading-none">Personnel</span>
           </button>
         )}
 
         {isModuleAllowedForRole('ged', currentUser.role) && (
           <button
             onClick={() => setCurrentModule('ged')}
-            className={`p-2 flex flex-col items-center gap-1 transition-colors cursor-pointer ${
-              currentModule === 'ged' ? 'text-cyan-700 dark:text-cyan-400 font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+            className={`p-1.5 flex flex-col items-center gap-1 transition-all cursor-pointer active:scale-90 ${
+              currentModule === 'ged' ? 'text-cyan-600 dark:text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300'
             }`}
           >
-            <FolderOpen className="w-4 h-4" />
-            <span className="text-[10px]">GED</span>
+            <div className={`p-1 rounded-xl transition-colors ${currentModule === 'ged' ? 'bg-cyan-500/10 dark:bg-cyan-400/15' : ''}`}>
+              <FolderOpen className="w-4 h-4" />
+            </div>
+            <span className="text-[10px] font-medium leading-none">GED</span>
           </button>
         )}
 
         {/* Global Menu trigger to open the full module drawer on mobile */}
         <button
           onClick={() => setMobileMenuOpen(true)}
-          className={`p-2 flex flex-col items-center gap-1 transition-colors cursor-pointer ${
-            mobileMenuOpen ? 'text-cyan-700 dark:text-cyan-400 font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+          className={`p-1.5 flex flex-col items-center gap-1 transition-all cursor-pointer active:scale-90 ${
+            mobileMenuOpen ? 'text-cyan-600 dark:text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300'
           }`}
           title="Tous les modules"
         >
-          <Menu className="w-4 h-4" />
-          <span className="text-[10px]">Menu</span>
+          <div className={`p-1 rounded-xl transition-colors ${mobileMenuOpen ? 'bg-cyan-500/10 dark:bg-cyan-400/15' : ''}`}>
+            <Menu className="w-4 h-4" />
+          </div>
+          <span className="text-[10px] font-medium leading-none">Menu</span>
         </button>
       </div>
 
@@ -850,8 +862,8 @@ export default function App() {
 
       {/* Notification Toast */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 border border-cyan-500/60 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in text-xs max-w-md">
-          <CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0" />
+        <div className="fixed bottom-6 right-6 z-50 bg-[--coresi-surface] dark:bg-[--coresi-surface-elevated] border border-[--coresi-primary] dark:border-[rgba(59,122,44,0.5)] text-[--coresi-text] px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in text-xs max-w-md">
+          <CheckCircle2 className="w-5 h-5 text-[--coresi-primary] shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}

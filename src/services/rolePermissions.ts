@@ -143,7 +143,7 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
       'settings',
     ],
     defaultModule: 'materials',
-    badgeColor: 'bg-cyan-950 text-cyan-300 border-cyan-800',
+    badgeColor: 'bg-emerald-950 text-emerald-300 border-emerald-800',
     description: 'Accès réservé aux stocks, réceptions de commandes, GMAO et transferts inter-sites.',
   },
   employe: {

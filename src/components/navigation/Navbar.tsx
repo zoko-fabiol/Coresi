@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Camera,
   Settings,
-  Shield,
-  User,
   ChevronDown,
   Check,
   UserCheck,
-  Building2,
   Sun,
   Moon,
   Cloud,
@@ -16,15 +13,14 @@ import {
   Menu,
   X,
   Bell,
-} from 'lucide-react';
-import { UserProfile, UserRole } from '../../types';
-import { ROLE_CONFIGS } from '../../services/rolePermissions';
-import { DataService } from '../../services/dataService';
-import { useTheme } from '../../context/ThemeContext';
-import { auth, signInWithGoogle, signOutUser, subscribeToAuth } from '../../firebase';
-import { User as FirebaseUser } from 'firebase/auth';
-
-import { useAuth } from '../../contexts/AuthContext';
+} from "lucide-react";
+import { UserProfile, UserRole } from "../../types";
+import { ROLE_CONFIGS } from "../../services/rolePermissions";
+import { DataService } from "../../services/dataService";
+import { useTheme } from "../../context/ThemeContext";
+import { auth, signOutUser, subscribeToAuth } from "../../firebase";
+import { User as FirebaseUser } from "firebase/auth";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface NavbarProps {
   currentUser: UserProfile;
@@ -58,9 +54,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(auth.currentUser);
 
   useEffect(() => {
-    const unsub = subscribeToAuth((usr) => {
-      setFirebaseUser(usr);
-    });
+    const unsub = subscribeToAuth((usr) => { setFirebaseUser(usr); });
     return () => unsub();
   }, []);
 
@@ -70,14 +64,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   const currentRoleConfig = ROLE_CONFIGS[currentUser.role] || ROLE_CONFIGS.invite;
-
-  const availableRoles: UserRole[] = ['dg', 'comptable', 'rh', 'chef_projet', 'magasinier', 'admin'];
+  const availableRoles: UserRole[] = ["dg", "comptable", "rh", "chef_projet", "magasinier", "admin"];
 
   const handleSelectRole = (r: UserRole) => {
     const config = ROLE_CONFIGS[r];
     const updatedUser: UserProfile = {
       uid: `user-${r}`,
-      email: 'clausephwandji2020@gmail.com',
+      email: "clausephwandji2020@gmail.com",
       displayName: config.defaultUserName,
       role: r,
       department: config.department,
@@ -88,143 +81,114 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="h-16 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 sticky top-0 z-30 transition-colors">
-      {/* Brand Logo & Name + Mobile Hamburger */}
+    <header className="navbar-glass h-14 sm:h-16 px-3 sm:px-5 flex items-center justify-between gap-2 sticky top-0 z-30">
+
+      {/* LEFT: Hamburger + Logo */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {onToggleMobileMenu && (
           <button
             onClick={onToggleMobileMenu}
-            className="p-2 -ml-1 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl md:hidden cursor-pointer transition-colors"
-            title="Menu des modules"
-            aria-label="Ouvrir le menu de navigation"
+            className="p-2 -ml-1 rounded-xl hover:bg-slate-100/80 dark:hover:bg-slate-900/80 transition-all active:scale-95 md:hidden cursor-pointer"
+            aria-label="Menu de navigation"
           >
-            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {isMobileMenuOpen
+              ? <X className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+              : <Menu className="w-5 h-5 text-slate-700 dark:text-slate-300" />
+            }
           </button>
         )}
 
-        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-cyan-600 to-blue-700 p-0.5 shadow-md flex items-center justify-center shrink-0">
-          <div className="w-full h-full bg-[#0b111e] rounded-[10px] flex items-center justify-center">
-            <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-amber-300 text-xs sm:text-sm tracking-wider">
+        <div className="logo-badge-glow w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600 p-[2px] flex items-center justify-center shrink-0">
+          <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+            <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-amber-300 to-orange-400 text-[10px] sm:text-xs tracking-wider">
               COR
             </span>
           </div>
         </div>
-        <div>
+
+        <div className="hidden xs:block sm:block">
           <div className="flex items-center gap-1.5">
-            <h1 className="font-extrabold text-xs sm:text-base text-slate-900 dark:text-white tracking-wide truncate max-w-[130px] sm:max-w-none">
-              CORESI <span className="text-cyan-700 dark:text-cyan-400 font-bold hidden xs:inline">INTERNATIONAL</span>
+            <h1 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white tracking-wide leading-none">
+              CORESI
+              <span className="text-cyan-600 dark:text-cyan-400 font-bold hidden sm:inline"> INTERNATIONAL</span>
             </h1>
-            <span className="text-[9px] bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 px-1.5 py-0.5 rounded font-mono border hidden sm:inline">
+            <span className="text-[9px] bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/80 px-1.5 py-0.5 rounded font-mono font-bold hidden sm:inline">
               SARL
             </span>
           </div>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400 hidden lg:block">
-            Chaudronnerie • Tuyauterie • Ingénierie • GED Intégrée
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 hidden lg:block leading-none mt-0.5 font-medium">
+            Chaudronnerie · Tuyauterie · GED Industrielle
           </p>
         </div>
       </div>
 
-      {/* Global Quick Actions & Role Switcher */}
-      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-        {/* Firebase Cloud Connection Status (Desktop Only) */}
+      {/* RIGHT: Actions */}
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+
         {firebaseUser ? (
-          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <Cloud className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span className="font-mono font-medium text-[11px] truncate max-w-[120px]">
-              {authUser?.displayName || firebaseUser.email?.split('@')[0]}
+          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/80 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 text-xs backdrop-blur-sm">
+            <span className="badge-live w-2 h-2 rounded-full bg-emerald-500 text-emerald-500 shrink-0" />
+            <Cloud className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
+            <span className="font-mono font-semibold text-[11px] truncate max-w-[110px]">
+              {authUser?.displayName || firebaseUser.email?.split("@")[0]}
             </span>
-            <button
-              onClick={handleGoogleLogout}
-              className="ml-1 text-slate-500 hover:text-red-500 cursor-pointer"
-              title="Se déconnecter"
-            >
+            <button onClick={handleGoogleLogout} className="ml-0.5 p-0.5 text-slate-400 hover:text-rose-500 cursor-pointer transition-colors rounded" title="Se deconnecter">
               <LogOut className="w-3 h-3" />
             </button>
           </div>
         ) : (
           <button
             onClick={onOpenAuthModal}
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-cyan-200 dark:border-cyan-800 bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-950/60 dark:hover:bg-cyan-900/60 text-cyan-800 dark:text-cyan-300 text-xs font-semibold cursor-pointer transition-colors shadow-xs"
-            title="Connexion Sécurisée (Email / Mot de passe ou Google)"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-cyan-200 dark:border-cyan-800/60 bg-cyan-50/70 hover:bg-cyan-100/80 dark:bg-cyan-950/40 dark:hover:bg-cyan-900/50 text-cyan-800 dark:text-cyan-300 text-xs font-semibold cursor-pointer transition-all active:scale-95"
+            title="Connexion securisee"
           >
             <LogIn className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
             <span className="hidden lg:inline text-[11px]">Connexion</span>
           </button>
         )}
 
-        {/* Quick Role Switcher Dropdown (Desktop & Tablet) */}
+        {/* Role Switcher md+ only */}
         <div className="relative hidden md:block">
-          <button
-            onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-            className="flex items-center gap-2 bg-white hover:bg-slate-100 border-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-slate-800 dark:hover:border-slate-700 border px-2.5 sm:px-3 py-1.5 rounded-xl cursor-pointer transition-all shadow-xs"
-            title="Changer de rôle pour tester les accès"
-          >
-            <div className="w-6 h-6 rounded-lg bg-cyan-50 dark:bg-cyan-950 border border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300 flex items-center justify-center text-[11px] font-bold shrink-0">
-              <UserCheck className="w-3.5 h-3.5" />
+          <button onClick={() => setRoleDropdownOpen(!roleDropdownOpen)} className="nav-action-btn" title="Changer de role">
+            <div className="w-5 h-5 rounded-lg bg-cyan-50 dark:bg-cyan-950/80 border border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300 flex items-center justify-center shrink-0">
+              <UserCheck className="w-3 h-3" />
             </div>
-            <div className="text-left">
-              <p className="text-xs font-semibold text-slate-900 dark:text-white leading-tight flex items-center gap-1">
-                <span>{currentRoleConfig.shortLabel}</span>
-              </p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[130px]">{currentUser.displayName}</p>
+            <div className="text-left hidden lg:block">
+              <p className="text-[11px] font-bold text-slate-900 dark:text-white leading-none">{currentRoleConfig.shortLabel}</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate max-w-[90px] leading-none mt-0.5">{currentUser.displayName}</p>
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0 ml-0.5" />
+            <ChevronDown className="w-3 h-3 text-slate-400 shrink-0" />
           </button>
 
-          {/* Dropdown Menu */}
           {roleDropdownOpen && (
             <>
-              <div
-                className="fixed inset-0 z-40"
-                onClick={() => setRoleDropdownOpen(false)}
-              />
-              <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-2 z-50 text-xs">
-                <div className="px-3 py-2 border-b border-slate-200 dark:border-slate-800 mb-1">
-                  <p className="text-slate-500 dark:text-slate-400 text-[10px] uppercase font-bold tracking-wider">
-                    Sélecteur de Rôle &amp; Droits d'Accès
-                  </p>
-                  <p className="text-slate-900 dark:text-white text-xs font-semibold mt-0.5">
-                    Tester l'affichage des onglets par métier
-                  </p>
+              <div className="fixed inset-0 z-40" onClick={() => setRoleDropdownOpen(false)} />
+              <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-2 z-50 backdrop-blur-md animate-slide-up">
+                <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-800 mb-1">
+                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Selecteur de Role &amp; Droits</p>
+                  <p className="text-xs font-semibold text-slate-900 dark:text-white mt-0.5">Tester l&apos;affichage par metier</p>
                 </div>
-
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   {availableRoles.map((roleKey) => {
                     const cfg = ROLE_CONFIGS[roleKey];
                     const isSelected = currentUser.role === roleKey;
-
                     return (
                       <button
                         key={roleKey}
                         onClick={() => handleSelectRole(roleKey)}
-                        className={`w-full p-2.5 rounded-xl text-left flex items-start justify-between gap-2 transition-colors cursor-pointer ${
-                          isSelected
-                            ? 'bg-cyan-50 dark:bg-cyan-600/20 border border-cyan-300 dark:border-cyan-500/50 text-cyan-900 dark:text-cyan-200'
-                            : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
-                        }`}
+                        className={`w-full p-2.5 rounded-xl text-left flex items-start justify-between gap-2 transition-all cursor-pointer ${isSelected ? "bg-cyan-50 dark:bg-cyan-950/50 border border-cyan-200 dark:border-cyan-800" : "hover:bg-slate-50 dark:hover:bg-slate-800/60 border border-transparent"}`}
                       >
                         <div>
                           <div className="flex items-center gap-1.5">
                             <span className="font-bold text-slate-900 dark:text-white text-xs">{cfg.title}</span>
-                            {roleKey === 'dg' && (
-                              <span className="text-[9px] bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 px-1 py-0.2 rounded border border-emerald-300 dark:border-emerald-800 font-semibold">
-                                100% Onglets
-                              </span>
+                            {roleKey === "dg" && (
+                              <span className="text-[9px] bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 px-1 py-px rounded border border-emerald-200 dark:border-emerald-800 font-bold">100%</span>
                             )}
                           </div>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                            {cfg.defaultUserName} ({cfg.department.toUpperCase()})
-                          </p>
-                          <p className="text-[10px] text-slate-400 dark:text-slate-500 line-clamp-1 mt-0.5">
-                            {cfg.description}
-                          </p>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{cfg.defaultUserName} · {cfg.department.toUpperCase()}</p>
                         </div>
-
                         {isSelected && (
-                          <span className="p-1 bg-cyan-600 dark:bg-cyan-500 text-white dark:text-slate-950 rounded-full mt-0.5 shrink-0">
-                            <Check className="w-3 h-3 stroke-[3]" />
-                          </span>
+                          <span className="p-1 bg-cyan-600 text-white rounded-full mt-0.5 shrink-0"><Check className="w-3 h-3 stroke-[3]" /></span>
                         )}
                       </button>
                     );
@@ -235,58 +199,39 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
         </div>
 
-        {/* Dark/Light Theme Toggle Button */}
-        <button
-          onClick={toggleTheme}
-          className="p-2 sm:px-3 sm:py-1.5 rounded-xl border transition-all text-xs font-semibold cursor-pointer bg-white hover:bg-slate-100 border-slate-200 text-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:border-slate-800 dark:text-slate-300 shadow-xs flex items-center gap-1.5"
-          title={theme === 'dark' ? 'Basculer en Mode Clair' : 'Basculer en Mode Sombre'}
-          aria-label="Basculer le mode sombre ou clair"
-        >
-          {theme === 'dark' ? (
-            <>
-              <Sun className="w-4 h-4 text-amber-400" />
-              <span className="hidden md:inline text-amber-300">Clair</span>
-            </>
+        {/* Theme Toggle hidden on mobile */}
+        <button onClick={toggleTheme} className="hidden sm:flex nav-action-btn p-2 sm:px-3 sm:py-1.5" title={theme === "dark" ? "Mode Clair" : "Mode Sombre"} aria-label="Basculer le mode">
+          {theme === "dark" ? (
+            <><Sun className="w-4 h-4 text-amber-400" /><span className="hidden lg:inline text-amber-500 font-semibold">Clair</span></>
           ) : (
-            <>
-              <Moon className="w-4 h-4 text-indigo-600" />
-              <span className="hidden md:inline text-slate-800 font-medium">Sombre</span>
-            </>
+            <><Moon className="w-4 h-4 text-indigo-500" /><span className="hidden lg:inline text-slate-700 font-semibold">Sombre</span></>
           )}
         </button>
 
-        {/* Prominent Smart Scanner button */}
+        {/* Scanner CTA always visible */}
         <button
           onClick={onOpenScanner}
-          className="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5 sm:gap-2 shadow-md shadow-amber-500/20 transition-transform active:scale-95 cursor-pointer shrink-0"
-          title="Numériser un document"
+          className="scanner-btn-glow flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black rounded-xl text-xs cursor-pointer transition-all active:scale-95 shrink-0"
+          title="Numeriser un document"
         >
-          <Camera className="w-4 h-4" />
-          <span className="hidden sm:inline">Scanner</span>
+          <Camera className="w-4 h-4 stroke-[2.5]" />
+          <span className="hidden sm:inline font-bold">Scanner</span>
         </button>
 
-        {/* Notifications button */}
+        {/* Notifications */}
         {onOpenNotifications && (
-          <button
-            onClick={onOpenNotifications}
-            className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-900 rounded-xl transition-colors cursor-pointer relative shrink-0"
-            title="Centre de Notifications"
-          >
+          <button onClick={onOpenNotifications} className="relative p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100/80 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-900/80 transition-all cursor-pointer active:scale-95 shrink-0" title="Notifications">
             <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
             {unreadNotificationsCount > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-bold text-[9px] flex items-center justify-center animate-pulse">
-                {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
+              <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-bold text-[9px] flex items-center justify-center shadow-sm shadow-rose-500/50">
+                {unreadNotificationsCount > 9 ? "9+" : unreadNotificationsCount}
               </span>
             )}
           </button>
         )}
 
-        {/* Settings button (Desktop only, accessible in menu on mobile) */}
-        <button
-          onClick={onOpenSettings}
-          className="hidden sm:flex p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-900 rounded-xl transition-colors cursor-pointer shrink-0"
-          title="Paramètres Cloudinary &amp; Rôles"
-        >
+        {/* Settings desktop only */}
+        <button onClick={onOpenSettings} className="hidden sm:flex p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100/80 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-900/80 transition-all cursor-pointer active:scale-95 shrink-0" title="Parametres">
           <Settings className="w-5 h-5" />
         </button>
       </div>

@@ -67,7 +67,7 @@ export const PREDEFINED_PROFILES: PredefinedProfile[] = [
     },
     roleDescription: 'Supervision des chantiers (Tuyauterie HP Djeno), rapports d\'avancement, photos et dépenses associées.',
     allowedModules: ['projects', 'ged', 'materials', 'settings'],
-    color: 'from-blue-600 to-cyan-600',
+    color: 'from-blue-600 to-emerald-600',
     badge: 'bg-blue-950 text-blue-300 border-blue-800',
     iconName: 'FolderKanban',
   },
