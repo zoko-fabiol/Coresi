@@ -191,3 +191,72 @@ export interface FinanceSettings {
   cashRegisterClosingHour: string;
   mandatoryInvoiceDueDateDays: number;
 }
+
+export interface GmaoSettings {
+  preventiveAlertHours: number;
+  urgentPriorityThresholdCost: number;
+  requireDiagnosticBeforeClosure: boolean;
+  equipmentCategories: string[];
+  autoGenerateWorkOrderOnAlert: boolean;
+}
+
+export interface MissionSettings {
+  perDiemOnshoreFCFA: number;
+  perDiemOffshoreFCFA: number;
+  perDiemInternationalFCFA: number;
+  maxAdvancePercentage: number;
+  justificationDeadlineDays: number;
+  requireDgApprovalAboveFCFA: number;
+}
+
+export interface SiteSettings {
+  defaultBaseSiteId: string;
+  requireDualApprovalForTransfer: boolean;
+  maxTransitDays: number;
+  quarantineRequiredForIncoming: boolean;
+  siteTypes: { id: string; label: string }[];
+}
+
+export interface ReportSettings {
+  defaultApplicableStandards: string[];
+  hydraulicTestPressureFactor: number;
+  hydraulicTestHoldDurationMinutes: number;
+  requireTechnicalDirectorVisa: boolean;
+  defaultSafetyWatermark: string;
+}
+
+export interface PurchaseSettings {
+  approvalTier1LimitFCFA: number;
+  approvalTier2LimitFCFA: number;
+  requireThreeQuotesAboveFCFA: number;
+  deliveryQuantityTolerancePct: number;
+  autoGenerateGoodsReceipt: boolean;
+}
+
+export interface PartnerSettings {
+  defaultPaymentTermDays: number;
+  mandatoryHseDocumentsForSubcontractors: string[];
+  supplierRatingScale: number;
+  requireTaxCertificateNif: boolean;
+}
+
+export interface PayrollSettings {
+  cnssEmployeeRatePct: number;
+  cnssEmployerRatePct: number;
+  standardTransportAllowanceFCFA: number;
+  standardSiteBonusFCFA: number;
+  seniorityBonusRatePerYearPct: number;
+  defaultPaymentMode: string;
+}
+
+export interface PrintSettings {
+  companyHeaderTitle: string;
+  companySubtitle: string;
+  legalFormOhada: string;
+  officialWatermark: string;
+  stampAsmeIsoText: string;
+  defaultSignerLeft: string;
+  defaultSignerRight: string;
+  showQrCode: boolean;
+}
+

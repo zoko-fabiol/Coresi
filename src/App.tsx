@@ -220,6 +220,15 @@ export default function App() {
     const unsubData = DataService.onDataChange(() => {
       reloadData();
     });
+    const unsubAdmin = AdminConfigService.onConfigChange(() => {
+      reloadData();
+      try {
+        const sec = AdminConfigService.getSecuritySettings();
+        if (sec?.idleTimeoutMinutes) {
+          setIdleTimeoutMinutes(sec.idleTimeoutMinutes);
+        }
+      } catch {}
+    });
     testConnection().then((connected) => {
       if (connected) {
         console.log('CORESI ERP: Connexion Cloud Firestore validée.');
@@ -232,6 +241,7 @@ export default function App() {
 
     return () => {
       unsubData();
+      unsubAdmin();
       clearTimeout(splashTimer);
     };
   }, []);

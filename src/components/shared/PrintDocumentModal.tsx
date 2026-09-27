@@ -112,6 +112,7 @@ export const PrintDocumentModal: React.FC<PrintDocumentModalProps> = ({
   if (!isOpen || !documentData) return null;
 
   const comp = AdminConfigService.getCompanySettings();
+  const printCfg = AdminConfigService.getPrintSettings();
 
   const handlePrint = () => {
     printOfficialA4Document('coresi-print-sheet', `${documentData.title} - ${documentData.reference}`);
@@ -222,11 +223,13 @@ export const PrintDocumentModal: React.FC<PrintDocumentModalProps> = ({
             {/* Watermark central de sécurité institutionnelle */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.035] select-none">
               <div className="text-center transform -rotate-12">
-                <p className="text-7xl sm:text-8xl font-black tracking-widest text-[#3B7A2C]">CORESI</p>
-                <p className="text-xl sm:text-2xl font-bold uppercase tracking-widest text-slate-900">
-                  INTERNATIONAL SARL
+                <p className="text-7xl sm:text-8xl font-black tracking-widest text-[#3B7A2C]">
+                  {printCfg.officialWatermark || 'CORESI'}
                 </p>
-                <p className="text-xs uppercase tracking-widest mt-1">Pointe-Noire · République du Congo</p>
+                <p className="text-xl sm:text-2xl font-bold uppercase tracking-widest text-slate-900">
+                  {printCfg.companyHeaderTitle || comp.name || 'INTERNATIONAL SARL'}
+                </p>
+                <p className="text-xs uppercase tracking-widest mt-1">{comp.address || 'Pointe-Noire · République du Congo'}</p>
               </div>
             </div>
 
@@ -244,14 +247,13 @@ export const PrintDocumentModal: React.FC<PrintDocumentModalProps> = ({
                   </div>
                   <div>
                     <h2 className="text-base font-black text-slate-900 tracking-tight leading-none">
-                      CORESI <span className="text-[#3B7A2C]">INTERNATIONAL</span> SARL
+                      {printCfg.companyHeaderTitle || 'CORESI INTERNATIONAL SARL'}
                     </h2>
                     <p className="text-[10px] text-slate-600 font-bold uppercase tracking-wide mt-0.5">
-                      Chaudronnerie · Tuyauterie Haute Pression · Maintenance Industrielle
+                      {printCfg.companySubtitle || 'Chaudronnerie · Tuyauterie Haute Pression · Maintenance Industrielle'}
                     </p>
                     <p className="text-[9px] text-slate-500 mt-1 leading-tight">
-                      Siège : Zone Industrielle, Pointe-Noire · Agence : Brazzaville<br />
-                      RCCM : CG-PNR-01-2018-B12-00452 · NIF : 020181000049281
+                      Siège : {comp.address} · NIF : {comp.taxId} · RCCM : {comp.registrationNumber}
                     </p>
                   </div>
                 </div>
@@ -543,21 +545,25 @@ export const PrintDocumentModal: React.FC<PrintDocumentModalProps> = ({
             <div className="pt-6 border-t border-stone-200 mt-6 space-y-4 relative z-10">
               <div className="grid grid-cols-3 gap-4 text-center text-xs">
                 <div className="p-2 border border-stone-200 rounded-lg bg-stone-50 flex flex-col justify-between h-24">
-                  <span className="text-[9.5px] uppercase font-bold text-slate-500">L'Émetteur / Responsable</span>
+                  <span className="text-[9.5px] uppercase font-bold text-slate-500">
+                    {printCfg.defaultSignerLeft || 'L\'Émetteur / Responsable'}
+                  </span>
                   <div className="text-[10px] text-slate-400 italic">Signature &amp; Date</div>
                   <span className="text-[10px] font-semibold text-slate-700">{documentData.visaText || 'CORESI Opérations'}</span>
                 </div>
 
                 <div className="p-2 border border-stone-200 rounded-lg bg-stone-50 flex flex-col justify-between h-24 items-center">
                   <span className="text-[9.5px] uppercase font-bold text-slate-500">Cachet d'Homologation</span>
-                  <div className="w-14 h-14 border border-dashed border-[#3B7A2C]/60 rounded-full flex items-center justify-center text-[7px] text-[#3B7A2C] font-black uppercase text-center leading-none">
-                    CORESI SARL<br />ASME IX<br />ISO 9606-1
+                  <div className="w-14 h-14 border border-dashed border-[#3B7A2C]/60 rounded-full flex items-center justify-center text-[7px] text-[#3B7A2C] font-black uppercase text-center leading-none px-1">
+                    {printCfg.stampAsmeIsoText || 'CORESI SARL\nASME IX\nISO 9606-1'}
                   </div>
                   <span className="text-[9px] text-emerald-800 font-bold">VALIDÉ DIRECTION</span>
                 </div>
 
                 <div className="p-2 border border-stone-200 rounded-lg bg-stone-50 flex flex-col justify-between h-24">
-                  <span className="text-[9.5px] uppercase font-bold text-slate-500">Direction Générale / Client</span>
+                  <span className="text-[9.5px] uppercase font-bold text-slate-500">
+                    {printCfg.defaultSignerRight || 'Direction Générale / Client'}
+                  </span>
                   <div className="text-[10px] text-slate-400 italic">Mention "Bon pour accord"</div>
                   <span className="text-[10px] font-semibold text-slate-700">Dr. Joseph Ndoundo (DG)</span>
                 </div>
@@ -565,7 +571,7 @@ export const PrintDocumentModal: React.FC<PrintDocumentModalProps> = ({
 
               {/* Micro-footer */}
               <div className="flex justify-between text-[8px] text-slate-400 border-t border-stone-100 pt-1">
-                <span>CORESI INTERNATIONAL SARL · Logiciel Certifié Gestion &amp; GED Industrielle v2.0</span>
+                <span>{printCfg.legalFormOhada || `${comp.name} · Logiciel Certifié Gestion & GED Industrielle v2.0`}</span>
                 <span>Document généré le {new Date().toLocaleDateString('fr-FR')} · Page 1 / 1</span>
               </div>
             </div>

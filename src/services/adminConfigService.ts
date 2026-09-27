@@ -13,6 +13,14 @@ import {
   StockSettings,
   HrSettings,
   FinanceSettings,
+  GmaoSettings,
+  MissionSettings,
+  SiteSettings,
+  ReportSettings,
+  PurchaseSettings,
+  PartnerSettings,
+  PayrollSettings,
+  PrintSettings,
 } from '../types/admin';
 import { db } from '../firebase';
 import { doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
@@ -181,32 +189,18 @@ export const INITIAL_MODULES: SystemModule[] = [
     iconName: 'ShoppingBag',
   },
   {
-    id: 'clients',
-    name: 'Clients & Donneurs d\'ordre',
+    id: 'partners',
+    name: 'Clients, Fournisseurs & Tiers',
     category: 'operations',
-    description: 'Répertoire des multinationales pétrolières, minières et BTP (TotalEnergies, Perenco, SNH...).',
+    description: 'Répertoire des multinationales pétrolières (TotalEnergies, Perenco), fournisseurs d\'aciers et sous-traitants agréés.',
     enabled: true,
     enabledAt: '2026-01-01T08:00:00Z',
     updatedAt: '2026-09-25T07:00:00Z',
     updatedBy: 'Dr. Joseph Ndoundo (DG)',
     dependencies: [],
-    featuresCount: 4,
-    activeFeaturesCount: 4,
+    featuresCount: 8,
+    activeFeaturesCount: 8,
     iconName: 'Building2',
-  },
-  {
-    id: 'suppliers',
-    name: 'Fournisseurs & Sous-traitants',
-    category: 'operations',
-    description: 'Catalogue des fournisseurs d\'aciers spéciaux, gaz industriels, boulonnerie et contrôles CND.',
-    enabled: true,
-    enabledAt: '2026-01-01T08:00:00Z',
-    updatedAt: '2026-09-25T07:00:00Z',
-    updatedBy: 'Dr. Joseph Ndoundo (DG)',
-    dependencies: [],
-    featuresCount: 4,
-    activeFeaturesCount: 4,
-    iconName: 'Truck',
   },
   {
     id: 'reports',
@@ -294,10 +288,10 @@ export const INITIAL_MODULES: SystemModule[] = [
     iconName: 'CreditCard',
   },
   {
-    id: 'advanced_accounting',
-    name: 'Comptabilité Avancée',
+    id: 'accounting',
+    name: 'Comptabilité Avancée & SYSCOHADA',
     category: 'finance',
-    description: 'Rapprochement bancaire, grand livre analytique par chantier et clôture périodique de caisse.',
+    description: 'Plan comptable OHADA, rapprochement bancaire, grand livre analytique par chantier et clôture de caisse.',
     enabled: true,
     enabledAt: '2026-01-01T08:00:00Z',
     updatedAt: '2026-09-25T07:00:00Z',
@@ -308,10 +302,10 @@ export const INITIAL_MODULES: SystemModule[] = [
     iconName: 'Calculator',
   },
   {
-    id: 'multi_sites',
+    id: 'sites',
     name: 'Multi-Sites & Chantiers Déportés',
     category: 'operations',
-    description: 'Gestion centralisée de multiples bases opérationnelles (Pointe-Noire, Brazzaville, Port-Gentil).',
+    description: 'Gestion centralisée de multiples bases opérationnelles (Pointe-Noire, Brazzaville, Port-Gentil, Djéno).',
     enabled: true,
     enabledAt: '2026-01-01T08:00:00Z',
     updatedAt: '2026-09-25T07:00:00Z',
@@ -883,15 +877,229 @@ export const INITIAL_NOTIFICATIONS_SETTINGS: NotificationSetting[] = [
   { id: 'notif_expense_pending', event: 'Nouvelle dépense en attente d\'approbation', description: 'Soumission d\'un achat chantier supérieur au seuil', enabled: true, channels: { internal: true, email: true, push: true }, priority: 'high', recipientsRole: ['dg', 'comptable'], delayMinutes: 0 },
 ];
 
+// 9. Initial Finance Settings
+export const INITIAL_FINANCE_SETTINGS: FinanceSettings = {
+  currency: 'FCFA',
+  vatRatePct: 18,
+  applyVatByDefault: true,
+  paymentMethods: ['Virement Bancaire', 'Chèque', 'Espèces / Caisse', 'Mobile Money (Airtel/MTN)'],
+  pettyCashLimit: 2500000,
+  cashRegisterAutoCloseDaily: true,
+  cashRegisterClosingHour: '18:00',
+  mandatoryInvoiceDueDateDays: 30,
+};
+
+// 10. Initial GED Settings
+export const INITIAL_GED_SETTINGS: GedSettings = {
+  allowedCategories: ['factures', 'devis', 'bons_commande', 'bons_livraison', 'rapports', 'plans', 'contrats', 'certificats', 'paie', 'qhse'],
+  maxUploadSizeBytes: 25 * 1024 * 1024,
+  retentionYears: 10,
+  mandatoryDocumentsPerProject: [
+    'Bon de commande ou Contrat client',
+    'Plan Assurance Qualité (PAQ)',
+    'Licence de soudage 6G à jour',
+    'Attestation de ressuage COFREND',
+    'PV d\'épreuve hydraulique finale',
+  ],
+  versioningEnabled: true,
+  signatureEnabled: true,
+  autoTagging: true,
+};
+
+// 11. Initial Scanner & OCR Settings
+export const INITIAL_SCANNER_OCR_SETTINGS: ScannerOcrSettings = {
+  scannerEnabled: true,
+  ocrEnabled: true,
+  autoDetectEdges: true,
+  perspectiveCorrection: true,
+  imageEnhancement: true,
+  multiPageSupport: true,
+  ocrLanguage: 'fra+eng',
+  pdfQuality: 'high',
+  autoExtraction: true,
+  requireHumanValidation: true,
+};
+
+// 12. Initial Project Settings
+export const INITIAL_PROJECT_SETTINGS: ProjectSettings = {
+  statuses: [
+    { id: 'planned', label: 'Planifié', color: 'slate' },
+    { id: 'in_progress', label: 'En cours', color: 'cyan' },
+    { id: 'completed', label: 'Livré / Réceptionné', color: 'emerald' },
+    { id: 'on_hold', label: 'En attente', color: 'amber' },
+  ],
+  categories: [
+    { id: 'chaudronnerie', label: 'Chaudronnerie & Mécano-Soudure' },
+    { id: 'tuyauterie', label: 'Tuyauterie Haute Pression & Piping' },
+    { id: 'genie_civil', label: 'Génie Civil & Charpente Métallique' },
+    { id: 'offshore', label: 'Maintenance Pétrolière Offshore' },
+  ],
+  budgetWarningThresholdPct: 80,
+  budgetCriticalThresholdPct: 95,
+  mandatoryReportFrequencyDays: 7,
+  requireWeeklySafetyBriefing: true,
+};
+
+// 13. Initial Stock Settings
+export const INITIAL_STOCK_SETTINGS: StockSettings = {
+  minStockAlertGlobal: 10,
+  enableMultiWarehouses: true,
+  warehouses: [
+    { id: 'mag_central', name: 'Magasin Central Base Mongo Kamba', location: 'Pointe-Noire' },
+    { id: 'depot_djeno', name: 'Dépôt Avancé Terminal Djéno', location: 'Djéno Onshore' },
+    { id: 'mag_bzv', name: 'Antenne Logistique Brazzaville', location: 'Brazzaville' },
+  ],
+  requireReturnReceipt: true,
+  serialNumberTracking: true,
+  batchTracking: true,
+  maintenanceAlertHours: 250,
+};
+
+// 14. Initial HR Settings
+export const INITIAL_HR_SETTINGS: HrSettings = {
+  contractTypes: ['CDI (Durée Indéterminée)', 'CDD (Durée Déterminée)', 'Prestation Chantier', 'Stage Professionnel'],
+  departments: [
+    'Direction Générale',
+    'Chaudronnerie & Tuyauterie',
+    'Ingénierie & Bureau d\'Études',
+    'Comptabilité & Finances',
+    'Ressources Humaines',
+    'Logistique & Magasin',
+    'QHSE & Contrôles CND',
+  ],
+  positions: ['Ingénieur Projet', 'Chef de Chantier', 'Soudeur Homologué 6G', 'Tuyauteur Industriel', 'Contrôleur Qualité CND', 'Mécanicien Engins', 'Magasinier', 'Comptable'],
+  leaveTypes: ['Congé Payé Annuel', 'Congé Maladie', 'Permission Exceptionnelle', 'Récupération Chantier'],
+  certificationAlertDaysBeforeExpiry: 30,
+  enablePayrollModule: true,
+};
+
+// 15. Initial GMAO Settings
+export const INITIAL_GMAO_SETTINGS: GmaoSettings = {
+  preventiveAlertHours: 250,
+  urgentPriorityThresholdCost: 500000,
+  requireDiagnosticBeforeClosure: true,
+  equipmentCategories: ['soudage', 'usinage', 'levage', 'compresseur', 'generateur', 'vehicule'],
+  autoGenerateWorkOrderOnAlert: true,
+};
+
+// 16. Initial Mission Settings
+export const INITIAL_MISSION_SETTINGS: MissionSettings = {
+  perDiemOnshoreFCFA: 25000,
+  perDiemOffshoreFCFA: 50000,
+  perDiemInternationalFCFA: 85000,
+  maxAdvancePercentage: 50,
+  justificationDeadlineDays: 8,
+  requireDgApprovalAboveFCFA: 500000,
+};
+
+// 17. Initial Site Settings
+export const INITIAL_SITE_SETTINGS: SiteSettings = {
+  defaultBaseSiteId: 'site-pnr-central',
+  requireDualApprovalForTransfer: true,
+  maxTransitDays: 3,
+  quarantineRequiredForIncoming: false,
+  siteTypes: [
+    { id: 'headquarters', label: 'Siège & Ateliers Centraux' },
+    { id: 'construction_site', label: 'Chantier BTP / Tuyauterie' },
+    { id: 'branch', label: 'Antenne / Filiale' },
+    { id: 'temporary_site', label: 'Chantier Temporaire / Offshore' },
+    { id: 'warehouse', label: 'Dépôt / Entrepôt' },
+  ],
+};
+
+// 18. Initial Report Settings
+export const INITIAL_REPORT_SETTINGS: ReportSettings = {
+  defaultApplicableStandards: ['ASME B31.3', 'ASME IX', 'CODAP 2020', 'ISO 9606-1', 'ISO 9001:2015', 'DESP 2014/68/UE'],
+  hydraulicTestPressureFactor: 1.5,
+  hydraulicTestHoldDurationMinutes: 30,
+  requireTechnicalDirectorVisa: true,
+  defaultSafetyWatermark: 'CORESI INTERNATIONAL SARL',
+};
+
+// 19. Initial Purchase Settings
+export const INITIAL_PURCHASE_SETTINGS: PurchaseSettings = {
+  approvalTier1LimitFCFA: 250000,
+  approvalTier2LimitFCFA: 1500000,
+  requireThreeQuotesAboveFCFA: 1500000,
+  deliveryQuantityTolerancePct: 5,
+  autoGenerateGoodsReceipt: true,
+};
+
+// 20. Initial Partner Settings
+export const INITIAL_PARTNER_SETTINGS: PartnerSettings = {
+  defaultPaymentTermDays: 30,
+  mandatoryHseDocumentsForSubcontractors: [
+    'Attestation d\'Assurance RC Pro en cours',
+    'Plan Particulier de Sécurité et Protection de la Santé (PPSPS)',
+    'Certificats d\'aptitude médicale du personnel déployé',
+    'Attestation de régularité fiscale & sociale (CNSS)',
+  ],
+  supplierRatingScale: 5,
+  requireTaxCertificateNif: true,
+};
+
+// 21. Initial Payroll Settings
+export const INITIAL_PAYROLL_SETTINGS: PayrollSettings = {
+  cnssEmployeeRatePct: 4.0,
+  cnssEmployerRatePct: 8.0,
+  standardTransportAllowanceFCFA: 25000,
+  standardSiteBonusFCFA: 45000,
+  seniorityBonusRatePerYearPct: 2.0,
+  defaultPaymentMode: 'Virement bancaire',
+};
+
+// 22. Initial Print Settings
+export const INITIAL_PRINT_SETTINGS: PrintSettings = {
+  companyHeaderTitle: 'CORESI INTERNATIONAL SARL',
+  companySubtitle: 'Travaux Industriels, Chaudronnerie, Tuyauterie & Maintenance Pétrolière',
+  legalFormOhada: 'SARL au capital de 10 000 000 FCFA • RCCM CG-PNR-01-2018-B12-00452',
+  officialWatermark: 'CORESI INTERNATIONAL SARL',
+  stampAsmeIsoText: 'CORESI SARL\nASME IX\nISO 9606-1',
+  defaultSignerLeft: 'Le Responsable Technique / Chantier',
+  defaultSignerRight: 'Dr. Joseph Ndoundo (Directeur Général)',
+  showQrCode: true,
+};
+
 export class AdminConfigService {
+  private static listeners: (() => void)[] = [];
+
+  public static onConfigChange(callback: () => void): () => void {
+    this.listeners.push(callback);
+    return () => {
+      this.listeners = this.listeners.filter((cb) => cb !== callback);
+    };
+  }
+
+  public static notifyListeners(): void {
+    this.listeners.forEach((cb) => {
+      try {
+        cb();
+      } catch (err) {
+        console.warn('Config change listener error:', err);
+      }
+    });
+  }
+
   // Modules
   public static getModules(): SystemModule[] {
     return getLocal<SystemModule[]>('modules', INITIAL_MODULES);
   }
 
   public static isModuleEnabled(moduleId: string): boolean {
+    const aliasMap: Record<string, string> = {
+      multi_sites: 'sites',
+      sites: 'sites',
+      advanced_accounting: 'accounting',
+      accounting: 'accounting',
+      clients: 'partners',
+      suppliers: 'partners',
+      partners: 'partners',
+      stock: 'materials',
+      materials: 'materials',
+    };
+    const resolvedId = aliasMap[moduleId] || moduleId;
     const modules = this.getModules();
-    const mod = modules.find((m) => m.id === moduleId);
+    const mod = modules.find((m) => m.id === resolvedId);
     return mod ? mod.enabled : false;
   }
 
@@ -952,6 +1160,7 @@ export class AdminConfigService {
       console.warn('Firestore sync notice for modules:', e);
     }
 
+    this.notifyListeners();
     return { success: true, message: `Module ${target.name} mis à jour avec succès.` };
   }
 
@@ -997,6 +1206,7 @@ export class AdminConfigService {
       await setDoc(doc(db, 'settings', 'features'), { list: features, updatedAt: new Date().toISOString() });
     } catch {}
 
+    this.notifyListeners();
     return true;
   }
 
@@ -1182,6 +1392,203 @@ export class AdminConfigService {
     try {
       await setDoc(doc(db, 'settings', 'notifications'), { list: settings, updatedAt: new Date().toISOString() });
     } catch {}
+    this.notifyListeners();
+  }
+
+  // 1. Finance Settings
+  public static getFinanceSettings(): FinanceSettings {
+    return getLocal<FinanceSettings>('finance_settings', INITIAL_FINANCE_SETTINGS);
+  }
+
+  public static async saveFinanceSettings(settings: FinanceSettings): Promise<void> {
+    setLocal('finance_settings', settings);
+    DataService.logAudit('admin_finance_saved', 'finance_settings', 'main', `Paramètres financiers modifiés (TVA: ${settings.vatRatePct}%, Devise: ${settings.currency})`);
+    try {
+      await setDoc(doc(db, 'settings', 'finance'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
+  }
+
+  // 2. GED Settings
+  public static getGedSettings(): GedSettings {
+    return getLocal<GedSettings>('ged_settings', INITIAL_GED_SETTINGS);
+  }
+
+  public static async saveGedSettings(settings: GedSettings): Promise<void> {
+    setLocal('ged_settings', settings);
+    DataService.logAudit('admin_ged_saved', 'ged_settings', 'main', `Paramètres GED mis à jour (Rétention: ${settings.retentionYears} ans, Taille max: ${settings.maxUploadSizeBytes / (1024 * 1024)} Mo)`);
+    try {
+      await setDoc(doc(db, 'settings', 'ged'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
+  }
+
+  // 3. Scanner & OCR Settings
+  public static getScannerOcrSettings(): ScannerOcrSettings {
+    return getLocal<ScannerOcrSettings>('scanner_ocr_settings', INITIAL_SCANNER_OCR_SETTINGS);
+  }
+
+  public static async saveScannerOcrSettings(settings: ScannerOcrSettings): Promise<void> {
+    setLocal('scanner_ocr_settings', settings);
+    DataService.logAudit('admin_scanner_saved', 'scanner_ocr_settings', 'main', `Configuration du scanner et moteur OCR mise à jour.`);
+    try {
+      await setDoc(doc(db, 'settings', 'scanner_ocr'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
+  }
+
+  // 4. Project Settings
+  public static getProjectSettings(): ProjectSettings {
+    return getLocal<ProjectSettings>('project_settings', INITIAL_PROJECT_SETTINGS);
+  }
+
+  public static async saveProjectSettings(settings: ProjectSettings): Promise<void> {
+    setLocal('project_settings', settings);
+    DataService.logAudit('admin_projects_saved', 'project_settings', 'main', `Paramètres projets & alertes budget (Alerte: ${settings.budgetWarningThresholdPct}%, Critique: ${settings.budgetCriticalThresholdPct}%) mis à jour.`);
+    try {
+      await setDoc(doc(db, 'settings', 'projects'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
+  }
+
+  // 5. Stock Settings
+  public static getStockSettings(): StockSettings {
+    return getLocal<StockSettings>('stock_settings', INITIAL_STOCK_SETTINGS);
+  }
+
+  public static async saveStockSettings(settings: StockSettings): Promise<void> {
+    setLocal('stock_settings', settings);
+    DataService.logAudit('admin_stock_saved', 'stock_settings', 'main', `Paramètres des stocks & dépôts modifiés.`);
+    try {
+      await setDoc(doc(db, 'settings', 'stock'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
+  }
+
+  // 6. HR Settings
+  public static getHrSettings(): HrSettings {
+    return getLocal<HrSettings>('hr_settings', INITIAL_HR_SETTINGS);
+  }
+
+  public static async saveHrSettings(settings: HrSettings): Promise<void> {
+    setLocal('hr_settings', settings);
+    DataService.logAudit('admin_hr_saved', 'hr_settings', 'main', `Paramètres ressources humaines & contrats mis à jour.`);
+    try {
+      await setDoc(doc(db, 'settings', 'hr'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
+  }
+
+  // 7. GMAO Settings
+  public static getGmaoSettings(): GmaoSettings {
+    return getLocal<GmaoSettings>('gmao_settings', INITIAL_GMAO_SETTINGS);
+  }
+
+  public static async saveGmaoSettings(settings: GmaoSettings): Promise<void> {
+    setLocal('gmao_settings', settings);
+    DataService.logAudit('admin_gmao_saved', 'gmao_settings', 'main', `Paramètres GMAO & révisions périodiques mis à jour.`);
+    try {
+      await setDoc(doc(db, 'settings', 'gmao'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
+  }
+
+  // 8. Mission Settings
+  public static getMissionSettings(): MissionSettings {
+    return getLocal<MissionSettings>('mission_settings', INITIAL_MISSION_SETTINGS);
+  }
+
+  public static async saveMissionSettings(settings: MissionSettings): Promise<void> {
+    setLocal('mission_settings', settings);
+    DataService.logAudit('admin_mission_saved', 'mission_settings', 'main', `Barème des perdiems et gestion des avances de mission modifiés.`);
+    try {
+      await setDoc(doc(db, 'settings', 'missions'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
+  }
+
+  // 9. Site Settings
+  public static getSiteSettings(): SiteSettings {
+    return getLocal<SiteSettings>('site_settings', INITIAL_SITE_SETTINGS);
+  }
+
+  public static async saveSiteSettings(settings: SiteSettings): Promise<void> {
+    setLocal('site_settings', settings);
+    DataService.logAudit('admin_sites_saved', 'site_settings', 'main', `Paramètres des bases et transferts inter-sites mis à jour.`);
+    try {
+      await setDoc(doc(db, 'settings', 'sites'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
+  }
+
+  // 10. Report Settings
+  public static getReportSettings(): ReportSettings {
+    return getLocal<ReportSettings>('report_settings', INITIAL_REPORT_SETTINGS);
+  }
+
+  public static async saveReportSettings(settings: ReportSettings): Promise<void> {
+    setLocal('report_settings', settings);
+    DataService.logAudit('admin_reports_saved', 'report_settings', 'main', `Normes d'épreuve et d'inspection technique mises à jour.`);
+    try {
+      await setDoc(doc(db, 'settings', 'reports'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
+  }
+
+  // 11. Purchase Settings
+  public static getPurchaseSettings(): PurchaseSettings {
+    return getLocal<PurchaseSettings>('purchase_settings', INITIAL_PURCHASE_SETTINGS);
+  }
+
+  public static async savePurchaseSettings(settings: PurchaseSettings): Promise<void> {
+    setLocal('purchase_settings', settings);
+    DataService.logAudit('admin_purchases_saved', 'purchase_settings', 'main', `Seuils de commande et règles d'achat modifiés.`);
+    try {
+      await setDoc(doc(db, 'settings', 'purchases'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
+  }
+
+  // 12. Partner Settings
+  public static getPartnerSettings(): PartnerSettings {
+    return getLocal<PartnerSettings>('partner_settings', INITIAL_PARTNER_SETTINGS);
+  }
+
+  public static async savePartnerSettings(settings: PartnerSettings): Promise<void> {
+    setLocal('partner_settings', settings);
+    DataService.logAudit('admin_partners_saved', 'partner_settings', 'main', `Conditions d'agrément tiers et délais de règlement mis à jour.`);
+    try {
+      await setDoc(doc(db, 'settings', 'partners'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
+  }
+
+  // 13. Payroll Settings
+  public static getPayrollSettings(): PayrollSettings {
+    return getLocal<PayrollSettings>('payroll_settings', INITIAL_PAYROLL_SETTINGS);
+  }
+
+  public static async savePayrollSettings(settings: PayrollSettings): Promise<void> {
+    setLocal('payroll_settings', settings);
+    DataService.logAudit('admin_payroll_saved', 'payroll_settings', 'main', `Taux CNSS et barèmes de rémunération mis à jour.`);
+    try {
+      await setDoc(doc(db, 'settings', 'payroll'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
+  }
+
+  // 14. Print Settings
+  public static getPrintSettings(): PrintSettings {
+    return getLocal<PrintSettings>('print_settings', INITIAL_PRINT_SETTINGS);
+  }
+
+  public static async savePrintSettings(settings: PrintSettings): Promise<void> {
+    setLocal('print_settings', settings);
+    DataService.logAudit('admin_print_saved', 'print_settings', 'main', `Paramètres d'impression A4 et charte documentaire mis à jour.`);
+    try {
+      await setDoc(doc(db, 'settings', 'print'), { ...settings, updatedAt: new Date().toISOString() });
+    } catch {}
+    this.notifyListeners();
   }
 
   // Reset complete configuration to factory defaults
@@ -1194,8 +1601,23 @@ export class AdminConfigService {
     setLocal('company_settings', INITIAL_COMPANY_SETTINGS);
     setLocal('security_settings', INITIAL_SECURITY_SETTINGS);
     setLocal('notification_settings', INITIAL_NOTIFICATIONS_SETTINGS);
+    setLocal('finance_settings', INITIAL_FINANCE_SETTINGS);
+    setLocal('ged_settings', INITIAL_GED_SETTINGS);
+    setLocal('scanner_ocr_settings', INITIAL_SCANNER_OCR_SETTINGS);
+    setLocal('project_settings', INITIAL_PROJECT_SETTINGS);
+    setLocal('stock_settings', INITIAL_STOCK_SETTINGS);
+    setLocal('hr_settings', INITIAL_HR_SETTINGS);
+    setLocal('gmao_settings', INITIAL_GMAO_SETTINGS);
+    setLocal('mission_settings', INITIAL_MISSION_SETTINGS);
+    setLocal('site_settings', INITIAL_SITE_SETTINGS);
+    setLocal('report_settings', INITIAL_REPORT_SETTINGS);
+    setLocal('purchase_settings', INITIAL_PURCHASE_SETTINGS);
+    setLocal('partner_settings', INITIAL_PARTNER_SETTINGS);
+    setLocal('payroll_settings', INITIAL_PAYROLL_SETTINGS);
+    setLocal('print_settings', INITIAL_PRINT_SETTINGS);
 
     DataService.logAudit('admin_factory_reset', 'system', 'all', 'RÉINITIALISATION GLOBALE : Retour aux paramètres d\'usine de CORESI ERP.');
+    this.notifyListeners();
   }
 
   // Check if current user is authorized to access Administration

@@ -34,6 +34,14 @@ import {
   ChevronRight,
   TrendingUp,
   Download,
+  Wrench,
+  Compass,
+  MapPin,
+  ClipboardCheck,
+  ShoppingCart,
+  Handshake,
+  Calculator,
+  Printer,
 } from 'lucide-react';
 import {
   AdminConfigService,
@@ -79,6 +87,14 @@ export type AdminTab =
   | 'projects'
   | 'stock'
   | 'hr'
+  | 'gmao'
+  | 'missions'
+  | 'sites'
+  | 'reports'
+  | 'purchases'
+  | 'partners'
+  | 'payroll'
+  | 'print'
   | 'notifications'
   | 'numbering'
   | 'security'
@@ -241,12 +257,20 @@ export const AdminModule: React.FC<AdminModuleProps> = ({ onModuleStateChange })
     { id: 'features', label: 'Fonctionnalités', icon: Sliders, badge: `${activeFeaturesCount}/${features.length}`, badgeColor: 'bg-emerald-500/20 text-emerald-400' },
     { id: 'workflows', label: 'Workflows de Validation', icon: GitBranch, badge: workflows.length },
     { id: 'roles', label: 'Rôles & Permissions', icon: ShieldCheck },
-    { id: 'finance', label: 'Paramètres Finance', icon: DollarSign },
-    { id: 'ged', label: 'Paramètres GED', icon: FolderOpen },
+    { id: 'finance', label: 'Finance', icon: DollarSign },
+    { id: 'ged', label: 'GED', icon: FolderOpen },
     { id: 'scanner_ocr', label: 'Scanner & OCR', icon: Camera },
-    { id: 'projects', label: 'Paramètres Projets', icon: FolderKanban },
-    { id: 'stock', label: 'Paramètres Stock', icon: Package },
-    { id: 'hr', label: 'Paramètres RH', icon: Users },
+    { id: 'projects', label: 'Projets & Chantiers', icon: FolderKanban },
+    { id: 'stock', label: 'Stocks & Matériels', icon: Package },
+    { id: 'hr', label: 'RH & Soudeurs', icon: Users },
+    { id: 'gmao', label: 'GMAO & Maintenance', icon: Wrench },
+    { id: 'missions', label: 'Missions & Ordres', icon: Compass },
+    { id: 'sites', label: 'Multi-Sites', icon: MapPin },
+    { id: 'reports', label: 'Rapports & PV Tech.', icon: ClipboardCheck },
+    { id: 'purchases', label: 'Achats & Commandes', icon: ShoppingCart },
+    { id: 'partners', label: 'Partenaires & Tiers', icon: Handshake },
+    { id: 'payroll', label: 'Paie & CNSS', icon: Calculator },
+    { id: 'print', label: 'Impression & A4', icon: Printer },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'numbering', label: 'Numérotation', icon: Hash },
     { id: 'security', label: 'Sécurité & Verrouillage', icon: Lock },
@@ -1002,8 +1026,24 @@ export const AdminModule: React.FC<AdminModuleProps> = ({ onModuleStateChange })
         </div>
       )}
 
-      {/* SPECIALIZED DOMAIN SETTINGS (Finance, GED, Scanner/OCR, Projects, Stock, HR, Notifications) */}
-      {['finance', 'ged', 'scanner_ocr', 'projects', 'stock', 'hr', 'notifications'].includes(activeTab) && (
+      {/* SPECIALIZED DOMAIN SETTINGS (Finance, GED, Scanner/OCR, Projects, Stock, HR, GMAO, Missions, Sites, Reports, Purchases, Partners, Payroll, Print, Notifications) */}
+      {[
+        'finance',
+        'ged',
+        'scanner_ocr',
+        'projects',
+        'stock',
+        'hr',
+        'gmao',
+        'missions',
+        'sites',
+        'reports',
+        'purchases',
+        'partners',
+        'payroll',
+        'print',
+        'notifications',
+      ].includes(activeTab) && (
         <SpecializedSettings
           section={activeTab as any}
           onSaved={(msg) => {
