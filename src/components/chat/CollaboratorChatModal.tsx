@@ -24,7 +24,7 @@ import {
   FileSpreadsheet,
 } from 'lucide-react';
 import { UserProfile } from '../../types';
-import { ChatService, CollaboratorMessage, ChatAttachment } from '../../services/chatService';
+import { ChatService, CollaboratorMessage, ChatAttachment, normalizeUserId } from '../../services/chatService';
 import { iswHrService, ISWEmployee } from '../../services/iswHrService';
 import { AudioMessagePlayer } from './AudioMessagePlayer';
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
@@ -45,6 +45,7 @@ interface CollaboratorChatModalProps {
   onClose: () => void;
   currentUser: UserProfile;
   initialPeerId?: string | null;
+  onUserRoleChange?: (newUser: UserProfile) => void;
 }
 
 export const CollaboratorChatModal: React.FC<CollaboratorChatModalProps> = ({
@@ -52,6 +53,7 @@ export const CollaboratorChatModal: React.FC<CollaboratorChatModalProps> = ({
   onClose,
   currentUser,
   initialPeerId,
+  onUserRoleChange,
 }) => {
   const [messages, setMessages] = useState<CollaboratorMessage[]>([]);
   const [selectedPeerId, setSelectedPeerId] = useState<string | null>(initialPeerId || null);
@@ -175,12 +177,16 @@ export const CollaboratorChatModal: React.FC<CollaboratorChatModalProps> = ({
     return list;
   }, [currentUser]);
 
-  // Si pas de pair sélectionné, prendre le premier par défaut
+  // Si pas de pair sélectionné ou si le pair actuel est l'utilisateur connecté suite à un changement de rôle
   useEffect(() => {
+    const currentNorm = ChatService.normalizeUserId(currentUser?.uid || 'user-dg');
     if (!selectedPeerId && contacts.length > 0) {
       setSelectedPeerId(initialPeerId || contacts[0].id);
+    } else if (selectedPeerId && ChatService.normalizeUserId(selectedPeerId) === currentNorm) {
+      const other = contacts.find((c) => ChatService.normalizeUserId(c.id) !== currentNorm);
+      if (other) setSelectedPeerId(other.id);
     }
-  }, [contacts, selectedPeerId, initialPeerId]);
+  }, [contacts, selectedPeerId, initialPeerId, currentUser?.uid]);
 
   // 2. Synchronisation temps réel des messages
   useEffect(() => {
@@ -212,13 +218,17 @@ export const CollaboratorChatModal: React.FC<CollaboratorChatModalProps> = ({
     return ChatService.getConversationMessages(currentUser.uid, selectedPeerId);
   }, [messages, selectedPeerId, currentUser?.uid]);
 
-  // Calcul du nombre de non lus par contact
+  // Calcul du nombre de non lus par contact avec normalisation bidirectionnelle
   const unreadByContact = useMemo(() => {
     const counts: Record<string, number> = {};
     if (!currentUser?.uid) return counts;
+    const currentNorm = ChatService.normalizeUserId(currentUser.uid);
 
     messages.forEach((m) => {
-      if (m.recipientId === currentUser.uid && !m.isRead) {
+      const recipientNorm = ChatService.normalizeUserId(m.recipientId);
+      if (recipientNorm === currentNorm && !m.isRead) {
+        const senderNorm = ChatService.normalizeUserId(m.senderId);
+        counts[senderNorm] = (counts[senderNorm] || 0) + 1;
         counts[m.senderId] = (counts[m.senderId] || 0) + 1;
       }
     });
@@ -233,7 +243,9 @@ export const CollaboratorChatModal: React.FC<CollaboratorChatModalProps> = ({
     contacts.forEach((c) => {
       const conv = ChatService.getConversationMessages(currentUser.uid, c.id);
       if (conv.length > 0) {
-        map[c.id] = conv[conv.length - 1];
+        const last = conv[conv.length - 1];
+        map[c.id] = last;
+        map[ChatService.normalizeUserId(c.id)] = last;
       }
     });
     return map;
@@ -477,21 +489,59 @@ export const CollaboratorChatModal: React.FC<CollaboratorChatModalProps> = ({
             })}
           </div>
 
-          {/* Footer de profil actif */}
-          <div className="p-3 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between">
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-[#2D6020] text-white flex items-center justify-center font-bold text-xs">
-                {currentUser?.displayName ? currentUser.displayName.charAt(0) : 'U'}
+          {/* Footer de profil actif avec sélecteur de rôle instantané */}
+          <div className="p-3 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-[#2D6020] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                  {currentUser?.displayName ? currentUser.displayName.charAt(0) : 'U'}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
+                    {currentUser?.displayName || 'Utilisateur CORESI'}
+                  </p>
+                  <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
+                    Connecté ({currentUser?.role || 'Admin'})
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <p className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
-                  {currentUser?.displayName || 'Utilisateur CORESI'}
-                </p>
-                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
-                  Connecté ({currentUser?.role || 'Admin'})
-                </p>
-              </div>
+            </div>
+
+            {/* Sélecteur rapide d'identité pour test de conversation en direct */}
+            <div className="pt-1.5 border-t border-slate-100 dark:border-slate-800 flex items-center gap-1.5">
+              <span className="text-[10px] text-slate-400 shrink-0 font-medium">Profil :</span>
+              <select
+                value={ChatService.normalizeUserId(currentUser?.uid || 'user-dg')}
+                onChange={(e) => {
+                  const targetId = e.target.value;
+                  const profiles: Record<string, { role: any; displayName: string; email: string }> = {
+                    'user-dg': { role: 'dg', displayName: 'Fabrice TCHOUENKAM', email: 'direction@coresi-cm.com' },
+                    'user-compta': { role: 'comptable', displayName: 'Béatrice NGAKO', email: 'compta@coresi-cm.com' },
+                    'user-ct': { role: 'chef_projet', displayName: 'Paul BIKELE', email: 'chantiers@coresi-cm.com' },
+                    'user-rh': { role: 'rh', displayName: 'Marcelle EBONGO', email: 'rh@coresi-cm.com' },
+                    'user-be': { role: 'be', displayName: 'Willy Landry DJOPNANG', email: 'etudes@coresi-cm.com' },
+                    'user-magasin': { role: 'magasinier', displayName: 'Alain KOUAM', email: 'magasin@coresi-cm.com' },
+                  };
+                  const matched = profiles[targetId];
+                  if (matched && onUserRoleChange) {
+                    onUserRoleChange({
+                      uid: targetId,
+                      email: matched.email,
+                      displayName: matched.displayName,
+                      role: matched.role,
+                    });
+                  }
+                }}
+                className="w-full text-[11px] font-semibold py-1 px-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#3B7A2C]"
+              >
+                <option value="user-dg">DG - Fabrice TCHOUENKAM</option>
+                <option value="user-compta">Compta - Béatrice NGAKO</option>
+                <option value="user-ct">Chantiers - Paul BIKELE</option>
+                <option value="user-rh">RH - Marcelle EBONGO</option>
+                <option value="user-be">B. Études - Willy Landry DJOPNANG</option>
+                <option value="user-magasin">Magasin - Alain KOUAM</option>
+              </select>
             </div>
           </div>
         </div>
@@ -588,7 +638,7 @@ export const CollaboratorChatModal: React.FC<CollaboratorChatModalProps> = ({
                   </div>
                 ) : (
                   activeConversationMessages.map((msg) => {
-                    const isOutgoing = msg.senderId === (currentUser?.uid || 'user-dg');
+                    const isOutgoing = ChatService.normalizeUserId(msg.senderId) === ChatService.normalizeUserId(currentUser?.uid || 'user-dg');
 
                     return (
                       <div

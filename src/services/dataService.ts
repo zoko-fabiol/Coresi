@@ -110,8 +110,8 @@ function setLocal<T>(key: string, value: T): void {
 export class DataService {
   // Current active user simulation / state
   private static currentUser: UserProfile = {
-    uid: 'coresi-dg-user',
-    email: 'clausephwandji2020@gmail.com',
+    uid: 'user-dg',
+    email: 'direction@coresi-cm.com',
     displayName: 'Dr. Joseph Ndoundo',
     role: 'dg',
     department: 'direction',

@@ -116,13 +116,30 @@ const saveStoredMessages = (messages: CollaboratorMessage[]): void => {
   }
 };
 
+// Normalisation robuste des identifiants utilisateurs et rôles
+export const normalizeUserId = (id: string = ''): string => {
+  if (!id) return 'user-dg';
+  const clean = String(id).trim();
+  if (clean === 'coresi-dg-user' || clean === 'dg' || clean === 'user-dg') return 'user-dg';
+  if (clean === 'user-comptable' || clean === 'comptable' || clean === 'user-compta') return 'user-compta';
+  if (clean === 'user-chef_projet' || clean === 'chef_projet' || clean === 'user-ct') return 'user-ct';
+  if (clean === 'user-magasinier' || clean === 'magasinier' || clean === 'user-magasin') return 'user-magasin';
+  if (clean === 'rh' || clean === 'user-rh') return 'user-rh';
+  if (clean === 'admin' || clean === 'user-admin') return 'user-admin';
+  return clean;
+};
+
 // Système de notification d'écoute temps réel
 type ChatListener = (messages: CollaboratorMessage[]) => void;
 const listeners: ChatListener[] = [];
 
 export const ChatService = {
+  normalizeUserId,
+
   getConversationId: (userAId: string, userBId: string): string => {
-    const sorted = [userAId, userBId].sort();
+    const normA = normalizeUserId(userAId);
+    const normB = normalizeUserId(userBId);
+    const sorted = [normA, normB].sort();
     return `conv_${sorted[0]}_${sorted[1]}`;
   },
 
@@ -131,14 +148,22 @@ export const ChatService = {
   },
 
   getConversationMessages: (userAId: string, userBId: string): CollaboratorMessage[] => {
-    const convId = ChatService.getConversationId(userAId, userBId);
+    const normA = normalizeUserId(userAId);
+    const normB = normalizeUserId(userBId);
+    const convId = ChatService.getConversationId(normA, normB);
     const all = getStoredMessages();
-    return all.filter((m) => m.conversationId === convId);
+    return all.filter((m) => {
+      if (m.conversationId === convId) return true;
+      const s = normalizeUserId(m.senderId);
+      const r = normalizeUserId(m.recipientId);
+      return (s === normA && r === normB) || (s === normB && r === normA);
+    });
   },
 
   getUnreadCountForUser: (userId: string): number => {
+    const normUser = normalizeUserId(userId);
     const all = getStoredMessages();
-    return all.filter((m) => m.recipientId === userId && !m.isRead).length;
+    return all.filter((m) => normalizeUserId(m.recipientId) === normUser && !m.isRead).length;
   },
 
   getUnreadCount: (userId: string): number => {
@@ -146,9 +171,14 @@ export const ChatService = {
   },
 
   getUnreadCountBetween: (userId: string, peerId: string): number => {
-    const convId = ChatService.getConversationId(userId, peerId);
+    const normUser = normalizeUserId(userId);
+    const normPeer = normalizeUserId(peerId);
     const all = getStoredMessages();
-    return all.filter((m) => m.conversationId === convId && m.recipientId === userId && !m.isRead).length;
+    return all.filter((m) => {
+      const s = normalizeUserId(m.senderId);
+      const r = normalizeUserId(m.recipientId);
+      return s === normPeer && r === normUser && !m.isRead;
+    }).length;
   },
 
   sendMessage: async (params: {
@@ -165,18 +195,20 @@ export const ChatService = {
     voiceDuration?: number;
     attachments?: ChatAttachment[];
   }): Promise<CollaboratorMessage> => {
-    const conversationId = ChatService.getConversationId(params.senderId, params.recipientId);
+    const normSender = normalizeUserId(params.senderId);
+    const normRecipient = normalizeUserId(params.recipientId);
+    const conversationId = ChatService.getConversationId(normSender, normRecipient);
     const id = `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     const timestamp = new Date().toISOString();
 
     const newMsg: CollaboratorMessage = {
       id,
       conversationId,
-      senderId: params.senderId,
+      senderId: normSender,
       senderName: params.senderName,
       senderRole: params.senderRole,
       senderEmail: params.senderEmail,
-      recipientId: params.recipientId,
+      recipientId: normRecipient,
       recipientName: params.recipientName,
       recipientRole: params.recipientRole,
       recipientEmail: params.recipientEmail,
@@ -211,7 +243,7 @@ export const ChatService = {
       title: `Message de ${params.senderName}`,
       message: params.text ? (params.text.length > 80 ? params.text.slice(0, 80) + '...' : params.text) : 'Note vocale ou pièce jointe partagée',
       recipientRole: 'all',
-      recipientUserId: params.recipientId,
+      recipientUserId: normRecipient,
       priority: 'high',
       deepLink: 'chat',
     });
@@ -220,12 +252,17 @@ export const ChatService = {
   },
 
   markConversationAsRead: (userId: string, peerId: string): void => {
-    const convId = ChatService.getConversationId(userId, peerId);
+    const normUser = normalizeUserId(userId);
+    const normPeer = normalizeUserId(peerId);
+    const convId = ChatService.getConversationId(normUser, normPeer);
     const all = getStoredMessages();
     let hasChanged = false;
 
     const updated = all.map((m) => {
-      if (m.conversationId === convId && m.recipientId === userId && !m.isRead) {
+      const mRecipient = normalizeUserId(m.recipientId);
+      const mSender = normalizeUserId(m.senderId);
+      const matches = m.conversationId === convId || (mRecipient === normUser && mSender === normPeer);
+      if (matches && mRecipient === normUser && !m.isRead) {
         hasChanged = true;
         return { ...m, isRead: true };
       }
@@ -235,7 +272,7 @@ export const ChatService = {
     if (hasChanged) {
       saveStoredMessages(updated);
       if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('coresi_chat_read', { detail: { userId, peerId } }));
+        window.dispatchEvent(new CustomEvent('coresi_chat_read', { detail: { userId: normUser, peerId: normPeer } }));
       }
       listeners.forEach((cb) => cb(updated));
     }

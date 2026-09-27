@@ -1018,6 +1018,7 @@ export default function App() {
         }}
         currentUser={currentUser}
         initialPeerId={selectedChatPeerId}
+        onUserRoleChange={handleRoleChange}
       />
 
       {/* Notification Toast */}

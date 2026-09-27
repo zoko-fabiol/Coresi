@@ -76,9 +76,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const handleSelectRole = (r: UserRole) => {
     const config = ROLE_CONFIGS[r];
+    let mappedUid = `user-${r}`;
+    if (r === 'comptable') mappedUid = 'user-compta';
+    if (r === 'chef_projet') mappedUid = 'user-ct';
+    if (r === 'magasinier') mappedUid = 'user-magasin';
+
     const updatedUser: UserProfile = {
-      uid: `user-${r}`,
-      email: "clausephwandji2020@gmail.com",
+      uid: mappedUid,
+      email: `${r}@coresi-cm.com`,
       displayName: config.defaultUserName,
       role: r,
       department: config.department,

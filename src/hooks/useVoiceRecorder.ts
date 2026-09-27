@@ -106,18 +106,30 @@ export const useVoiceRecorder = () => {
       mediaRecorder.onstop = () => {
         const mimeType = mediaRecorder.mimeType || 'audio/webm';
         const blob = new Blob(audioChunksRef.current, { type: mimeType });
-        const url = URL.createObjectURL(blob);
 
-        setAudioBlob(blob);
-        setAudioUrl(url);
-        setIsRecording(false);
+        // Conversion en Data URL Base64 pour persistance permanente multi-utilisateurs
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64Url = (reader.result as string) || URL.createObjectURL(blob);
+          setAudioBlob(blob);
+          setAudioUrl(base64Url);
+          setIsRecording(false);
 
-        if (streamRef.current) {
-          streamRef.current.getTracks().forEach((track) => track.stop());
-          streamRef.current = null;
-        }
+          if (streamRef.current) {
+            streamRef.current.getTracks().forEach((track) => track.stop());
+            streamRef.current = null;
+          }
 
-        resolve({ blob, url, duration: finalDuration });
+          resolve({ blob, url: base64Url, duration: finalDuration });
+        };
+        reader.onerror = () => {
+          const fallbackUrl = URL.createObjectURL(blob);
+          setAudioBlob(blob);
+          setAudioUrl(fallbackUrl);
+          setIsRecording(false);
+          resolve({ blob, url: fallbackUrl, duration: finalDuration });
+        };
+        reader.readAsDataURL(blob);
       };
 
       mediaRecorder.stop();

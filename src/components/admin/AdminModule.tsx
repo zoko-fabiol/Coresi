@@ -42,6 +42,7 @@ import {
   Handshake,
   Calculator,
   Printer,
+  Mail,
 } from 'lucide-react';
 import {
   AdminConfigService,
@@ -55,6 +56,9 @@ import {
   INITIAL_NOTIFICATIONS_SETTINGS,
 } from '../../services/adminConfigService';
 import { SpecializedSettings } from './SpecializedSettings';
+import { EmailRemindersModule } from '../reminders/EmailRemindersModule';
+import { runAutomatedRemindersCheck } from '../../services/autoReminderEngine';
+import { getEmailSettings } from '../../services/emailService';
 import {
   SystemModule,
   SystemFeature,
@@ -274,6 +278,13 @@ export const AdminModule: React.FC<AdminModuleProps> = ({ onModuleStateChange })
   const navTabs: { id: AdminTab; label: string; icon: any; badge?: number | string; badgeColor?: string }[] = [
     { id: 'overview', label: 'Vue d\'ensemble', icon: TrendingUp },
     { id: 'users', label: 'Comptes & Rôles', icon: Users },
+    {
+      id: 'notifications',
+      label: 'E-mails & Notifications',
+      icon: Mail,
+      badge: 'AUTO',
+      badgeColor: 'bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/40',
+    },
     { id: 'modules', label: 'Modules Système', icon: Layers, badge: `${activeModulesCount}/${modules.length}`, badgeColor: 'bg-cyan-500/20 text-cyan-400' },
     { id: 'features', label: 'Fonctionnalités', icon: Sliders, badge: `${activeFeaturesCount}/${features.length}`, badgeColor: 'bg-emerald-500/20 text-emerald-400' },
     { id: 'workflows', label: 'Workflows de Validation', icon: GitBranch, badge: workflows.length },
@@ -292,7 +303,6 @@ export const AdminModule: React.FC<AdminModuleProps> = ({ onModuleStateChange })
     { id: 'partners', label: 'Partenaires & Tiers', icon: Handshake },
     { id: 'payroll', label: 'Paie & CNSS', icon: Calculator },
     { id: 'print', label: 'Impression & A4', icon: Printer },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'numbering', label: 'Numérotation', icon: Hash },
     { id: 'security', label: 'Sécurité & Verrouillage', icon: Lock },
     { id: 'company', label: 'Identité Entreprise', icon: Building2 },
@@ -446,6 +456,67 @@ export const AdminModule: React.FC<AdminModuleProps> = ({ onModuleStateChange })
               </div>
             </div>
           </div>
+
+          {/* HERO CARD : PASSERELLE E-MAILS & NOTIFICATIONS AUTOMATIQUES (MIS EN ÉVIDENCE) */}
+          {(() => {
+            const emailCfg = getEmailSettings();
+            return (
+              <div className="bg-gradient-to-r from-emerald-950/80 via-slate-900 to-cyan-950/80 border-2 border-emerald-500/60 hover:border-emerald-400 rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden transition-all">
+                <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0 shadow-lg">
+                      <Mail className="w-7 h-7" />
+                    </div>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                        <span className="text-[10px] uppercase font-black tracking-wider px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-md">
+                          Passerelle &amp; Alertes E-mails
+                        </span>
+                        <span className="text-[10px] font-mono text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-md border border-cyan-800 flex items-center gap-1.5 font-bold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          Fournisseur : {emailCfg.provider}
+                        </span>
+                        <span className="text-[10px] text-slate-300 bg-slate-800 px-2 py-0.5 rounded-md border border-slate-700">
+                          {emailCfg.autoRemindersEnabled ? 'Scan Auto Activé (30 min)' : 'Scan Manuel'}
+                        </span>
+                      </div>
+                      <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
+                        Configuration des Notifications &amp; E-mails Automatiques
+                      </h3>
+                      <p className="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                        Paramétrez votre passerelle d'envoi (EmailJS, Resend, Brevo ou Sandbox), gérez l'adresse d'expédition officielle CORESI et pilotez les relances automatiques d'échéances (factures clients impayées, qualifications soudeurs HSE, échéances des chantiers).
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0">
+                    <button
+                      onClick={async () => {
+                        const res = await runAutomatedRemindersCheck();
+                        showNotification(
+                          `Scan exécuté : ${res.checkedCount} échéances analysées, ${res.sentCount} e-mails expédiés, ${res.skippedCount} doublons ignorés.`
+                        );
+                      }}
+                      className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md"
+                    >
+                      <RefreshCw className="w-4 h-4 text-emerald-400" />
+                      <span>Scanner Maintenant</span>
+                    </button>
+
+                    <button
+                      onClick={() => setActiveTab('notifications')}
+                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-[#3B7A2C] hover:from-emerald-500 hover:to-[#4FA33B] text-white text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-lg hover:shadow-emerald-500/20 active:scale-95"
+                    >
+                      <Settings className="w-4 h-4" />
+                      <span>Accéder à la Configuration</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Quick Hub Navigation Grid */}
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
@@ -1047,7 +1118,55 @@ export const AdminModule: React.FC<AdminModuleProps> = ({ onModuleStateChange })
         </div>
       )}
 
-      {/* SPECIALIZED DOMAIN SETTINGS (Finance, GED, Scanner/OCR, Projects, Stock, HR, GMAO, Missions, Sites, Reports, Purchases, Partners, Payroll, Print, Notifications) */}
+      {/* NOTIFICATIONS & E-MAILS AUTOMATIQUES */}
+      {activeTab === 'notifications' && (
+        <div className="space-y-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 relative overflow-hidden">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0">
+                <Mail className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 rounded-md">
+                    Passerelle &amp; Relances Automatiques
+                  </span>
+                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-800 flex items-center gap-1 font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Moteur de Tâche de Fond Actif
+                  </span>
+                </div>
+                <h2 className="text-xl font-extrabold text-white tracking-tight">
+                  Centre de Configuration des E-mails &amp; Rappels Automatiques
+                </h2>
+                <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
+                  Gérez la passerelle d'envoi (EmailJS, Resend, Brevo ou Sandbox), testez l'expédition en temps réel avec prévisualisation HTML, visualisez le registre quotidien anti-doublon et définissez la matrice des canaux d'alertes.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Module complet des relances et passerelles e-mail */}
+          <EmailRemindersModule />
+
+          {/* Matrice complémentaire des alertes internes / push */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <h3 className="font-bold text-sm text-white flex items-center gap-2">
+              <Bell className="w-4 h-4 text-amber-400" />
+              <span>Matrice des Canaux d'Alerte Système (Interne, E-mail, Push)</span>
+            </h3>
+            <SpecializedSettings
+              section="notifications"
+              onSaved={(msg) => {
+                refreshAllStates();
+                showNotification(msg);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* SPECIALIZED DOMAIN SETTINGS (Finance, GED, Scanner/OCR, Projects, Stock, HR, GMAO, Missions, Sites, Reports, Purchases, Partners, Payroll, Print) */}
       {[
         'finance',
         'ged',
@@ -1063,7 +1182,6 @@ export const AdminModule: React.FC<AdminModuleProps> = ({ onModuleStateChange })
         'partners',
         'payroll',
         'print',
-        'notifications',
       ].includes(activeTab) && (
         <SpecializedSettings
           section={activeTab as any}
