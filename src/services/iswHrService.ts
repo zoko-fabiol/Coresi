@@ -515,6 +515,12 @@ export const iswHrService = {
   },
 
   // Employés
+  getEmployeesSync: (): ISWEmployee[] => {
+    initStorage();
+    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem('sirh_employees') : null;
+    return raw ? JSON.parse(raw) : DEFAULT_EMPLOYEES;
+  },
+
   getEmployees: async (): Promise<ISWEmployee[]> => {
     initStorage();
     const raw = localStorage.getItem('sirh_employees');

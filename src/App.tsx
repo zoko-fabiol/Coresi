@@ -77,7 +77,12 @@ import { PayrollModule } from './components/payroll/PayrollModule';
 import { AccountingModule } from './components/accounting/AccountingModule';
 import { SitesModule } from './components/sites/SitesModule';
 import { NotificationCenterModal } from './components/notifications/NotificationCenterModal';
+import { NotificationDropdown } from './components/notifications/NotificationDropdown';
 import { OcrValidationModal } from './components/ocr/OcrValidationModal';
+import { CollaboratorChatModal } from './components/chat/CollaboratorChatModal';
+import { EmailRemindersModule } from './components/reminders/EmailRemindersModule';
+import { ChatService } from './services/chatService';
+import { runAutomatedRemindersCheck } from './services/autoReminderEngine';
 
 import { SmartScannerModal } from './components/scanner/SmartScannerModal';
 import { DocumentViewerModal } from './components/ged/DocumentViewerModal';
@@ -181,6 +186,12 @@ export default function App() {
   // Advanced Modals
   const [notificationsOpen, setNotificationsOpen] = useState<boolean>(false);
   const [selectedOcrRecord, setSelectedOcrRecord] = useState<OcrResultRecord | null>(null);
+
+  // Chat Collaborateurs & Notifications
+  const [isChatModalOpen, setIsChatModalOpen] = useState<boolean>(false);
+  const [selectedChatPeerId, setSelectedChatPeerId] = useState<string | null>(null);
+  const [unreadChatCount, setUnreadChatCount] = useState<number>(0);
+  const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState<boolean>(false);
 
   // Modal States
   const [scannerOpen, setScannerOpen] = useState<boolean>(false);
@@ -352,9 +363,27 @@ export default function App() {
     }
   };
 
+  // Synchronisation temps réel des messages non-lus du Chat
+  useEffect(() => {
+    const userId = currentUser?.uid || 'user-dg';
+    setUnreadChatCount(ChatService.getUnreadCount(userId));
+    const unsub = ChatService.subscribe(() => {
+      setUnreadChatCount(ChatService.getUnreadCount(userId));
+    });
+    return () => unsub();
+  }, [currentUser]);
+
+  // Scan automatique des rappels d'échéances en arrière-plan
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      runAutomatedRemindersCheck().catch((err) => console.warn('Auto reminder check notice:', err));
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const currentRoleConfig = ROLE_CONFIGS[currentUser.role] || ROLE_CONFIGS.invite;
   const isModuleActive = (modId: string) => {
-    if (modId === 'admin' || modId === 'settings' || modId === 'dashboard') return true;
+    if (modId === 'admin' || modId === 'settings' || modId === 'dashboard' || modId === 'reminders') return true;
     return AdminConfigService.isModuleEnabled(modId);
   };
 
@@ -373,7 +402,9 @@ export default function App() {
         onOpenScanner={() => handleOpenScanner()}
         onOpenSettings={() => setSettingsOpen(true)}
         onLockSession={() => setIsSessionLocked(true)}
-        onOpenNotifications={() => setNotificationsOpen(true)}
+        onOpenChat={() => setIsChatModalOpen(true)}
+        unreadChatCount={unreadChatCount}
+        onOpenNotifications={() => setIsNotificationDropdownOpen(!isNotificationDropdownOpen)}
         unreadNotificationsCount={notifications.filter((n) => !n.read).length}
         onOpenAuthModal={() => setAuthModalOpen(true)}
         onUserRoleChange={handleRoleChange}
@@ -386,6 +417,28 @@ export default function App() {
         onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
         isMobileMenuOpen={mobileMenuOpen}
       />
+
+      {/* Dropdown de notifications connecté sous la cloche de la Navbar */}
+      <div className="relative z-50">
+        <NotificationDropdown
+          isOpen={isNotificationDropdownOpen}
+          onClose={() => setIsNotificationDropdownOpen(false)}
+          notifications={notifications}
+          onRefresh={reloadData}
+          onNavigateToModule={(mod) => {
+            if (isModuleAllowedForRole(mod, currentUser.role)) {
+              setCurrentModule(mod);
+            }
+          }}
+          onOpenChatWithPeer={(peerId) => {
+            setSelectedChatPeerId(peerId || null);
+            setIsChatModalOpen(true);
+          }}
+          onOpenFullCenter={() => {
+            setNotificationsOpen(true);
+          }}
+        />
+      </div>
 
       <div className="flex-1 flex overflow-hidden relative">
         {/* Left Sidebar filtering strictly by role */}
@@ -649,6 +702,10 @@ export default function App() {
                   onRefresh={reloadData}
                   showToast={showToast}
                 />
+              )}
+
+              {currentModule === 'reminders' && (
+                <EmailRemindersModule />
               )}
 
               {currentModule === 'settings' && (
@@ -951,6 +1008,17 @@ export default function App() {
           showToast={showToast}
         />
       )}
+
+      {/* Chat Collaborateurs Modal */}
+      <CollaboratorChatModal
+        isOpen={isChatModalOpen}
+        onClose={() => {
+          setIsChatModalOpen(false);
+          setSelectedChatPeerId(null);
+        }}
+        currentUser={currentUser}
+        initialPeerId={selectedChatPeerId}
+      />
 
       {/* Notification Toast */}
       {toastMessage && (

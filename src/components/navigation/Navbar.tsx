@@ -14,6 +14,7 @@ import {
   X,
   Bell,
   Lock,
+  MessageSquare,
 } from "lucide-react";
 import { UserProfile, UserRole } from "../../types";
 import { ROLE_CONFIGS } from "../../services/rolePermissions";
@@ -30,6 +31,8 @@ interface NavbarProps {
   onLockSession?: () => void;
   onOpenNotifications?: () => void;
   unreadNotificationsCount?: number;
+  onOpenChat?: () => void;
+  unreadChatCount?: number;
   onOpenAuthModal?: () => void;
   onUserRoleChange: (newUser: UserProfile) => void;
   onGlobalSearch: (q: string) => void;
@@ -45,6 +48,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLockSession,
   onOpenNotifications,
   unreadNotificationsCount = 0,
+  onOpenChat,
+  unreadChatCount = 0,
   onOpenAuthModal,
   onUserRoleChange,
   pendingScansCount = 0,
@@ -221,9 +226,33 @@ export const Navbar: React.FC<NavbarProps> = ({
           <span className="hidden sm:inline font-bold">Scanner</span>
         </button>
 
+        {/* Chat Collaborateurs Direct */}
+        {onOpenChat && (
+          <button
+            id="chat-navbar-btn"
+            onClick={onOpenChat}
+            className="relative p-2 rounded-xl text-slate-500 hover:text-[#3B7A2C] hover:bg-[#3B7A2C]/10 dark:text-slate-400 dark:hover:text-[#4FA33B] dark:hover:bg-[#3B7A2C]/20 transition-all cursor-pointer active:scale-95 shrink-0"
+            title="Chat Collaborateurs CORESI"
+            aria-label="Chat Collaborateurs"
+          >
+            <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
+            {unreadChatCount > 0 && (
+              <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#3B7A2C] text-white font-bold text-[9px] flex items-center justify-center shadow-xs">
+                {unreadChatCount > 9 ? '9+' : unreadChatCount}
+              </span>
+            )}
+          </button>
+        )}
+
         {/* Notifications */}
         {onOpenNotifications && (
-          <button onClick={onOpenNotifications} className="relative p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100/80 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-900/80 transition-all cursor-pointer active:scale-95 shrink-0" title="Notifications">
+          <button
+            id="notifications-navbar-btn"
+            onClick={onOpenNotifications}
+            className="relative p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100/80 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-900/80 transition-all cursor-pointer active:scale-95 shrink-0"
+            title="Notifications"
+            aria-label="Notifications"
+          >
             <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
             {unreadNotificationsCount > 0 && (
               <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-bold text-[9px] flex items-center justify-center shadow-sm shadow-rose-500/50">

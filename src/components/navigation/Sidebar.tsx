@@ -22,6 +22,7 @@ import {
   X,
   Sun,
   Moon,
+  Mail,
 } from 'lucide-react';
 import { UserProfile } from '../../types';
 import { ROLE_CONFIGS, isModuleAllowedForRole } from '../../services/rolePermissions';
@@ -167,6 +168,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       pole: 'systeme',
     },
     {
+      id: 'reminders',
+      label: 'Rappels & E-mails',
+      subtext: 'Alertes & Échéances',
+      icon: Mail,
+      pole: 'systeme',
+    },
+    {
       id: 'admin',
       label: 'Administration',
       subtext: 'Configuration Système',
@@ -186,7 +194,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const visibleMenuItems = allMenuItems.filter((item) => {
     if (!isModuleAllowedForRole(item.id, currentUser.role)) return false;
     // Real system deactivation: if module is toggled OFF in AdminConfigService, hide it completely
-    if (item.id !== 'admin' && item.id !== 'settings' && item.id !== 'dashboard') {
+    if (item.id !== 'admin' && item.id !== 'settings' && item.id !== 'dashboard' && item.id !== 'reminders') {
       if (!AdminConfigService.isModuleEnabled(item.id)) {
         return false;
       }
