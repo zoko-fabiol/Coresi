@@ -17,11 +17,14 @@ const ThemeContext = createContext<ThemeContextType>({
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
     try {
+      const params = new URLSearchParams(window.location.search);
+      const urlTheme = params.get('theme');
+      if (urlTheme === 'light' || urlTheme === 'dark') return urlTheme;
       const saved = localStorage.getItem('coresi_theme');
       if (saved === 'light' || saved === 'dark') return saved;
-      return 'dark';
+      return 'light'; // Default to light mode for crisp professional display
     } catch {
-      return 'dark';
+      return 'light';
     }
   });
 

@@ -108,6 +108,7 @@ export default function App() {
     try {
       const params = new URLSearchParams(window.location.search);
       const mod = params.get('module') || window.location.hash.replace('#', '');
+      if (mod.startsWith('admin')) return 'admin';
       if (mod) return mod;
     } catch {}
     return getDefaultModuleForRole(DataService.getCurrentUser().role);
@@ -116,7 +117,11 @@ export default function App() {
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash.replace('#', '');
-      if (hash) setCurrentModule(hash);
+      if (hash.startsWith('admin')) {
+        setCurrentModule('admin');
+      } else if (hash) {
+        setCurrentModule(hash);
+      }
     };
     window.addEventListener('hashchange', handleHash);
     return () => window.removeEventListener('hashchange', handleHash);

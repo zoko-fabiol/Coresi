@@ -103,7 +103,28 @@ export type AdminTab =
   | 'audit';
 
 export const AdminModule: React.FC<AdminModuleProps> = ({ onModuleStateChange }) => {
-  const [activeTab, setActiveTab] = useState<AdminTab>('overview');
+  const [activeTab, setActiveTab] = useState<AdminTab>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('adminTab');
+      if (tab) return tab as AdminTab;
+      if (window.location.hash.startsWith('#admin-')) {
+        return window.location.hash.replace('#admin-', '') as AdminTab;
+      }
+    } catch {}
+    return 'overview';
+  });
+
+  React.useEffect(() => {
+    const handleHash = () => {
+      if (window.location.hash.startsWith('#admin-')) {
+        const tab = window.location.hash.replace('#admin-', '');
+        setActiveTab(tab as AdminTab);
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [successToast, setSuccessToast] = useState<string | null>(null);
 
