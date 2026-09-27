@@ -25,6 +25,7 @@ import { DataService } from '../../services/dataService';
 import { DetailSidebar, SidebarSection, SidebarField, SidebarStatusBadge, SidebarDivider } from '../shared/DetailSidebar';
 import { AttendanceTab } from './sections/AttendanceTab';
 import { LeavesAndOvertimeTab } from './sections/LeavesAndOvertimeTab';
+import { EmployeesTab } from './sections/EmployeesTab';
 
 interface HrModuleProps {
   employees: Employee[];
@@ -158,139 +159,7 @@ export const HrModule: React.FC<HrModuleProps> = ({
 
       {/* TAB 1: EMPLOYEES */}
       {activeTab === 'employees' && (
-        <div className="space-y-4">
-          {/* Filter and Search */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Rechercher par nom, matricule ou qualification..."
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-9 pr-4 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none"
-              />
-            </div>
-
-            <select
-              value={departmentFilter}
-              onChange={(e) => setDepartmentFilter(e.target.value)}
-              className="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none"
-            >
-              <option value="all">Tous les départements</option>
-              <option value="direction">Direction Générale</option>
-              <option value="ingenierie">Ingénierie &amp; Qualité</option>
-              <option value="tuyauterie">Tuyauterie Haute Pression</option>
-              <option value="chaudronnerie">Chaudronnerie &amp; Montage</option>
-              <option value="comptabilite">Administration &amp; Finances</option>
-            </select>
-
-            <div className="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-700">
-              <button
-                onClick={() => setStatusFilter('actif')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  statusFilter === 'actif' ? 'bg-slate-800 text-cyan-300 shadow font-bold' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Actifs ({employees.filter((e) => e.status === 'actif').length})
-              </button>
-              <button
-                onClick={() => setStatusFilter('archive')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  statusFilter === 'archive' ? 'bg-slate-800 text-amber-300 shadow font-bold' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Historique Archivés ({employees.filter((e) => e.status === 'archive').length})
-              </button>
-              <button
-                onClick={() => setStatusFilter('all')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  statusFilter === 'all' ? 'bg-slate-800 text-white shadow font-bold' : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Tous ({employees.length})
-              </button>
-            </div>
-          </div>
-
-          {/* Employees Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredEmployees.map((emp) => {
-              const empDocs = documents.filter((d) => d.context.employeeId === emp.id || d.title.toLowerCase().includes(emp.fullName.toLowerCase()));
-
-              return (
-                <div
-                  key={emp.id}
-                  onClick={() => setSelectedEmployee(emp)}
-                  className="bg-slate-900 border border-slate-800 hover:border-cyan-500/50 rounded-2xl p-5 shadow-lg flex flex-col justify-between cursor-pointer transition-all duration-200"
-                >
-                  <div>
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <div className="flex items-center gap-3 group">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-600 to-blue-700 text-white font-bold flex items-center justify-center text-sm shadow-md">
-                          {emp.fullName.split(' ').map((n) => n[0]).join('').slice(0, 2)}
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-sm text-white group-hover:text-cyan-300 transition-colors">
-                            {emp.fullName}
-                          </h4>
-                          <p className="text-xs text-cyan-400 font-medium">{emp.role}</p>
-                          <span className="text-[10px] font-mono text-slate-400">{emp.matricule}</span>
-                        </div>
-                      </div>
-
-                      <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
-                          emp.status === 'actif'
-                            ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-                            : 'bg-slate-800 text-slate-400'
-                        }`}
-                      >
-                        {emp.status === 'actif' ? 'Actif' : 'Archivé'}
-                      </span>
-                    </div>
-
-                    <div className="space-y-1.5 text-xs text-slate-400 bg-slate-950 p-3 rounded-xl border border-slate-800/80 mb-3">
-                      <p className="flex items-center gap-2">
-                        <Briefcase className="w-3.5 h-3.5 text-slate-500" />
-                        <span className="capitalize">{emp.department} • Contrat {emp.contractType.toUpperCase()}</span>
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <Phone className="w-3.5 h-3.5 text-slate-500" />
-                        <span>{emp.phone}</span>
-                      </p>
-                      {emp.assignedProjectName && (
-                        <p className="flex items-center gap-2 text-cyan-300">
-                          <Building2 className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
-                          <span className="truncate">{emp.assignedProjectName}</span>
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Bottom Actions */}
-                  <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
-                    <span className="text-xs text-cyan-400 font-semibold flex items-center gap-1">
-                      <Users className="w-3.5 h-3.5" /> Fiche &amp; Avances ({empDocs.length} docs)
-                    </span>
-
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onOpenScannerForEmployee(emp);
-                      }}
-                      className="px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-                      title="Numériser contrat, certificat ou passeport sécurité"
-                    >
-                      <Camera className="w-3.5 h-3.5" />
-                      <span>Scanner RH</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <EmployeesTab onRefresh={onRefresh} showToast={showToast} />
       )}
 
       {/* TAB 2: CERTIFICATIONS & QUALIFICATIONS TECHNIQUES */}
