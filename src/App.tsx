@@ -93,13 +93,34 @@ import { QuickUnlockModal } from './components/auth/QuickUnlockModal';
 import { ConstructionLoader } from './components/shared/ConstructionLoader';
 
 export default function App() {
-  const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
+  const [isInitialLoading, setIsInitialLoading] = useState<boolean>(() => {
+    try {
+      if (window.location.search.includes('skipSplash') || window.location.hash) {
+        return false;
+      }
+    } catch {}
+    return true;
+  });
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
   const [isSessionLocked, setIsSessionLocked] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<UserProfile>(DataService.getCurrentUser());
-  const [currentModule, setCurrentModule] = useState<string>(
-    getDefaultModuleForRole(DataService.getCurrentUser().role)
-  );
+  const [currentModule, setCurrentModule] = useState<string>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const mod = params.get('module') || window.location.hash.replace('#', '');
+      if (mod) return mod;
+    } catch {}
+    return getDefaultModuleForRole(DataService.getCurrentUser().role);
+  });
+
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash) setCurrentModule(hash);
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
 
   // Inactivity auto-lock timer (configurable in Settings)
   const [idleTimeoutMinutes] = useState<number>(() => {
